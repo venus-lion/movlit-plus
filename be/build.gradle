@@ -91,6 +91,9 @@ dependencies {
 
     // websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // rabbitmq
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
 }
 
 ext {

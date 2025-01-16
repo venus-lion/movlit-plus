@@ -1,12 +1,15 @@
 package movlit.be.pub_sub.chatMessage.presentation.dto.response;
 
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.ToString;
+
+import lombok.*;
 import movlit.be.common.util.ids.MemberId;
 
 @Getter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ChatMessageDto {
 
     private Long roomId;

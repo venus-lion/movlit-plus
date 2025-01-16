@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class RedisMessagePublisher {
 
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final ChannelTopic topic;
-
-    public void publish(ChatMessageDto chatMessageDto) {
-        log.info("Publishing chat message {}", chatMessageDto);
-        redisTemplate.convertAndSend(topic.getTopic(), chatMessageDto);
-    }
+//    private final RedisTemplate<String, Object> redisTemplate;
+//    private final ChannelTopic topic;
+//
+//    public void publish(ChatMessageDto chatMessageDto) {
+//        log.info("Publishing chat message {}", chatMessageDto);
+//        redisTemplate.convertAndSend(topic.getTopic(), chatMessageDto);
+//    }
 
 }

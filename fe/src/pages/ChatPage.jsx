@@ -46,7 +46,7 @@ function ChatPage() {
 
             // 과거 메시지 로드
             axiosInstance
-                .get(`/api/chat/history?roomId=${roomId}`)
+                .get(`/chat/history?roomId=${roomId}`)
                 .then((response) => {
                     setMessages(response.data);
                 })
@@ -78,7 +78,7 @@ function ChatPage() {
             };
 
             stompClient.publish({
-                destination: '/app/chat/message',
+                destination: '/app/chat/message.send',
                 body: JSON.stringify(chatMessage),
             });
 
