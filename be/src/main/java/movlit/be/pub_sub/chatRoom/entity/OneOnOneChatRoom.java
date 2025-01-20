@@ -21,18 +21,16 @@ public class OneOnOneChatRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String roomName;
+    
     private String memberAId;
     private String memberBId;
     private LocalDateTime regDt;
 
     @Builder
 
-    public OneOnOneChatRoom(String memberAId, String memberBId, String roomName) {
+    public OneOnOneChatRoom(String memberAId, String memberBId) {
         this.memberAId = memberAId;
         this.memberBId = memberBId;
-        this.roomName = roomName;
         this.regDt = LocalDateTime.now();
     }
 

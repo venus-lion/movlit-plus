@@ -12,9 +12,9 @@ const ChatTabs = ({activeTab, setActiveTab}) => {
                     borderBottom: activeTab === 'personal' ? '2px solid blue' : 'none',
                     cursor: 'pointer',
                 }}
-                onClick={() => setActiveTab('personal')}
+                onClick={() => setActiveTab('oneOnOne')}
             >
-                개인 채팅
+                1:1 채팅
             </button>
             <button
                 style={{
@@ -28,6 +28,19 @@ const ChatTabs = ({activeTab, setActiveTab}) => {
                 onClick={() => setActiveTab('group')}
             >
                 그룹 채팅
+            </button>
+            <button
+                style={{
+                    flex: 1,
+                    padding: '10px',
+                    background: activeTab === 'popular' ? 'green' : '#6f6b6b',
+                    border: '1px solid #ddd',
+                    borderBottom: activeTab === 'popular' ? '2px solid blue' : 'none',
+                    cursor: 'pointer',
+                }}
+                onClick={() => setActiveTab('popular')}
+            >
+                인기 그룹톡
             </button>
         </div>
     );
