@@ -67,6 +67,7 @@ function ChatPageGroup({ roomId, roomInfo }) {
             axiosInstance
                 .get(`/chat/history?roomId=${roomId}`)
                 .then((response) => {
+                    console.log('------- response --------', response.data);
                     setMessages(response.data);
                 })
                 .catch((error) => {

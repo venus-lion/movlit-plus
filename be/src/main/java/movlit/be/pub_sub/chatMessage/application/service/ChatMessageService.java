@@ -30,6 +30,7 @@ public class ChatMessageService {
 
         String chatMessageJson = convertToJson(chatMessageDto);
         redisTemplate.opsForList().rightPush(MESSAGE_QUEUE, chatMessageJson);
+
         // 비동기적으로 큐에서 메시지를 처리하는 작업을 시작
         processQueue();
 
@@ -38,7 +39,11 @@ public class ChatMessageService {
 
     public void sendMessageForGroup(ChatMessageDto chatMessageDto) {
         chatMessageDto.setMessageType(MessageType.GROUP);
-//        saveMessageToMongoDB(chatMessageDto);
+
+        String chatMessageJson = convertToJson(chatMessageDto);
+        redisTemplate.opsForList().rightPush(MESSAGE_QUEUE, chatMessageJson);
+
+        // 비동기적으로 큐에서 메시지를 처리하는 작업을 시작
         processQueue();
         messagePublisher.sendMessage(chatMessageDto);
     }
@@ -63,6 +68,7 @@ public class ChatMessageService {
      */
     public List<ChatMessageDto> fetchChatMessages(String roomId) {
         List<ChatMessage> chatMessages = chatMessageMongoRepository.findByRoomId(roomId);
+        log.info("chatMessage={}", chatMessages.toString());
 
         log.info("=== chatMessages : {}", chatMessages);
         // TODO : Converter 나중에 빼기
