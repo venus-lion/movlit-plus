@@ -29,7 +29,7 @@ function GenreMoviesComponent({genreId, onMoviesLoaded, hidden }) {
         }
     }, [movies, onMoviesLoaded]);
 
-    if (loading) return <p>Loading movies...</p>;
+    if (loading) return <p>영화들을 가져오는 중입니다!</p>;
     if (error) return (
         <div>
             <p>Error loading movies.</p>

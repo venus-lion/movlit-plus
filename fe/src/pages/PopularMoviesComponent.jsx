@@ -31,7 +31,7 @@ function PopularMoviesComponent({ onMoviesLoaded, hidden }) {
     }, [movies, onMoviesLoaded]);
 
 
-    if (loading) return <p>Loading popular movies...</p>;
+    if (loading) return <p>인기 있는 영화들을 가져오는 중입니다!</p>;
     if (error) return (
         <div>
             <p>Error loading popular movies.</p>

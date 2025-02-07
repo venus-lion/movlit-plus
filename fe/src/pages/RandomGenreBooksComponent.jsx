@@ -24,7 +24,7 @@ function RandomGenreBooksComponent() {
         }
     };
 
-    if (loading) return <p>Loading books...</p>;
+    if (loading) return <p>랜덤 장르의 도서들을 가져오는 중입니다!</p>;
     if (error) return (
         <div>
             <p>Error loading popular books.</p>

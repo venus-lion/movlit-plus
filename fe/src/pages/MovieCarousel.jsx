@@ -72,7 +72,7 @@ function MovieCarousel({title, movies, startIndex, handleNext, handlePrev, hasMo
                         {'>'}
                     </button>
                 )}
-                {loading && <p>Loading more movies...</p>}
+                {loading && <p>영화들을 가져오는 중입니다!</p>}
             </div>
         </div>
     );

@@ -24,7 +24,7 @@ function PopularBooksComponent() {
         }
     };
 
-    if (loading) return <p>Loading popular books...</p>;
+    if (loading) return <p>인기 있는 도서들을 가져오는 중입니다!</p>;
     if (error) return (
         <div>
             <p>Error loading popular books.</p>
