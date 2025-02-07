@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom';
 function BookCarousel({title, books, startIndex, handlePrev, handleNext}) {
     return (
         <div className="book-content">
-            <h2>{title}</h2>
+            <h2 className="carousel-title">{title}</h2>
             <div className="book-carousel">
                 {startIndex > 0 && (
                     <button className="prev-button" onClick={handlePrev}>

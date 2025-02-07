@@ -14,7 +14,11 @@
 
 .book-carousel-section, .movie-carousel-section {
     margin: 20px 0;
+    /*padding: 0 50px;*/
+}
 
+.carousel-title {
+    padding: 0 60px;
 }
 
 .book-carousel, .movie-carousel {
@@ -22,6 +26,8 @@
     align-items: center;
     position: relative;
     /*margin-bottom: 20px;*/
+    /* 버튼이 들어갈 공간 확보 (좌우에 패딩 추가) */
+    padding: 0 50px;
 }
 
 .book-list, .movie-list {
@@ -42,6 +48,7 @@
 .book-card, .movie-card {
     /*width: 20%;*/
     /*margin-right: 20px;*/
+    overflow: hidden;
     position: relative; /* 순위 표시를 위해 relative 설정 */
     flex: 0 0 18%;
     margin: 0 1%;
@@ -70,18 +77,21 @@
 
 .book-image, .movie-image {
     width: 100%;
-    /*padding-top: 56.25%; !* 16:9 비율 유지 (높이는 비율로 계산) *!*/
+    aspect-ratio: 2 / 3; /* 예: 2:3 비율 (전형적인 영화 포스터 비율) */
+    /*position: relative;*/
     /*position: relative;*/
     border-radius: 8px;
+    /*height: 350px;*/
 }
 
-.book-image img {
+.book-image img .movie-image img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover; /* 비율 유지하면서 div를 채우도록 설정 */
+    object-position: center; /* 가운데 정렬 */
 }
 
 .book-info, .movie-info {
@@ -107,18 +117,51 @@
 
 .prev-button,
 .next-button {
-    background-color: #f8f8f8;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%); /* 수직 가운데 정렬 */
+    z-index: 2; /* 리스트 위로 표시되도록 */
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px 15px;
     cursor: pointer;
-    margin: 0 10px;
+    background-color: #c1edbb; /* 기본 색상 */
+    width: 40px; /* 버튼 폭을 40px로 고정 */
+    height: 40px; /* 버튼 높이를 40px로 고정 */
+    /*margin: 0 10px;*/
+}
+
+/* 왼쪽 버튼 */
+.prev-button {
+    left: 10px; /* .movie-carousel의 왼쪽에서 10px 떨어진 위치 */
+}
+
+/* 오른쪽 버튼 */
+.next-button {
+    right: 10px; /* .movie-carousel의 오른쪽에서 10px 떨어진 위치 */
 }
 
 .prev-button:disabled,
 .next-button:disabled {
     cursor: not-allowed;
     opacity: 0.5;
+}
+
+.prev-button:hover,
+.next-button:hover {
+    background-color: #2E8B57; /* 호버했을 때 색상 */
+}
+
+@media (max-width: 1200px) {
+    .movie-card .book-card {
+        flex: 0 0 20%;
+    }
+}
+
+@media (max-width: 992px) {
+    .movie-card .book-card {
+        flex: 0 0 25%;
+    }
 }
 
 @media (max-width: 768px) {
@@ -129,7 +172,14 @@
 
 @media (max-width: 480px) {
     .movie-card, .book-card {
-        flex: 0 0 45%;
+        flex: 0 0 30%;
+        margin-bottom: 20px; /* 2열로 정렬 시 세로 간격 확보 */
+    }
+
+    .prev-button,
+    .next-button {
+        padding: 5px 8px; /* 여백 축소 */
+        font-size: 0.9rem; /* 글자 크기 축소 */
     }
 }
 
