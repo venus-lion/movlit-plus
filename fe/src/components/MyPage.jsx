@@ -1,4 +1,3 @@
-// MyPage.jsx
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import axiosInstance from '../axiosInstance';
 import './MyPage.css';
@@ -260,93 +259,134 @@ function MyPage() {
 
     return (
         <div className="mypage-container">
-            <div className="mypage-content-wrapper"> {/* White content wrapper 추가 */}
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    style={{display: 'none'}}
-                    onChange={handleFileChange}
-                    accept="image/*"
-                />
-                <div
-                    className="profile-image"
-                    onClick={handleProfileImageClick}
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    style={{cursor: 'pointer'}}
-                >
-                    {userData.profileImgUrl ? (
-                        <img src={userData.profileImgUrl} alt="Profile" className="profile-img"/>
-                    ) : (
-                        <FaUserCircle className="default-profile-icon"/>
-                    )}
-                    {isHovering && (
-                        <div className="overlay">
-                            <FaCamera className="camera-icon"/>
-                        </div>
-                    )}
-                </div>
-                <div className="mypage-header">
-                    <div className="user-info">
-                        <h2>{userData.nickname}</h2>
-                        <p>{userData.email}</p>
-                    </div>
-                    <div className="settings-icon" onClick={toggleDropdown}>
-                        <IoSettingsOutline className="settings-icon-comp"/>
-                        {isDropdownOpen && (
-                            <div className="dropdown-menu">
-                                <button onClick={handleLogout} className="dropdown-item logout-button">
-                                    로그아웃
-                                </button>
-                                <button onClick={handleUpdateClick}
-                                        className="dropdown-item update-button"> {/* button으로 변경 */}
-                                    수정하기
-                                </button>
-                                <button onClick={openDeleteDialog} className="dropdown-item delete-button">
-                                    탈퇴하기
-                                </button>
+            <div className="mypage-content-wrapper">
+                {/* Section 1: Profile Info */}
+                <div className="mypage-section">
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{display: 'none'}}
+                        onChange={handleFileChange}
+                        accept="image/*"
+                    />
+                    <div
+                        className="profile-image"
+                        onClick={handleProfileImageClick}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        style={{cursor: 'pointer'}}
+                    >
+                        {userData.profileImgUrl ? (
+                            <img src={userData.profileImgUrl} alt="Profile" className="profile-img"/>
+                        ) : (
+                            <FaUserCircle className="default-profile-icon"/>
+                        )}
+                        {isHovering && (
+                            <div className="overlay">
+                                <FaCamera className="camera-icon"/>
                             </div>
                         )}
                     </div>
-                </div>
-                <div className="mypage-stats">
-                    <div className="stat-item">
-                        <span onClick={handleFollowerClick} className="link-button">{followerCount}</span>
-                        <span>팔로워</span>
+                    <div className="mypage-header">
+                        <div className="user-info">
+                            <h2>{userData.nickname}</h2>
+                            <p>{userData.email}</p>
+                        </div>
+                        <div className="settings-icon" onClick={toggleDropdown}>
+                            <IoSettingsOutline className="settings-icon-comp"/>
+                            {isDropdownOpen && (
+                                <div className="dropdown-menu">
+                                    <button onClick={handleLogout} className="dropdown-item logout-button">
+                                        로그아웃
+                                    </button>
+                                    <button onClick={handleUpdateClick}
+                                            className="dropdown-item update-button"> {/* button으로 변경 */}
+                                        수정하기
+                                    </button>
+                                    <button onClick={openDeleteDialog} className="dropdown-item delete-button">
+                                        탈퇴하기
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    <div className="stat-item">
-                        <span onClick={handleFollowingClick} className="link-button">{followingCount}</span>
-                        <span>팔로잉</span>
-                    </div>
-                    <div className="stat-item">
-                        <span>{userData.movieHeartCount}</span>
-                        <span>영화 찜</span>
-                    </div>
-                    <div className="stat-item">
-                        <span>{userData.movieCommentCount}</span>
-                        <span>영화 코멘트</span>
-                    </div>
-                    <div className="stat-item">
-                        <span>{userData.bookHeartCount}</span>
-                        <span>도서 찜</span>
-                    </div>
-                    <div className="stat-item">
-                        <span>{userData.bookCommentCount}</span>
-                        <span>도서 코멘트</span>
-                    </div>
-                </div>
-                <div className="mypage-genre-list">
-                    <h3>선호 장르</h3>
-                    <div className="genre-chips">
-                        {genreList.map((genre) => (
-                            <div key={genre.genreId} className="genre-chip">
-                                {genre.genreName}
-                            </div>
-                        ))}
+                    <div className="mypage-stats">
+                        <div className="stat-item">
+                            <span onClick={handleFollowerClick} className="link-button">{followerCount}</span>
+                            <span>팔로워</span>
+                        </div>
+                        <div className="stat-item">
+                            <span onClick={handleFollowingClick} className="link-button">{followingCount}</span>
+                            <span>팔로잉</span>
+                        </div>
+                        <div className="stat-item">
+                            <span>{userData.movieHeartCount}</span>
+                            <span>영화 찜</span>
+                        </div>
+                        <div className="stat-item">
+                            <span>{userData.movieCommentCount}</span>
+                            <span>영화 코멘트</span>
+                        </div>
+                        <div className="stat-item">
+                            <span>{userData.bookHeartCount}</span>
+                            <span>도서 찜</span>
+                        </div>
+                        <div className="stat-item">
+                            <span>{userData.bookCommentCount}</span>
+                            <span>도서 코멘트</span>
+                        </div>
                     </div>
                 </div>
 
-                {/* Material-UI Dialog 추가 (유지) */}
+                {/* Section 2: 선호 장르 (Preferred Genres) */}
+                <div className="mypage-section">
+                    <div className="mypage-genre-list">
+                        <h3>선호 장르</h3>
+                        <div className="genre-chips">
+                            {genreList.map((genre) => (
+                                <div key={genre.genreId} className="genre-chip">
+                                    {genre.genreName}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+
+                {/* Section 3: Movie Home */}
+                <div className="mypage-section">
+                    <div className="movie-home">
+                        {isLoggedIn && <RecentHeartSimilarCrewMoviesComponent/>}
+                        {isLoggedIn && <InterestGenreMoviesComponent/>}
+                    </div>
+                </div>
+
+                {/* Section 4: Book Home */}
+                <div className="mypage-section">
+                    <div className="book-home">
+                        {isLoggedIn && interestGenreBooks.length > 0 && (
+                            <BookCarouselRecommend
+                                title="회원님의 취향저격 도서 장르"
+                                books={interestGenreBooks}
+                                startIndex={startIndexInterestGenre}
+                                handlePrev={handlePrevInterestGenre}
+                                handleNext={handleNextInterestGenre}
+                            />
+                        )}
+
+                        {isLoggedIn && recommendedBooks.length > 0 && (
+                            <BookCarouselRecommend
+                                title="회원님이 찜한 책과 닮은 도서들"
+                                books={recommendedBooks}
+                                startIndex={startIndexRecommended}
+                                handlePrev={handlePrevRecommended}
+                                handleNext={handleNextRecommended}
+                            />
+                        )}
+                    </div>
+                </div>
+
+                {/* Material-UI Dialog (Keep it outside sections as it's a modal) */}
                 <Dialog
                     open={isDeleteDialogOpen}
                     onClose={closeDeleteDialog}
@@ -386,32 +426,6 @@ function MyPage() {
                     </DialogActions>
                 </Dialog>
 
-                <div className="movie-home">
-                    {isLoggedIn && <RecentHeartSimilarCrewMoviesComponent/>}
-                    {isLoggedIn && <InterestGenreMoviesComponent/>}
-                </div>
-
-                <div className="book-home">
-                    {isLoggedIn && interestGenreBooks.length > 0 && (
-                        <BookCarouselRecommend
-                            title="회원님의 취향저격 도서 장르"
-                            books={interestGenreBooks}
-                            startIndex={startIndexInterestGenre}
-                            handlePrev={handlePrevInterestGenre}
-                            handleNext={handleNextInterestGenre}
-                        />
-                    )}
-
-                    {isLoggedIn && recommendedBooks.length > 0 && (
-                        <BookCarouselRecommend
-                            title="회원님이 찜한 책과 닮은 도서들"
-                            books={recommendedBooks}
-                            startIndex={startIndexRecommended}
-                            handlePrev={handlePrevRecommended}
-                            handleNext={handleNextRecommended}
-                        />
-                    )}
-                </div>
             </div> {/* End of mypage-content-wrapper */}
         </div>
 
