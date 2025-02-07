@@ -1,0 +1,30 @@
+/* ChatTabs.css */
+
+.chat-tabs {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.chat-button {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.chat-button:hover {
+    background-color: #2E8B57; /* 호버 시 진한 초록색 */
+    color: white; /* 호버 시 글자색 */
+}
+
+.group-chat-button {
+    flex: 1;
+    padding: 10px;
+    background-color: #6f6b6b;
+    color: white;
+    cursor: pointer;
+}
+
+.group-chat-button:hover {
+    background-color: #282c34;
+}
