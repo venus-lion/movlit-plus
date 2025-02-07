@@ -1,4 +1,4 @@
-import React, {useEffect, useState, Suspense, lazy} from 'react';
+import React, {useEffect, useState, Suspense, lazy, useCallback} from 'react';
 import './Home.css';
 import {useOutletContext} from 'react-router-dom';
 
@@ -41,22 +41,31 @@ function MovieHome() {
     };
 
 
-    // Update loading state for each component
-    const updateComponentLoaded = (componentName, isLoaded, index = null) => {
+    const updateComponentLoaded = useCallback((componentName, isLoaded, index = null) => {
         setComponentsLoaded(prev => {
             if (index !== null) {  //For GenreMoviesComponent
+                // index가 null이 아닐때만 newGenreStatus를 만듭니다.
                 const newGenreStatus = [...prev.genre];
                 newGenreStatus[index] = isLoaded;
+
+                // 이전 genre 상태와 새로운 genre 상태가 같은지 비교. 같다면 prev를 반환.
+                if (JSON.stringify(prev.genre) === JSON.stringify(newGenreStatus)) { // 간단한 비교
+                    return prev;
+                }
                 return {...prev, genre: newGenreStatus};
             }
-            return {...prev, [componentName]: isLoaded}
-        });
 
-    };
+            // index가 null이면, 이전 값과 비교하여 변경된 경우에만 업데이트.
+            if (prev[componentName] === isLoaded) {
+                return prev;
+            }
+            return {...prev, [componentName]: isLoaded};
+        });
+    }, []);
 
     return (
         <div className="movie-home">
-            <Suspense fallback={<p>Loading...</p>}>
+            <Suspense fallback={<p>로딩 중입니다.</p>}>
                 {/* Popular Movies */}
                 <PopularMoviesComponent
                     onMoviesLoaded={(movies) => updateComponentLoaded('popular', areMoviesLoaded(movies))}
