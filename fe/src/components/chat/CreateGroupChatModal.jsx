@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react"; // useContext 임포트 추가
 import Modal from "react-modal";
 import {FaRegStar, FaStar, FaStarHalfAlt} from 'react-icons/fa';
 import "../../assets/css/CreateGroupChatModal.css";
 import axiosInstance from "../../axiosInstance.js";
-import {toast} from "react-toastify";
+import {AppContext} from "../../App.jsx"; // AppContext 임포트
 
+// 별을 표시하는 함수 (기존과 동일)
 const renderStars = (rating) => {
     const validRating = Math.max(0, Math.min(10, rating || 0));
     const fullStars = Math.floor(validRating / 2);
@@ -24,18 +25,21 @@ const renderStars = (rating) => {
     );
 };
 
+// 제목이 길 경우 ...으로 줄여주는 함수 (기존과 동일)
 const truncateTitle = (title, maxLength = 15) => {
     if (title.length > maxLength) {
         return `${title.slice(0, maxLength)}...`;
     }
     return title;
 };
+
 const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
     const [selectedCategory, setSelectedCategory] = useState("movie");
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
-    const [hasSearched, setHasSearched] = useState(false); // 추가된 상태
+    const [hasSearched, setHasSearched] = useState(false); // 검색 여부 상태 추가
+    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
 
     const handleCategoryChange = (event) => {
         setSearchResults([]);
@@ -50,12 +54,12 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
 
     const handleSearch = async () => {
         if (!searchTerm.trim()) {
-            toast.error('검색어를 입력해주세요.');
+            updateSnackbar('검색어를 입력해주세요.', 'warning'); // toast.error -> updateSnackbar
             return;
         }
         setSearchResults([]);
         setSelectedCard(null);
-        setHasSearched(true); // 검색 상태 설정
+        setHasSearched(true); // 검색 시작 상태 설정
 
         try {
             const response = await axiosInstance.get(
@@ -88,7 +92,7 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
 
     const handleConfirm = () => {
         if (!selectedCard) {
-            toast.error('카드를 선택해주세요.');
+            updateSnackbar('카드를 선택해주세요.', 'warning'); // toast.error -> updateSnackbar
             return;
         }
         onConfirm(selectedCard, selectedCategory);
@@ -153,9 +157,9 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
                         </button>
                     </div>
 
-                    {/* 검색 결과 */}
+                    {/* 검색 결과 (기존과 동일) */}
                     <div className="result-container">
-                        {hasSearched && ( // 검색이 이루어진 경우에만 결과 보여줌
+                        {hasSearched && ( // 검색이 이루어진 경우에만 결과 표시
                             <>
                                 <h3>검색 결과</h3>
                                 <div className="results-scroll">
@@ -198,7 +202,7 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
                                             ))}
                                         </div>
                                     ) : (
-                                        hasSearched && <p>검색결과가 없습니다.</p> // 결과가 없을 경우에만
+                                        hasSearched && <p>검색결과가 없습니다.</p> // 검색 후 결과 없을 시
                                     )}
                                 </div>
                             </>
@@ -215,4 +219,3 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
 };
 
 export default CreateGroupChatModal;
-

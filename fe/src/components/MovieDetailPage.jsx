@@ -1,8 +1,7 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useContext} from 'react';
 import {Link, useParams} from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import {FaComment, FaHeart, FaRegHeart, FaRegStar, FaStar, FaStarHalfAlt, FaUserCircle,} from 'react-icons/fa';
-import {toast, ToastContainer} from 'react-toastify';
 import MovieCarousel from '../pages/MovieCarousel';
 import useAuthMovieList from '../hooks/useAuthMovieList';
 import useBookList from '../hooks/useBookList';
@@ -12,6 +11,7 @@ import 'react-circular-progressbar/dist/styles.css';
 import GetGroupChatInfoModal from "./chat/GetGroupChatInfoModal.jsx";
 import CreateGroupChatNameModal from "./chat/CreateGroupChatNameModal.jsx";
 import './MovieDetailPage.css'; // CSS 파일 import
+import {AppContext} from "../App.jsx"; // AppContext import
 
 function MovieDetailPage() {
     const {movieId} = useParams();
@@ -35,17 +35,16 @@ function MovieDetailPage() {
     const [userComment, setUserComment] = useState(null);
     const [userCommentId, setUserCommentId] = useState(null);
     const loader = useRef(null);
-    // const [existingRoomInfo, setExistingRoomInfo] = useState(null);
     const [isGetGroupChatInfoModalOpen, setIsGetGroupChatInfoModalOpen] = useState(false); // 채팅방 존재여무 모달 열림 상태
     const [isCreateGroupChatNameModalOpen, setIsCreateGroupChatNameModalOpen] = useState(false); // 모달2 열림 상태
     const [selectedCard, setSelectedCard] = useState(null); // 선택된 데이터
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [refreshKey, setRefreshKey] = useState(0); // 채팅 리스트 새로고침 키 추가
     const [currentMemberId, setCurrentMemberId] = useState(null); // 현재 로그인된 memberId 상태 추가
+    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
 
     const initialVisibleCrews = 14;
 
-    // 관련 영화 데이터 가져오기
     const {
         movies: relatedMovies,
         loading: relatedMoviesLoading,
@@ -70,7 +69,6 @@ function MovieDetailPage() {
         }
     };
 
-    // 관련 장르 도서 데이터 가져오기
     const {
         books: relatedBooks,
         loading: relatedBooksLoading,
@@ -160,7 +158,6 @@ function MovieDetailPage() {
             .catch((error) => console.error('Error fetching member id:', error));
     }, [movieId]);
 
-    // Intersection Observer 설정 (코멘트 무한 스크롤)
     useEffect(() => {
         if (!isInitialLoad) {
             const options = {
@@ -178,7 +175,6 @@ function MovieDetailPage() {
         }
     }, [comments, hasMore, isInitialLoad]);
 
-    // 사용자 코멘트 가져오기
     const fetchUserComment = async () => {
         try {
             const response = await axiosInstance.get(`/movies/${movieId}/myComment`);
@@ -193,20 +189,20 @@ function MovieDetailPage() {
                 });
                 setUserCommentId(movieCommentId);
                 setMyRating(score);
-                setDbRating(score); // dbRating 업데이트
+                setDbRating(score);
                 setMyComment(comment);
                 if (score > 0) {
                     setShowCommentInput(false);
                 } else {
-                    setShowCommentInput(false); // 사용자가 코멘트를 남긴 적이 없으면 입력란을 숨김
+                    setShowCommentInput(false);
                 }
             } else {
                 setUserComment(null);
                 setUserCommentId(null);
                 setMyRating(0);
-                setDbRating(0); // dbRating 업데이트
+                setDbRating(0);
                 setMyComment('');
-                setShowCommentInput(false); // 사용자가 코멘트를 남긴 적이 없으면 입력란을 숨김
+                setShowCommentInput(false);
             }
         } catch (error) {
             console.error('Error fetching user comment:', error);
@@ -215,7 +211,6 @@ function MovieDetailPage() {
         }
     };
 
-    // 코멘트 불러오기 함수
     const fetchComments = (currentPage = 0) => {
         axiosInstance
             .get(`/movies/${movieId}/comments?page=${currentPage}`)
@@ -227,7 +222,6 @@ function MovieDetailPage() {
                 setTotalComments(fetchedTotalComments);
 
                 if (currentPage === 0) {
-                    // 각 코멘트 객체에 isLiked와 commentLikeCount, profileImgUrl이 존재하는지 확인하고, 값이 없으면 false, 0, null으로 설정
                     const updatedComments = response.data.content.map((comment) => ({
                         ...comment,
                         isLiked: comment.isLiked || false,
@@ -239,7 +233,6 @@ function MovieDetailPage() {
                         response.data.content.length > 4 || fetchedTotalComments > 4
                     );
                 } else {
-                    // 마찬가지로 isLiked와 commentLikeCount, profileImgUrl 존재 여부 확인 및 기본값 설정
                     const updatedComments = response.data.content.map((comment) => ({
                         ...comment,
                         isLiked: comment.isLiked || false,
@@ -254,7 +247,6 @@ function MovieDetailPage() {
             .catch((error) => console.error('Error fetching comments:', error));
     };
 
-    // Intersection Observer 콜백 함수
     const handleObserver = (entities) => {
         const target = entities[0];
         if (target.isIntersecting && hasMore && !isInitialLoad) {
@@ -262,9 +254,7 @@ function MovieDetailPage() {
         }
     };
 
-    // 코멘트 별점 클릭 핸들러
     const handleRatingClick = (newRating, e) => {
-        // 클릭 위치에 따라 반 별 또는 온전한 별로 설정
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const halfWidth = rect.width / 2;
@@ -275,16 +265,14 @@ function MovieDetailPage() {
         } else {
             setMyRating(starIndex * 2);
         }
-        setShowCommentInput(true); // 별점 클릭 시 코멘트 입력란을 보이도록 설정
+        setShowCommentInput(true);
     };
 
-    // 찜하기/찜해제 처리
     const handleWishClick = async () => {
         try {
             let updatedHeartCount;
 
             if (movieData.isHearted) {
-                // 찜 해제 (DELETE 요청)
                 await axiosInstance.delete(`/movies/${movieId}/hearts`);
                 updatedHeartCount = movieData.heartCount - 1;
                 setMovieData((prevMovieData) => ({
@@ -292,9 +280,8 @@ function MovieDetailPage() {
                     heartCount: updatedHeartCount,
                     isHearted: false,
                 }));
-                toast.success('찜 목록에서 제거되었습니다.');
+                updateSnackbar('찜 목록에서 제거되었습니다.', 'success');
             } else {
-                // 찜하기 (POST 요청)
                 const response = await axiosInstance.post(`/movies/${movieId}/hearts`);
                 updatedHeartCount = response.data.movieHeartCnt;
                 setMovieData((prevMovieData) => ({
@@ -302,10 +289,9 @@ function MovieDetailPage() {
                     heartCount: updatedHeartCount,
                     isHearted: true,
                 }));
-                toast.success('찜 목록에 추가되었습니다.');
+                updateSnackbar('찜 목록에 추가되었습니다.', 'success');
             }
 
-            // 찜 상태에 따라 버튼 및 카운트 업데이트
             const button = document.getElementById('wishButton');
             const heartCountSpan = document.getElementById('heartCount');
 
@@ -320,7 +306,7 @@ function MovieDetailPage() {
             }
         } catch (error) {
             console.error('Error updating wish status:', error);
-            toast.error('찜하기/찜해제 처리에 실패했습니다.');
+            updateSnackbar('찜하기/찜해제 처리에 실패했습니다.', 'error');
         }
     };
 
@@ -332,15 +318,14 @@ function MovieDetailPage() {
         }
     };
 
-    // 코멘트 제출
     const handleSubmitComment = async () => {
         if (myRating === 0) {
-            toast.error('별점을 입력해주세요.');
+            updateSnackbar('별점을 입력해주세요.', 'warning');
             return;
         }
         const currentComment = userComment ? myComment : comment;
         if (currentComment.trim() === '') {
-            toast.error('코멘트를 입력해주세요.');
+            updateSnackbar('코멘트를 입력해주세요.', 'warning');
             return;
         }
 
@@ -351,48 +336,42 @@ function MovieDetailPage() {
 
         try {
             if (userCommentId) {
-                // 코멘트 수정 (PUT 요청)
                 await axiosInstance.put(
                     `/movies/comments/${userCommentId}`,
                     requestBody
                 );
-                toast.success('코멘트가 수정되었습니다.');
+                updateSnackbar('코멘트가 수정되었습니다.', 'success');
             } else {
-                // 새 코멘트 저장 (POST 요청)
                 await axiosInstance.post(`/movies/${movieId}/comments`, requestBody);
-                toast.success('코멘트가 저장되었습니다.');
+                updateSnackbar('코멘트가 저장되었습니다.', 'success');
             }
 
-            // 코멘트 상태 업데이트
             fetchUserComment();
             fetchComments(0);
         } catch (error) {
             console.error('코멘트 저장/수정 실패:', error);
-            toast.error('코멘트 저장/수정에 실패했습니다.');
+            updateSnackbar('코멘트 저장/수정에 실패했습니다.', 'error');
         } finally {
             setComment('');
-            setMyRating(0); // 코멘트 제출 후 별점을 다시 0으로 설정
+            setMyRating(0);
             setShowCommentInput(false);
         }
     };
 
-    // 코멘트 삭제
     const handleDeleteComment = async () => {
         if (!userCommentId) return;
 
         try {
-            // 코멘트 삭제 (DELETE 요청)
             await axiosInstance.delete(`/movies/comments/${userCommentId}`);
-            toast.success('코멘트가 삭제되었습니다.');
+            updateSnackbar('코멘트가 삭제되었습니다.', 'success');
             fetchUserComment();
             fetchComments(0);
         } catch (error) {
             console.error('Error deleting comment:', error);
-            toast.error('코멘트 삭제에 실패했습니다.');
+            updateSnackbar('코멘트 삭제에 실패했습니다.', 'error');
         }
     };
 
-    // 출연/제작진 더보기/취소 처리
     const handleShowMoreCrews = () => {
         setShowMoreCrews(true);
         setVisibleCrews(crews);
@@ -403,14 +382,12 @@ function MovieDetailPage() {
         setVisibleCrews(crews.slice(0, initialVisibleCrews));
     };
 
-    // 코멘트 더보기 처리
     const handleLoadMore = () => {
         setIsInitialLoad(false);
         fetchComments(page);
         setShowLessComments(true);
     };
 
-    // 코멘트 더보기 취소 처리
     const handleShowLessComments = () => {
         setComments(comments.slice(0, 4));
         setShowLessComments(false);
@@ -419,32 +396,27 @@ function MovieDetailPage() {
         setIsInitialLoad(true);
     };
 
-    // 좋아요/좋아요 취소 처리
     const handleLikeClick = async (commentId, isLiked) => {
         try {
             if (isLiked) {
-                // 좋아요 취소 (DELETE 요청)
                 await axiosInstance.delete(`/movies/comments/${commentId}/likes`);
-                toast.success('좋아요를 취소했습니다.');
+                updateSnackbar('좋아요를 취소했습니다.', 'success');
             } else {
-                // 좋아요 (POST 요청)
                 await axiosInstance.post(`/movies/comments/${commentId}/likes`);
-                toast.success('좋아요를 눌렀습니다.');
+                updateSnackbar('좋아요를 눌렀습니다.', 'success');
             }
 
-            // 코멘트 목록 다시 불러오기
             fetchComments(0);
         } catch (error) {
             console.error('Error updating like status:', error);
-            toast.error('좋아요/좋아요 취소 처리에 실패했습니다.');
+            updateSnackbar('좋아요/좋아요 취소 처리에 실패했습니다.', 'error');
         }
     };
 
-    // 별을 표시하는 함수 수정 (반 별: 1점, 온전한 별: 2점으로 계산)
     const renderStars = (rating) => {
-        const fullStars = Math.floor(rating / 2); // 온전한 별의 개수 (2점당 1개)
-        const halfStar = rating % 2 === 1; // 반 별의 여부 (나머지가 1이면 반 별)
-        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0); // 빈 별의 개수
+        const fullStars = Math.floor(rating / 2);
+        const halfStar = rating % 2 === 1;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
 
         return (
             <>
@@ -463,7 +435,6 @@ function MovieDetailPage() {
         return <div style={styles.loading}>Loading...</div>;
     }
 
-    // 유니크한 장르 세트 생성
     const uniqueGenres = new Set();
     if (relatedBooks) {
         relatedBooks.forEach((book) => {
@@ -473,6 +444,7 @@ function MovieDetailPage() {
         });
     }
     const uniqueGenreList = Array.from(uniqueGenres);
+
 
     const handleJoinGroupChatroom = async (movieId) => {
         try {
@@ -496,10 +468,9 @@ function MovieDetailPage() {
                 crew: visibleCrews.map(crew => crew.name),
                 movieGenre: genres.map(genre => ({
                     ...genre,
-                    genreName: genre.name // 새로운 속성 추가
+                    genreName: genre.name
                 })),
             };
-            // 가입 여부 확인 api 호출
             console.log(selectedCard);
             handleOpenGroupChatInfoModal(selectedCard, "movie");
 
@@ -509,27 +480,27 @@ function MovieDetailPage() {
     }
 
     const handleJoinRoom = async (existingRoomInfo) => {
-        // existingRoomInfo가 null이 아닌지 확인
         if (!existingRoomInfo || !existingRoomInfo.groupChatroomId) {
             alert("채팅방 정보가 유효하지 않습니다.");
             return;
         }
 
-        const groupChatroomId = existingRoomInfo.groupChatroomId; // 채팅방 ID 추출
+        const groupChatroomId = existingRoomInfo.groupChatroomId;
         try {
             const response = await axiosInstance.post(`/chat/group/${groupChatroomId}`);
             alert("채팅방 가입에 성공하였습니다.");
-            setRefreshKey(prevKey => prevKey + 1); // 키를 업데이트하여 ChatList를 다시 렌더링함
-            handleCloseGroupChatInfoModal(); // 현재 두번째 모달창 닫기
+            setRefreshKey(prevKey => prevKey + 1);
+            handleCloseGroupChatInfoModal();
         } catch (err) {
             alert("채팅방 가입에 실패했습니다.");
         }
     };
 
+
     const handleOpenGroupChatInfoModal = (card, category) => {
         setSelectedCard(card);
         setSelectedCategory(category);
-        setIsGetGroupChatInfoModalOpen(true); // 두 번째 모달 열기
+        setIsGetGroupChatInfoModalOpen(true);
     };
     const handleCloseGroupChatInfoModal = () => {
         setIsGetGroupChatInfoModalOpen(false);
@@ -537,10 +508,11 @@ function MovieDetailPage() {
         setSelectedCategory(null);
     };
 
+
     const handleOpenGroupChatNameModal = (card, category) => {
-        setSelectedCard(card); // 선택된 카드 데이터 저장
-        setSelectedCategory(category); // 선택된 카테고리 저장
-        setIsCreateGroupChatNameModalOpen(true); // 모달 열기
+        setSelectedCard(card);
+        setSelectedCategory(category);
+        setIsCreateGroupChatNameModalOpen(true);
     };
 
     const handleCloseGroupChatNameModal = () => {
@@ -548,6 +520,7 @@ function MovieDetailPage() {
         setSelectedCard(null);
         setSelectedCategory(null);
     };
+
 
     return (
         <div style={styles.container}>
@@ -587,7 +560,7 @@ function MovieDetailPage() {
                         style={{
                             ...styles.button,
                             backgroundColor: '#FF3366',
-                            marginTop: '20px', // 이미지와 버튼 사이 간격 조절
+                            marginTop: '20px',
                         }}
                         onClick={() => handleJoinGroupChatroom(movieId)}
                     >
@@ -600,7 +573,6 @@ function MovieDetailPage() {
                         <div style={styles.myRating}>
                             <span style={styles.ratingLabel}>내 별점</span>
                             <div style={styles.stars}>
-                                {/* 별 5개로 10점 만점 표현 */}
                                 {[...Array(5)].map((_, index) => {
                                     const starIndex = (index + 1);
                                     const rating = myRating === 0 ? hoverRating : myRating;
@@ -614,7 +586,6 @@ function MovieDetailPage() {
                                                 const x = e.clientX - rect.left;
                                                 const halfWidth = rect.width / 2;
 
-                                                // 클릭된 별점이 있든 없든 마우스 호버 이벤트는 항상 감지
                                                 if (x <= halfWidth) {
                                                     setHoverRating(starIndex * 2 - 1);
                                                 } else {
@@ -625,7 +596,6 @@ function MovieDetailPage() {
                                                 setHoverRating(0);
                                             }}
                                         >
-                                            {/* 클릭된 별점이 없으면 마우스 호버 상태에 따라 별을 표시하고, 클릭된 별점이 있으면 클릭된 별점을 기준으로 별을 표시 */}
                                             {starIndex * 2 <= rating ? (
                                                 <FaStar style={styles.starFilled}/>
                                             ) : starIndex * 2 === rating + 1 ? (
@@ -644,7 +614,6 @@ function MovieDetailPage() {
                                 <div style={styles.stars}>
                                     {renderStars(movieData.voteAverage)}
                                 </div>
-                                {/* Circular Progress Bar 추가 */}
                                 <div style={styles.progressBarContainer}>
                                     <CircularProgressbar
                                         value={movieData.voteAverage * 10}
@@ -679,7 +648,6 @@ function MovieDetailPage() {
                         </div>
                     </div>
 
-                    {/* 사용자 코멘트 표시 */}
                     {userComment && userComment.score > 0 && (
                         <div style={styles.userCommentDisplay}>
                             <div style={styles.userInfo}>
@@ -701,7 +669,6 @@ function MovieDetailPage() {
                         </div>
                     )}
 
-                    {/* 코멘트 입력 및 수정/삭제 버튼 */}
                     {myRating > 0 && showCommentInput && (
                         <div style={styles.commentSection}>
                             <textarea
@@ -716,7 +683,6 @@ function MovieDetailPage() {
                         </div>
                     )}
 
-                    {/* 코멘트 삭제 및 수정 버튼 */}
                     {!showCommentInput && userComment && (
                         <div style={styles.commentActions}>
                             <button
@@ -830,11 +796,8 @@ function MovieDetailPage() {
                                                 )}
                                                 <span style={styles.commentUser}>{comment.nickname}</span>
                                             </Link>
-                                            {/* 별점 및 좋아요 컨테이너 */}
                                             <div style={styles.commentActions}>
-                                                {/* 코멘트 별점 표시 */}
                                                 <div style={styles.commentRating}>
-                                                    {/* 별 5개로 10점 만점 표현 */}
                                                     {[...Array(5)].map((_, index) => {
                                                         const starIndex = (index + 1);
                                                         return (
@@ -849,9 +812,7 @@ function MovieDetailPage() {
                                                             </span>
                                                         );
                                                     })}
-                                                    {/*<span style={styles.commentScore}>{comment.score}</span>*/}
                                                 </div>
-                                                {/* 좋아요 버튼 및 카운트 컨테이너 */}
                                                 <div style={styles.likeContainer}>
                                                     <button
                                                         style={styles.likeButton}
@@ -860,22 +821,18 @@ function MovieDetailPage() {
                                                         {comment.isLiked ? <FaHeart style={styles.likedIcon}/> :
                                                             <FaRegHeart style={styles.likeIcon}/>}
                                                     </button>
-                                                    {/* 좋아요 카운트 */}
                                                     <span
                                                         style={styles.likeCountContainer}>{comment.commentLikeCount}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        {/* 코멘트 내용 */}
                                         <div style={styles.commentContent}>
                                             <FaComment style={styles.commentIcon}/>
                                             <p style={styles.commentText}>{comment.comment}</p>
                                         </div>
                                     </div>
                                 ))}
-                                {/* 무한 스크롤 로딩 감지 Element */}
                                 <div ref={loader}/>
-                                {/* 더보기 버튼 */}
                                 {hasMore && isInitialLoad && (
                                     <div style={styles.moreButtonContainer}>
                                         <button style={styles.moreButton} onClick={handleLoadMore}>
@@ -883,7 +840,6 @@ function MovieDetailPage() {
                                         </button>
                                     </div>
                                 )}
-                                {/* 더보기 취소 버튼 */}
                                 {showLessComments && (
                                     <div style={styles.moreButtonContainer}>
                                         <button style={styles.moreButton} onClick={handleShowLessComments}>
@@ -894,7 +850,6 @@ function MovieDetailPage() {
                             </div>
                         </div>
 
-                        {/* 새로운 관련 영화 섹션 */}
                         <div style={styles.section}>
                             <div style={styles.sectionTitle}>관련 영화 추천</div>
                             <div style={styles.sectionContent}>
@@ -915,7 +870,6 @@ function MovieDetailPage() {
                             </div>
                         </div>
 
-                        {/* 관련 도서 섹션 */}
                         <div style={styles.section}>
                             <div style={styles.sectionTitle}>관련 도서 추천</div>
                             <div style={styles.sectionContent}>
@@ -937,22 +891,21 @@ function MovieDetailPage() {
                         </div>
                     </div>
                 </div>
-
                 <GetGroupChatInfoModal
                     isOpen={isGetGroupChatInfoModalOpen}
                     onClose={handleCloseGroupChatInfoModal}
-                    selectedCard={selectedCard} // 선택된 데이터 전달
-                    selectedCategory={selectedCategory} // 선택된 카테고리 전달
-                    onConfirm={(card, category) => handleOpenGroupChatNameModal(card, category)} // 선택된 데이터 전달
-                    onJoin={handleJoinRoom} // "가입하기" 버튼의 핸들러 추가
+                    selectedCard={selectedCard}
+                    selectedCategory={selectedCategory}
+                    onConfirm={(card, category) => handleOpenGroupChatNameModal(card, category)}
+                    onJoin={handleJoinRoom}
                 />
                 <CreateGroupChatNameModal
                     isOpen={isCreateGroupChatNameModalOpen}
                     onClose={handleCloseGroupChatNameModal}
-                    selectedCard={selectedCard} // 선택된 데이터 전달
-                    selectedCategory={selectedCategory} // 선택된 카테고리 전달
+                    selectedCard={selectedCard}
+                    selectedCategory={selectedCategory}
                     onUpdateChatList={() => {
-                        setRefreshKey(prevKey => prevKey + 1); // 채팅방 리스트 새로고침 키 업데이트
+                        setRefreshKey(prevKey => prevKey + 1);
                     }}
                 />
             </div>
@@ -995,9 +948,9 @@ const styles = {
         marginRight: '30px',
         flexShrink: 0,
 
-        display: 'flex',             // Flexbox 사용 설정
-        flexDirection: 'column',     // 자식 요소들을 세로 방향으로 배치
-        alignItems: 'center',        // 자식 요소들을 가로 방향으로 중앙 정렬
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
     },
     info: {
         flex: 1,
@@ -1021,18 +974,18 @@ const styles = {
     },
     stars: {
         display: 'inline-block',
-        alignItems: 'center', // 세로 중앙 정렬
+        alignItems: 'center',
         //marginLeft: '10px',
     },
     starFilled: {
         color: '#f8d90f',
         cursor: 'pointer',
-        fontSize: '40px', // 크기 조정
+        fontSize: '40px',
     },
     starEmpty: {
         color: '#ccc',
         cursor: 'pointer',
-        fontSize: '40px', // 크기 조정
+        fontSize: '40px',
     },
     starIcon: {
         fontSize: '40px',
@@ -1272,14 +1225,10 @@ const styles = {
     commentUserInfo: {
         display: 'flex',
         alignItems: 'center',
-        // textDecoration과 color는 commentUserLink 클래스로 이동
     },
     commentUser: {
         fontWeight: 'bold',
         marginRight: '5px',
-        // color와 fontSize는 여기서 제거 (comment-user-link 클래스에서 관리)
-        // transition은 여기서 제거 (comment-user-link 클래스에서 관리)
-        // :hover 제거
     },
     commentProfileImage: {
         width: '30px',
@@ -1303,8 +1252,8 @@ const styles = {
     },
     averageRating: {
         marginLeft: '20px',
-        display: 'flex', // 가로 정렬
-        alignItems: 'center', // 세로 중앙 정렬
+        display: 'flex',
+        alignItems: 'center',
     },
     voteAverage: {
         marginLeft: '10px',
@@ -1316,8 +1265,8 @@ const styles = {
         alignItems: 'center',
     },
     progressBarContainer: {
-        width: '60px', // 원하는 크기로 조정
-        marginLeft: '15px', // 별점과의 간격 조정
+        width: '60px',
+        marginLeft: '15px',
     }
 };
 

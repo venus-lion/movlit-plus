@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react'; // useContext import 추가
 import ChatTabs from './ChatTabs';
 import ChatList from './ChatList';
 import {useNavigate, useOutletContext} from "react-router-dom";
@@ -8,17 +8,16 @@ import ChatPageGroup from "../../pages/ChatPageGroup.jsx";
 import CreateGroupChatNameModal from "./CreateGroupChatNameModal.jsx";
 import axiosInstance from "../../axiosInstance.js";
 import GetGroupChatInfoModal from "./GetGroupChatInfoModal.jsx"; // axios 임포트
-import {toast} from "react-toastify";
+import {AppContext} from "../../App.jsx"; // AppContext import
 
 const Chat = () => {
     const [activeTab, setActiveTab] = useState('personal'); // 개인 채팅 또는 그룹 채팅
     const [searchTerm, setSearchTerm] = useState(''); // 검색어
     const [selectedChat, setSelectedChat] = useState(null); // 현재 선택된 채팅방
-    const {isLoggedIn} = useOutletContext();
+    const {isLoggedIn, updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
     const navigate = useNavigate();
     const [refreshKey, setRefreshKey] = useState(0); // 채팅 리스트 새로고침 키 추가
     const [chatComponentKey, setChatComponentKey] = useState(0); // Chat 컴포넌트 새로고침 키
-
 
     const [isCreateGroupChatModalOpen, setIsCreateGroupChatModalOpen] = useState(false); // 모달1 열림 상태
     const [isGetGroupChatInfoModalOpen, setIsGetGroupChatInfoModalOpen] = useState(false); // 채팅방 존재여무 모달2 열림 상태
@@ -33,7 +32,7 @@ const Chat = () => {
         }
     }, [isLoggedIn, navigate]);
 
-    // 채팅방 리스트 업데이트 함수
+    // 채팅방 리스트 업데이트 함수 (기존과 동일)
     const updateChatList = async () => {
         try {
             const response = await axiosInstance.get('/chat/group/rooms/my');
@@ -53,7 +52,7 @@ const Chat = () => {
         setSelectedCategory(null);
     };
 
-    // 채팅방 존재여무 모달2
+    // 채팅방 존재여무 모달2 (기존과 동일)
     const handleOpenGroupChatInfoModal = (card, category) => {
         setSelectedCard(card);
         setSelectedCategory(category);
@@ -79,15 +78,15 @@ const Chat = () => {
         setSelectedCategory(null);
     };
 
-    // 검색 핸들러
+    // 검색 핸들러 (기존과 동일)
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
     };
 
-    // 채팅방 생성 핸들러
+    // 채팅방 생성 핸들러 (기존과 동일)
     const handleCreateChat = () => {
         if (!isLoggedIn) { // 로그인을 하지 않았다면..
-            alert('로그인이 필요합니다.');
+            alert('로그인이 필요합니다.'); // alert -> Material-UI Snackbar로 대체는 X (alert 유지)
             navigate('/member/login');
             return;
         }
@@ -95,24 +94,24 @@ const Chat = () => {
     };
 
     const handleJoinRoom = async (existingRoomInfo) => {
-        // existingRoomInfo가 null이 아닌지 확인
+        // existingRoomInfo가 null이 아닌지 확인 (기존과 동일)
         if (!existingRoomInfo || !existingRoomInfo.groupChatroomId) {
-            toast.error("채팅방 정보가 유효하지 않습니다.");
+            updateSnackbar("채팅방 정보가 유효하지 않습니다.", 'warning'); // toast.error -> updateSnackbar
             return;
         }
 
-        const groupChatroomId = existingRoomInfo.groupChatroomId; // 채팅방 ID 추출
+        const groupChatroomId = existingRoomInfo.groupChatroomId; // 채팅방 ID 추출 (기존과 동일)
         try {
-            const response = await axiosInstance.post(`/chat/group/${groupChatroomId}`);
-            toast.success("채팅방 가입에 성공하였습니다.");
-            setRefreshKey(prevKey => prevKey + 1); // 키를 업데이트하여 ChatList를 다시 렌더링함
-            handleCloseGroupChatInfoModal(); // 현재 두번째 모달창 닫기
+            await axiosInstance.post(`/chat/group/${groupChatroomId}`);
+            updateSnackbar("채팅방 가입에 성공하였습니다.", 'success'); // toast.success -> updateSnackbar
+            setRefreshKey(prevKey => prevKey + 1); // 키를 업데이트하여 ChatList를 다시 렌더링함 (기존과 동일)
+            handleCloseGroupChatInfoModal(); // 현재 두번째 모달창 닫기 (기존과 동일)
         } catch (error) {
-            toast.success("채팅방 가입에 실패했습니다.");
+            updateSnackbar("채팅방 가입에 실패했습니다.", 'error'); // toast.error -> updateSnackbar
         }
     };
 
-    // 선택된 채팅방에 따라 URL 변경
+    // 선택된 채팅방에 따라 URL 변경 (기존과 동일)
     useEffect(() => {
         if (selectedChat) {
             const chatId = activeTab === 'personal' ? selectedChat.roomId : selectedChat.groupChatroomId;
@@ -120,12 +119,12 @@ const Chat = () => {
         }
     }, [selectedChat, activeTab, navigate]);
 
-    // ChatList 갱신 함수
+    // ChatList 갱신 함수 (기존과 동일)
     const refreshChatList = () => {
         setRefreshKey(prevKey => prevKey + 1);
     };
 
-    // Chat 컴포넌트 새로고침 함수
+    // Chat 컴포넌트 새로고침 함수 (기존과 동일)
     const refreshChatComponent = () => {
         setChatComponentKey(prevKey => prevKey + 1);
         setSelectedChat(null); // selectedChat을 null로 설정
@@ -133,7 +132,7 @@ const Chat = () => {
 
     return (
         <div style={{display: 'flex', height: 'calc(100vh - 60px)'}}>
-            {/* 왼쪽: 채팅 목록 */}
+            {/* 왼쪽: 채팅 목록 (기존과 동일) */}
             <div style={{
                 width: '30%',
                 borderRight: '1px solid #ddd',
@@ -163,7 +162,7 @@ const Chat = () => {
                     onSelectChat={(chat) => setSelectedChat(chat)} // 선택된 채팅방 설정
                 />
 
-                {/* 채팅방 생성 버튼 */}
+                {/* 채팅방 생성 버튼 (기존과 동일) */}
                 {activeTab === "group" && (
 
                     <button
@@ -193,7 +192,7 @@ const Chat = () => {
                 )}
             </div>
 
-            {/* 오른쪽: 채팅방 창 */}
+            {/* 오른쪽: 채팅방 창 (기존과 동일) */}
             <div style={{flex: 1, padding: '10px'}}>
                 {selectedChat ? (
                     activeTab === 'personal' ? (
@@ -213,7 +212,7 @@ const Chat = () => {
                 )}
             </div>
 
-            {/* 모달 창 */}
+            {/* 모달 창 (기존과 동일) */}
             <CreateGroupChatModal
                 isOpen={isCreateGroupChatModalOpen}
                 onClose={handleCloseGroupChatModal}
@@ -238,7 +237,6 @@ const Chat = () => {
             />
         </div>
     );
-
 };
 
 export default Chat;

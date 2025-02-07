@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react'; // useContext import 추가
 import axiosInstance from '../axiosInstance';
 import './MemberProfilePage.css';
 import {FaUserCircle} from 'react-icons/fa';
 import {useParams} from 'react-router-dom';
-import {toast, ToastContainer} from 'react-toastify';
+import {AppContext} from "../App.jsx"; // AppContext import
 
 function MemberProfilePage() {
     const [userData, setUserData] = useState({
@@ -18,57 +18,42 @@ function MemberProfilePage() {
     const [genreList, setGenreList] = useState([]);
     const {memberId} = useParams();
 
-    // 팔로잉, 팔로우 관련 변수 추가
-    const [isFollowing, setIsFollowing] = useState(false); // 팔로우 상태
-    const [followerCount, setFollowerCount] = useState(0); // 팔로워 개수
-    const [followingCount, setFollowingCount] = useState(0); // 팔로잉 개수
+    // 팔로잉, 팔로우 관련 변수 추가 (기존과 동일)
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followerCount, setFollowerCount] = useState(0);
+    const [followingCount, setFollowingCount] = useState(0);
+    const [loginMemberId, setLoginMemberId] = useState(null);
+    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
 
-    const [loginMemberId, setLoginMemberId] = useState(null); // 멤버ID 상태변수 추가
-
-    //현재 로그인한 사용자의 memberId 가져오기
+    //현재 로그인한 사용자의 memberId 가져오기 (기존과 동일)
     const fetchLoginMemberId = async () => {
         try {
             const response = await axiosInstance.get('/members/id');
-            console.log('로그인한 memberId :: loginMemberId ');
-            console.log(response.data.memberId);
-
-            console.log('파라미터변수 memberId :: ');
-            console.log(memberId);
-
             setLoginMemberId(response.data.memberId);
         } catch (error) {
             console.error('Error fetching member ID:', error);
         }
     };
 
-    // 팔로우 상태 확인
+    // 팔로우 상태 확인 (기존과 동일)
     const checkFollowStatus = async () => {
         try {
             const response = await axiosInstance.get(`/follows/check/${memberId}`);
-            console.log('프론트에서 팔로우 팔로잉 여부 api 호출 결과 !!');
-            console.log(response.data.following);
-
             setIsFollowing(response.data.following); // 서버로부터 팔로우 상태를 받아옴
         } catch (error) {
             console.error('Error checking follow status : ', error);
         }
     };
 
-    // 팔로워 / 팔로잉 개수 가져오기
+    // 팔로워 / 팔로잉 개수 가져오기 (기존과 동일)
     const fetchFollowCounts = async () => {
         const followerCountResponse =
             await axiosInstance.get(`/follows/${memberId}/followers/count`);
-        console.log('프론트, 나를 팔로우하는, 팔로워 개수 가져오기 !! ');
-        console.log(followerCountResponse.data);
         setFollowerCount(followerCountResponse.data);
 
         const followeeCountResponse =
             await axiosInstance.get(`/follows/${memberId}/follows/count`);
-        console.log('프론트, 내가 팔로우하는, 팔로우 개수 가져오기 !! ');
-        console.log(followeeCountResponse.data);
-
         setFollowingCount(followeeCountResponse.data);
-
     };
 
     useEffect(() => {
@@ -84,7 +69,6 @@ function MemberProfilePage() {
         const fetchGenreList = async () => {
             try {
                 const response = await axiosInstance.get(`/members/${memberId}/genres`);
-                console.log('Genre list response:', response.data);
                 setGenreList(response.data);
             } catch (error) {
                 console.error('Error fetching genre list:', error);
@@ -102,9 +86,8 @@ function MemberProfilePage() {
     // 팔로우, 언팔로우 기능 처리
     const handleFollowToggle = async () => {
         try {
-            // 'test'가 'elsa'를 팔로우한 상태
             if (isFollowing) {
-                // 언팔로우 (팔로잉 -> 팔로우) -- 'test'가 'elsa'를 언랄로우 / memberId : elsa
+                // 언팔로우 (팔로잉 -> 팔로우)
                 await axiosInstance.delete(`/follows/${memberId}/follow`);
                 setIsFollowing(false);
                 setFollowerCount(prevCount => prevCount - 1);
@@ -116,14 +99,14 @@ function MemberProfilePage() {
                 setFollowerCount(prevCount => prevCount + 1);
             }
 
-            toast.success(isFollowing ? '언팔로우 하였습니다.' : '팔로우 하셨습니다.');
+            updateSnackbar(isFollowing ? '언팔로우 하였습니다.' : '팔로우 하셨습니다.', 'success'); // toast.success -> updateSnackbar
 
-            // 팔로우 상태 및 카운트 업데이트 이후, 추가 작업 수행 (상태 다시 불러오기)
+            // 팔로우 상태 및 카운트 업데이트 이후, 추가 작업 수행 (상태 다시 불러오기) (기존과 동일)
             checkFollowStatus();
             fetchFollowCounts();
         } catch (error) {
             console.error('Error toggling follow status:', error);
-            toast.error('팔로우/언팔로우 처리에 실패했습니다.');
+            updateSnackbar('팔로우/언팔로우 처리에 실패했습니다.', 'error'); // toast.error -> updateSnackbar
         }
     };
 
@@ -133,13 +116,13 @@ function MemberProfilePage() {
                 receiverId: memberId,
             });
 
-            // 성공적으로 채팅방이 생성되었을 때의 처리
-            toast.success('개인 채팅방이 생성되었습니다.');
+            // 성공적으로 채팅방이 생성되었을 때의 처리 (기존과 동일)
+            updateSnackbar('개인 채팅방이 생성되었습니다.', 'success'); // toast.success -> updateSnackbar
             console.log('개인 채팅방 생성 응답 : ', response.data);
 
         } catch (error) {
             console.error('Error creating one-on-one chatroom:', error);
-            toast.error('DM 채팅방 생성에 실패했습니다.');
+            updateSnackbar('DM 채팅방 생성에 실패했습니다.', 'error'); // toast.error -> updateSnackbar
         }
     };
 
@@ -156,13 +139,13 @@ function MemberProfilePage() {
                 <div className="user-info">
                     <h2>{userData.nickname}</h2>
                     <p>{userData.email}</p>
-                    {/*loginMemberId와 memberId가 동일하지 않을 때만 팔로우 버튼 렌더링*/}
+                    {/*loginMemberId와 memberId가 동일하지 않을 때만 팔로우 버튼 렌더링 (기존과 동일)*/}
                     {loginMemberId !== memberId && (
                         <>
                             <button onClick={handleFollowToggle} className="follow-button">
                                 {isFollowing ? '언팔로우' : '팔로우'}
                             </button>
-                            {/* DM 버튼 추가 */}
+                            {/* DM 버튼 추가 (기존과 동일) */}
                             <button onClick={handleCreateOneononeChatroom} className="dm-button">
                                 DM
                             </button>

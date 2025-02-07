@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react'; // useContext import 추가
 import axiosInstance from '../axiosInstance';
-import {useNavigate, useOutletContext} from 'react-router-dom';
-import {toast, ToastContainer} from 'react-toastify';
+import {useNavigate} from 'react-router-dom';
+import {AppContext} from '../App'; // AppContext import 추가
 
 const MemberLogin = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const {updateLoginStatus} = useOutletContext();
+    const {updateLoginStatus, updateSnackbar} = useContext(AppContext); // useOutletContext -> useContext, updateSnackbar 추가
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -26,13 +26,13 @@ const MemberLogin = () => {
 
             updateLoginStatus(true);
             console.log('로그인 요청 성공');
-            toast.success('로그인에 성공했습니다!');
+            updateSnackbar('로그인에 성공했습니다!', 'success'); // toast.success -> updateSnackbar
             console.log('알림 표시 후');
             navigate('/');
         } catch (error) {
             setError('로그인 정보가 올바르지 않습니다.');
             console.error('Login error:', error);
-            toast.error('로그인 정보가 올바르지 않습니다.');
+            updateSnackbar('로그인 정보가 올바르지 않습니다.', 'error'); // toast.error -> updateSnackbar
         }
     };
 
@@ -112,16 +112,6 @@ const MemberLogin = () => {
                                         <span>소셜 계정으로 가입</span>
                                     </div>
                                     <div className="social-login-buttons">
-                                        {/*<a*/}
-                                        {/*    href="/oauth2/authorization/google"*/}
-                                        {/*    className="social-login-button"*/}
-                                        {/*>*/}
-                                        {/*    <img*/}
-                                        {/*        src="/images/google-logo.png"*/}
-                                        {/*        alt="Google"*/}
-                                        {/*        className="social-login-icon"*/}
-                                        {/*    />*/}
-                                        {/*</a>*/}
                                         <a href="/oauth2/authorization/naver" className="social-login-button">
                                             <img
                                                 src="/images/naver-logo.jpg"
@@ -129,16 +119,6 @@ const MemberLogin = () => {
                                                 className="social-login-icon"
                                             />
                                         </a>
-                                        {/*<a*/}
-                                        {/*    href="/oauth2/authorization/kakao"*/}
-                                        {/*    className="social-login-button"*/}
-                                        {/*>*/}
-                                        {/*    <img*/}
-                                        {/*        src="/images/kakao-logo.png"*/}
-                                        {/*        alt="Kakao"*/}
-                                        {/*        className="social-login-icon"*/}
-                                        {/*    />*/}
-                                        {/*</a>*/}
                                     </div>
                                 </div>
                             </div>

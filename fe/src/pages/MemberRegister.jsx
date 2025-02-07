@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react'; // useContext import 추가
 import axiosInstance from '../axiosInstance';
 import {Link, useNavigate} from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select from 'react-select';
-import {toast, ToastContainer} from 'react-toastify';
+import {AppContext} from "../App.jsx"; // AppContext import
 
 const MemberRegister = () => {
     const [email, setEmail] = useState('');
@@ -15,6 +15,7 @@ const MemberRegister = () => {
     const [genres, setGenres] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
     const navigate = useNavigate();
+    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
 
     useEffect(() => {
         const fetchGenres = async () => {
@@ -41,12 +42,12 @@ const MemberRegister = () => {
         event.preventDefault();
 
         if (password !== repeatPassword) {
-            toast.error('패스워드가 일치하지 않습니다.');
+            updateSnackbar('패스워드가 일치하지 않습니다.', 'error'); // toast.error -> updateSnackbar
             return;
         }
 
         if (selectedGenres.length < 3) {
-            toast.error('최소 3개의 장르를 선택해야 합니다.');
+            updateSnackbar('최소 3개의 장르를 선택해야 합니다.', 'warning'); // toast.error -> updateSnackbar
             return;
         }
 
@@ -61,15 +62,15 @@ const MemberRegister = () => {
             });
 
             console.log('Registration successful:', response.data);
-            toast.success('회원 가입이 완료되었습니다.');
+            updateSnackbar('회원 가입이 완료되었습니다.', 'success'); // toast.success -> updateSnackbar
 
             navigate('/member/login');
         } catch (error) {
             console.error('Registration error:', error);
             if (error.response) {
-                toast.error(error.response.data.message);
+                updateSnackbar(error.response.data.message, 'error'); // toast.error -> updateSnackbar
             } else {
-                toast.error('요청 중 오류가 발생했습니다.');
+                updateSnackbar('요청 중 오류가 발생했습니다.', 'error'); // toast.error -> updateSnackbar
             }
         }
     };

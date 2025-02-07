@@ -1,10 +1,11 @@
 // FollowToggleButton.jsx (새 파일 생성)
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react'; // useContext import 추가
 import axiosInstance from '../axiosInstance';
-import {toast} from 'react-toastify';
+import {AppContext} from "../App.jsx"; // AppContext import
 
 function FollowToggleButton({memberId}) {
     const [isFollowing, setIsFollowing] = useState(false);
+    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
 
     const checkFollowStatus = async () => {
         try {
@@ -24,14 +25,15 @@ function FollowToggleButton({memberId}) {
             if (isFollowing) {
                 await axiosInstance.delete(`/follows/${memberId}/follow`);
                 setIsFollowing(false);
+                updateSnackbar('언팔로우 하였습니다.', 'success'); // toast.success -> updateSnackbar
             } else {
                 await axiosInstance.post(`/follows/${memberId}/follow`);
                 setIsFollowing(true);
+                updateSnackbar('팔로우 하였습니다.', 'success'); // toast.success -> updateSnackbar
             }
-            toast.success(isFollowing ? '언팔로우 하였습니다.' : '팔로우 하였습니다.');
         } catch (error) {
             console.error('Error toggling follow status:', error);
-            toast.error('팔로우/언팔로우 처리에 실패했습니다.');
+            updateSnackbar('팔로우/언팔로우 처리에 실패했습니다.', 'error'); // toast.error -> updateSnackbar
         }
     };
 

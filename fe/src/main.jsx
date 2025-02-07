@@ -23,10 +23,6 @@ import MemberProfilePage from "./components/MemberProfilePage.jsx";
 import PrivateRoute from "./PrivateRoute.jsx";
 import FollowList from "./pages/FollowList.jsx";
 
-// 전역 CSS 파일 import
-import 'react-toastify/dist/ReactToastify.css';
-import 'react-confirm-alert/src/react-confirm-alert.css';
-
 const router = createBrowserRouter([
     {
         path: '/',

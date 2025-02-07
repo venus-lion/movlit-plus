@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.3",
     "@radix-ui/react-radio-group": "^1.2.2",
     "@stomp/stompjs": "^7.0.0",
     "axios": "^1.7.9",
@@ -26,8 +29,8 @@
     "react-radio-group": "^3.0.3",
     "react-router-dom": "^7.1.1",
     "react-select": "^5.9.0",
-    "react-toastify": "^11.0.2",
-    "sockjs-client": "^1.6.1"
+    "sockjs-client": "^1.6.1",
+    "vite-plugin-css-injected-by-js": "^3.5.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

@@ -2,18 +2,20 @@ import React, {createContext, useCallback, useEffect, useState} from 'react';
 import {NavLink, Outlet, useNavigate} from 'react-router-dom';
 import axiosInstance from './axiosInstance';
 import './App.css';
-import {toast, ToastContainer} from 'react-toastify';
 import {FaUserCircle} from 'react-icons/fa';
 import {EventSourcePolyfill} from 'event-source-polyfill';
 import notificationIcon from './images/notification.jpg';
-import 'react-toastify/dist/ReactToastify.css';
+
+// Material-UI 컴포넌트 import (Snackbar, Alert 추가)
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 export const AppContext = createContext();
 
 function App() {
     const navigate = useNavigate();
     const [isLoggedIn, setIsLoggedIn] = useState(
-        !!localStorage.getItem('accessToken') // 세션 스토리지 -> 로컬 스토리지
+        !!localStorage.getItem('accessToken')
     );
     const [profileImage, setProfileImage] = useState(null);
     console.log('profileImage = {}', profileImage);
@@ -21,14 +23,34 @@ function App() {
     const updateLoginStatus = useCallback((status) => {
         setIsLoggedIn(status);
     }, []);
-    // 알림 관련
+
+    // 알림 관련 (기존 알림 관련 상태 및 함수 유지)
     const [notifications, setNotifications] = useState([]);
     const [newNotification, setNewNotification] = useState(false);
+
+    // Snackbar 관련 상태 및 함수 추가 (Material-UI Snackbar)
+    const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+    const updateSnackbar = useCallback((message, severity = 'success') => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setIsSnackbarOpen(true);
+    }, []);
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setIsSnackbarOpen(false);
+    };
+
 
     const handleLogout = async () => {
         try {
             await axiosInstance.post('/members/logout');
-            localStorage.removeItem('accessToken'); // 세션 스토리지 -> 로컬 스토리지
+            localStorage.removeItem('accessToken');
             document.cookie =
                 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             updateLoginStatus(false);
@@ -39,7 +61,7 @@ function App() {
         }
     };
 
-    // Enter 키 이벤트 처리
+    // Enter 키 이벤트 처리 (기존과 동일)
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
             handleSearch();
@@ -48,25 +70,27 @@ function App() {
 
     const [inputStr, setInputStr] = useState('');
 
-    // 입력 값 변경 시 실행
+    // 입력 값 변경 시 실행 (기존과 동일)
     const handleInputChange = (event) => {
         setInputStr(event.target.value);
     };
 
     const handleSearch = async () => {
         if (inputStr.trim() === '') {
-            toast.success('검색어를 입력해주세요!');
+            // toast.success('검색어를 입력해주세요!'); // react-toastify toast 그대로 사용 (일단 임시적으로)
+            updateSnackbar('검색어를 입력해주세요!', 'warning'); // Material-UI Snackbar 호출로 변경
             return;
         }
 
         navigate(`/search/${encodeURIComponent(inputStr)}`);
     };
 
-    // 알림 클릭 시
+    // 알림 클릭 시 (기존과 동일)
     const handleBellClick = () => {
-        setNewNotification(false); // 종모양 클릭 시 새로운 알림 플래그 초기화
-        navigate('/notifications'); // 알림 페이지로 이동
+        setNewNotification(false);
+        navigate('/notifications');
     };
+
 
     useEffect(() => {
         const fetchProfileImage = async () => {
@@ -90,7 +114,7 @@ function App() {
 
         const setupSSE = async () => {
             try {
-                // 사용자의 ID를 가져오는 API 호출
+                // 사용자 ID 가져오기 (기존과 동일)
                 const profileRes = await axiosInstance.get('/members/id');
                 const userId = profileRes.data.memberId;
 
@@ -99,12 +123,12 @@ function App() {
                 }
 
                 console.log('SSE 연결 설정, userId : ' + userId);
-                //SSE 연결 설정
+                //SSE 연결 설정 (기존과 동일)
                 eventSource = new EventSourcePolyfill(
                     `${import.meta.env.VITE_BASE_URL}/subscribe/${userId}`,
                     {
                         headers: {
-                            Authorization: `Bearer ${localStorage.getItem('accessToken')}`, // 세션 스토리지 -> 로컬 스토리지
+                            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
                             'Last-Event-ID': Date.now().toString()
                         },
                         withCredentials: true,
@@ -113,7 +137,7 @@ function App() {
                     }
                 );
 
-                // 연결 상태 관리
+                // 연결 상태 관리 (기존과 동일)
                 eventSource.onopen = () => {
                     console.log('로그인 이후 -- SSE 연결 성공');
                     if (reconnectTimer) {
@@ -122,12 +146,12 @@ function App() {
                     }
                 };
 
-                // 하트비트 이벤트 처리
+                // 하트비트 이벤트 처리 (기존과 동일)
                 eventSource.addEventListener('heartbeat', () => {
                     console.debug('SSE 연결 활성 상태 유지');
                 });
 
-                // 알림 이벤트 처리 - 'notification' 이벤트 수신 시..
+                // 알림 이벤트 처리 - 'notification' 이벤트 수신 시.. (기존과 동일)
                 eventSource.addEventListener('notification', (e) => {
                     try {
                         console.log('notification 이벤트를 받았다!!');
@@ -146,7 +170,7 @@ function App() {
                                 icon: notificationIcon,
                             });
 
-                            // 알림 종
+                            // 알림 종 (기존과 동일)
                             setNotifications((prev) => [...prev, notification]);
                             setNewNotification(true); // 새로운 알림 발생
 
@@ -161,7 +185,7 @@ function App() {
                     }
                 });
 
-                // 오류 처리
+                // 오류 처리 (기존과 동일)
                 eventSource.onerror = (e) => {
                     console.error('SSE 연결 오류:', e);
                     if (eventSource) {
@@ -192,14 +216,13 @@ function App() {
         };
     }, [isLoggedIn]);
 
-    // 읽지 않은 알림 조회
+    // 읽지 않은 알림 조회 (기존과 동일)
     useEffect(() => {
         const fetchUnreadNotifications = async () => {
             // 로그인 시 확인하지 않은 새로운 알림만 불러오기
             try {
                 const response = await axiosInstance.get('/notification/unread');
                 const data = response.data; // response.data로 수정
-                //console.log('읽지 않은 알림 : ' + JSON.stringify(data, null, 2));
 
                 if (data.length > 0) {
                     setNewNotification(true); // 새로운 알림 존재 시 배지 표시
@@ -217,7 +240,7 @@ function App() {
 
 
     return (
-        <AppContext.Provider value={{updateLoginStatus, isLoggedIn}}>
+        <AppContext.Provider value={{updateLoginStatus, isLoggedIn, updateSnackbar}}> {/* updateSnackbar 추가 */}
             <nav className="navbar">
                 <div className="nav-left">
                     <NavLink
@@ -238,16 +261,8 @@ function App() {
                     >
                         책
                     </NavLink>
-                    {/*{isLoggedIn && (*/}
-                    {/*    <NavLink*/}
-                    {/*        to="/chat" // 채팅 페이지로 이동하는 링크 추가*/}
-                    {/*        className={({isActive}) => (isActive ? 'active' : '')}*/}
-                    {/*    >*/}
-                    {/*        채팅*/}
-                    {/*    </NavLink>*/}
-                    {/*)}*/}
                     <NavLink
-                        to="/chatMain" // 채팅 페이지로 이동하는 링크 추가
+                        to="/chatMain"
                         className={({isActive}) => (isActive ? 'active' : '')}
                     >
                         채팅
@@ -286,7 +301,7 @@ function App() {
 
                             <div onClick={handleBellClick} style={{position: 'relative', cursor: 'pointer'}}>
                                 <img src="/images/notification-bell-icon.png" alt="알림" className="noti-img"/>
-                                {newNotification && <span className="badge">N</span>} {/* 빨간 점 표시 */}
+                                {newNotification && <span className="badge">N</span>}
                             </div>
 
                             <NavLink
@@ -314,18 +329,21 @@ function App() {
                 </div>
             </nav>
 
-            {/* Outlet에 context 전달 */}
-            <Outlet context={{updateLoginStatus, isLoggedIn}}/>
+            {/* Outlet에 context 전달 (기존과 동일) */}
+            <Outlet context={{updateLoginStatus, isLoggedIn, updateSnackbar}}/>
 
-            <ToastContainer
-                position="top-right"
-                autoClose={1000}
-                hideProgressBar={false}
-                closeOnClick
-                pauseOnHover={false}
-                draggable
-                progress={undefined}
-            />
+            {/* Material-UI Snackbar 추가 (ToastContainer 대신) */}
+            <Snackbar
+                open={isSnackbarOpen}
+                autoHideDuration={3000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{width: '100%'}}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+
         </AppContext.Provider>
     );
 }
