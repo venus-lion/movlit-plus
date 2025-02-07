@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import MovieCarousel from './MovieCarousel';
 import useGenreMovieList from "../hooks/useGenreMovieList.jsx";
 
-function GenreMoviesComponent({genreId, onMoviesLoaded, hidden }) {
+function GenreMoviesComponent({genreId, onMoviesLoaded, hidden}) {
     const {movies, loading, error, genreName} = useGenreMovieList({
         endpoint: '/movies/main/genre',
         params: {genreId: genreId, pageSize: 50},
@@ -29,7 +29,12 @@ function GenreMoviesComponent({genreId, onMoviesLoaded, hidden }) {
         }
     }, [movies, onMoviesLoaded]);
 
-    if (loading) return <p>영화들을 가져오는 중입니다!</p>;
+    if (loading) return (
+        <div className="loading-container">
+            <div className="spinner"></div>
+            <p>장르에 따른 영화 목록을 불러오는 중입니다!</p>
+        </div>
+    );
     if (error) return (
         <div>
             <p>Error loading movies.</p>

@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import MovieCarousel from './MovieCarousel';
 import useAuthMovieList from "../hooks/useAuthMovieList.jsx";
 
-function RecentHeartSimilarCrewMoviesComponent({ onMoviesLoaded, hidden }) {
+function RecentHeartSimilarCrewMoviesComponent({onMoviesLoaded, hidden}) {
     const {movies, loading, error} = useAuthMovieList({
         endpoint: '/movies/search/lastHeart',
         params: {pageSize: 30},
@@ -30,7 +30,12 @@ function RecentHeartSimilarCrewMoviesComponent({ onMoviesLoaded, hidden }) {
         }
     }, [movies, onMoviesLoaded]);
 
-    if (loading) return <p>Loading latest movies...</p>;
+    if (loading) return (
+        <div className="loading-container">
+            <div className="spinner"></div>
+            <p>회원님이 찜한 영화들에 따른 추천 영화 목록을 가져오는 중입니다!</p>
+        </div>
+    );
     if (error) return (
         <div>
             <p>Error loading latest movies.</p>

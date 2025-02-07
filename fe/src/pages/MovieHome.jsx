@@ -1,6 +1,7 @@
 import React, {useEffect, useState, Suspense, lazy, useCallback} from 'react';
 import './Home.css';
 import {useOutletContext} from 'react-router-dom';
+import '../assets/css/loading.css';
 
 // Lazy-load the components
 const PopularMoviesComponent = lazy(() => import('./PopularMoviesComponent.jsx'));
@@ -65,7 +66,9 @@ function MovieHome() {
 
     return (
         <div className="movie-home">
-            <Suspense fallback={<p>로딩 중입니다.</p>}>
+            <Suspense fallback={<div className="loading-container">
+                <div className="spinner"></div>
+                <p>로딩 중입니다.</p></div>}>
                 {/* Popular Movies */}
                 <PopularMoviesComponent
                     onMoviesLoaded={(movies) => updateComponentLoaded('popular', areMoviesLoaded(movies))}
@@ -100,7 +103,7 @@ function MovieHome() {
                     <GenreMoviesComponent
                         key={genreId}
                         genreId={genreId}
-                        onMoviesLoaded={(movies) => updateComponentLoaded('genre', areMoviesLoaded(movies) ,index)}
+                        onMoviesLoaded={(movies) => updateComponentLoaded('genre', areMoviesLoaded(movies), index)}
                         hidden={!componentsLoaded.genre[index]}
                     />
                 ))}
