@@ -92,6 +92,7 @@ function MyPage() {
 
     // Material-UI Dialog 관련 상태
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false); // 로그아웃 확인 다이얼로그 상태 추가
 
     const fetchMemberId = async () => {
         try {
@@ -134,6 +135,16 @@ function MyPage() {
         setIsDeleteDialogOpen(false);
     };
 
+    // Material-UI Logout Dialog 열기
+    const openLogoutDialog = () => {
+        setIsLogoutDialogOpen(true);
+    };
+
+    // Material-UI Logout Dialog 닫기
+    const closeLogoutDialog = () => {
+        setIsLogoutDialogOpen(false);
+    };
+
     const handleDeleteConfirm = async () => {
         try {
             await axiosInstance.delete('/members/delete');
@@ -149,6 +160,23 @@ function MyPage() {
         }
     };
 
+
+    const handleLogoutConfirm = async () => {
+        try {
+            await axiosInstance.post('/members/logout');
+            localStorage.removeItem('accessToken');
+            document.cookie =
+                'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            updateLoginStatus(false);
+            updateSnackbar('로그아웃 되었습니다.', 'success'); // Material-UI Snackbar 호출 (로그아웃 성공 알림)
+            navigate('/member/login');
+        } catch (error) {
+            console.error('Logout error:', error);
+            updateSnackbar('로그아웃 중 오류가 발생했습니다.', 'error'); // Material-UI Snackbar 호출 (로그아웃 실패 알림)
+        } finally {
+            closeLogoutDialog();
+        }
+    };
 
     useEffect(() => {
         const fetchMyPageData = async () => {
@@ -231,20 +259,20 @@ function MyPage() {
         setIsHovering(false);
     };
 
-    const handleLogout = async () => {
-        try {
-            await axiosInstance.post('/members/logout');
-            localStorage.removeItem('accessToken');
-            document.cookie =
-                'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            updateLoginStatus(false);
-            updateSnackbar('로그아웃 되었습니다.', 'success'); // Material-UI Snackbar 호출 (로그아웃 성공 알림)
-            navigate('/member/login');
-        } catch (error) {
-            console.error('Logout error:', error);
-            updateSnackbar('로그아웃 중 오류가 발생했습니다.', 'error'); // Material-UI Snackbar 호출 (로그아웃 실패 알림)
-        }
-    };
+    // const handleLogout = async () => {
+    //     try {
+    //         await axiosInstance.post('/members/logout');
+    //         localStorage.removeItem('accessToken');
+    //         document.cookie =
+    //             'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    //         updateLoginStatus(false);
+    //         updateSnackbar('로그아웃 되었습니다.', 'success'); // Material-UI Snackbar 호출 (로그아웃 성공 알림)
+    //         navigate('/member/login');
+    //     } catch (error) {
+    //         console.error('Logout error:', error);
+    //         updateSnackbar('로그아웃 중 오류가 발생했습니다.', 'error'); // Material-UI Snackbar 호출 (로그아웃 실패 알림)
+    //     }
+    // };
 
     const handleUpdateClick = () => { // 수정하기 버튼 클릭 핸들러
         navigate('/member/update');
@@ -296,7 +324,7 @@ function MyPage() {
                             <IoSettingsOutline className="settings-icon-comp"/>
                             {isDropdownOpen && (
                                 <div className="dropdown-menu">
-                                    <button onClick={handleLogout} className="dropdown-item logout-button">
+                                    <button onClick={openLogoutDialog} className="dropdown-item logout-button">
                                         로그아웃
                                     </button>
                                     <button onClick={handleUpdateClick}
@@ -425,6 +453,46 @@ function MyPage() {
                         </Button>
                     </DialogActions>
                 </Dialog>
+
+                {/* Logout Confirmation Dialog */}
+                <Dialog
+                    open={isLogoutDialogOpen}
+                    onClose={closeLogoutDialog}
+                    aria-labelledby="logout-dialog-title"
+                    aria-describedby="logout-dialog-description"
+                    PaperProps={{
+                        style: {
+                            borderRadius: 12,
+                            maxWidth: 500,
+                            width: '25%',
+                        },
+                    }}
+                >
+                    <DialogTitle id="logout-dialog-title" sx={{
+                        fontWeight: 'bold',
+                        fontSize: '1.5rem',
+                        textAlign: 'center'
+                    }}>
+                        {"로그아웃"}
+                    </DialogTitle>
+                    <DialogContent sx={{padding: '1.5rem', textAlign: 'center'}}>
+                        <DialogContentText id="logout-dialog-description" sx={{
+                            fontSize: '1rem',
+                            color: 'text.secondary'
+                        }}>
+                            정말로 로그아웃 하시겠습니까?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions sx={{padding: '1.25rem', justifyContent: 'center'}}>
+                        <Button onClick={handleLogoutConfirm} color="error" autoFocus sx={{minWidth: 100}}>
+                            예
+                        </Button>
+                        <Button onClick={closeLogoutDialog} color="primary" sx={{minWidth: 100}}>
+                            아니오
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
 
             </div> {/* End of mypage-content-wrapper */}
         </div>
