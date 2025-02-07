@@ -595,11 +595,12 @@ function MovieDetailPage() {
                     <img src={movieData.posterUrl} alt={movieData.title}/>
                     <button
                         id="groupChatButton"
-                        style={{
-                            ...styles.button,
-                            backgroundColor: '#FF3366',
-                            marginTop: '20px',
-                        }}
+                        // style={{
+                        //     ...styles.button,
+                        //     backgroundColor: '#FF3366',
+                        //     marginTop: '20px',
+                        // }}
+                        className="button-common join-button"
                         onClick={() => handleJoinGroupChatroom(movieId)}
                     >
                         그룹채팅 입장
@@ -669,14 +670,19 @@ function MovieDetailPage() {
                             </div>
                         </div>
                         <div style={styles.buttonGroup}>
+                            {/*<button*/}
+                            {/*    id="wishButton"*/}
+                            {/*    style={{*/}
+                            {/*        ...styles.button,*/}
+                            {/*        backgroundColor: movieData.isHearted*/}
+                            {/*            ? '#FF3366'*/}
+                            {/*            : '#4080ff',*/}
+                            {/*    }}*/}
+                            {/*    onClick={handleWishClick}*/}
+                            {/*>*/}
                             <button
                                 id="wishButton"
-                                style={{
-                                    ...styles.button,
-                                    backgroundColor: movieData.isHearted
-                                        ? '#FF3366'
-                                        : '#4080ff',
-                                }}
+                                className={`heart-button ${movieData.isHearted ? 'button-hearted' : 'button-not-hearted'}`}
                                 onClick={handleWishClick}
                             >
                                 {movieData.isHearted ? '찜 완료' : '찜'}
@@ -727,7 +733,8 @@ function MovieDetailPage() {
                     {!showCommentInput && userComment && (
                         <div style={styles.commentActions}>
                             <button
-                                style={styles.editButton}
+                                // style={styles.editButton}
+                                className="edit-button"
                                 onClick={() => {
                                     setMyRating(userComment.score);
                                     setMyComment(userComment.comment);
@@ -736,7 +743,7 @@ function MovieDetailPage() {
                             >
                                 수정하기
                             </button>
-                            <button style={styles.deleteButton} onClick={handleDeleteComment}>
+                            <button className="delete-button" onClick={handleDeleteComment}>
                                 삭제하기
                             </button>
                         </div>
