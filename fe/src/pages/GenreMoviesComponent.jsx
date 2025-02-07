@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import MovieCarousel from './MovieCarousel';
 import useGenreMovieList from "../hooks/useGenreMovieList.jsx";
 
-function GenreMoviesComponent({genreId}) {
+function GenreMoviesComponent({genreId, onMoviesLoaded, hidden }) {
     const {movies, loading, error, genreName} = useGenreMovieList({
         endpoint: '/movies/main/genre',
         params: {genreId: genreId, pageSize: 50},
@@ -23,6 +23,11 @@ function GenreMoviesComponent({genreId}) {
             setStartIndex(newIndex);
         }
     };
+    useEffect(() => {
+        if (onMoviesLoaded && movies) {
+            onMoviesLoaded(movies);
+        }
+    }, [movies, onMoviesLoaded]);
 
     if (loading) return <p>Loading movies...</p>;
     if (error) return (
@@ -30,7 +35,7 @@ function GenreMoviesComponent({genreId}) {
             <p>Error loading movies.</p>
         </div>
     );
-
+    if (hidden) return null;
     return (
         <MovieCarousel
             title={`${genreName} 리스트`}  // genreId에 따라 제목 변경 가능

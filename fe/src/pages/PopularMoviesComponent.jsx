@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import useMovieList from '../hooks/useMovieList';
 import MovieCarousel from './MovieCarousel';
 
-function PopularMoviesComponent() {
+function PopularMoviesComponent({ onMoviesLoaded, hidden }) {
     const {movies, loading, error} = useMovieList({
         endpoint: '/movies/main/popular',
         params: {pageSize: 20},
     });
 
-    const [startIndex, setStartIndex] = useState(0);  // 화면에 보이는 영화 시작 인덱스
+    const [startIndex, setStartIndex] = useState(0);
 
     const handleNext = () => {
         const newIndex = startIndex + 5;
@@ -24,12 +24,20 @@ function PopularMoviesComponent() {
         }
     };
 
+    useEffect(() => {
+        if (onMoviesLoaded && movies) {
+            onMoviesLoaded(movies);
+        }
+    }, [movies, onMoviesLoaded]);
+
+
     if (loading) return <p>Loading popular movies...</p>;
     if (error) return (
         <div>
             <p>Error loading popular movies.</p>
         </div>
     );
+    if (hidden) return null;
 
     return (
         <MovieCarousel

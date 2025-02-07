@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import MovieCarousel from './MovieCarousel';
 import useAuthMovieList from "../hooks/useAuthMovieList.jsx";
 
-function RecentHeartSimilarCrewMoviesComponent() {
+function RecentHeartSimilarCrewMoviesComponent({ onMoviesLoaded, hidden }) {
     const {movies, loading, error} = useAuthMovieList({
         endpoint: '/movies/search/lastHeart',
         params: {pageSize: 30},
@@ -24,12 +24,19 @@ function RecentHeartSimilarCrewMoviesComponent() {
         }
     };
 
+    useEffect(() => {
+        if (onMoviesLoaded && movies) {
+            onMoviesLoaded(movies);
+        }
+    }, [movies, onMoviesLoaded]);
+
     if (loading) return <p>Loading latest movies...</p>;
     if (error) return (
         <div>
             <p>Error loading latest movies.</p>
         </div>
     );
+    if (hidden) return null;
 
     // ★ movies가 비어있으면 빈 내용을 반환
     if (!movies || movies.length === 0) {

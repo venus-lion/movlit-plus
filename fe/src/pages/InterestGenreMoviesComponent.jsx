@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import MovieCarousel from './MovieCarousel';
 import useAuthMovieList from "../hooks/useAuthMovieList.jsx";
 
-function InterestGenreMoviesComponent() {
+function InterestGenreMoviesComponent({ onMoviesLoaded, hidden }) {
     const {movies, loading, error} = useAuthMovieList({
         endpoint: '/movies/search/interestGenre',
         params: {pageSize: 30},
@@ -24,6 +24,12 @@ function InterestGenreMoviesComponent() {
         }
     };
 
+    useEffect(() => {
+        if (onMoviesLoaded && movies) {
+            onMoviesLoaded(movies);
+        }
+    }, [movies, onMoviesLoaded]);
+
     if (loading) return <p>Loading latest movies...</p>;
     if (error) return (
         <div>
@@ -31,6 +37,7 @@ function InterestGenreMoviesComponent() {
         </div>
     );
 
+    if (hidden) return null;
     return (
         <MovieCarousel
             title="회원님의 관심 장르와 비슷한 영화"

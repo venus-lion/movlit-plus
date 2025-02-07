@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import useMovieList from '../hooks/useMovieList';
 import MovieCarousel from './MovieCarousel';
 
-function LatestMoviesComponent() {
+function LatestMoviesComponent({ onMoviesLoaded, hidden }) {
     const {movies, loading, error} = useMovieList({
         endpoint: '/movies/main/latest',
         params: {pageSize: 20},
@@ -23,6 +23,11 @@ function LatestMoviesComponent() {
             setStartIndex(newIndex);
         }
     };
+    useEffect(() => {
+        if (onMoviesLoaded && movies) {
+            onMoviesLoaded(movies);
+        }
+    }, [movies, onMoviesLoaded]);
 
     if (loading) return <p>Loading latest movies...</p>;
     if (error) return (
@@ -30,6 +35,8 @@ function LatestMoviesComponent() {
             <p>Error loading latest movies.</p>
         </div>
     );
+
+    if (hidden) return null;
 
     return (
         <MovieCarousel
