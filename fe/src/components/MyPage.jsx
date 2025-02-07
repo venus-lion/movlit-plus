@@ -3,7 +3,7 @@ import axiosInstance from '../axiosInstance';
 import './MyPage.css';
 import {FaCamera, FaUserCircle} from 'react-icons/fa';
 import {IoSettingsOutline} from 'react-icons/io5';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useOutletContext} from 'react-router-dom';
 import {AppContext} from '../App';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -11,8 +11,64 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import DialogContentText from "@mui/material/DialogContentText";
+import RecentHeartSimilarCrewMoviesComponent from "../pages/RecentHeartSimilarCrewMoviesComponent.jsx";
+import InterestGenreMoviesComponent from "../pages/InterestGenreMoviesComponent.jsx";
+import BookCarouselRecommend from "../pages/BookCarouselRecommend.jsx";
+import useApiData from "../hooks/userRecommendBookApi.jsx";
 
 function MyPage() {
+    useEffect(() => {
+
+        // 1부터 16까지 숫자 중 랜덤하게 4개의 숫자 뽑기
+        const getRandomGenreIds = () => {
+
+            const genreIds = [];
+            while (genreIds.length < 4) {
+                const randomId = Math.floor(Math.random() * 16) + 1; // 1 ~ 16 사이의 랜덤 값
+                if (!genreIds.includes(randomId)) {
+                    genreIds.push(randomId);
+                }
+            }
+            return genreIds;
+        };
+        setRandomGenreIds(getRandomGenreIds());
+    }, []);
+
+    const {isLoggedIn} = useOutletContext();
+
+    // 사용자 찜한 도서 기반 추천 도서 API 호출
+    const {
+        data: recommendedBooks,
+        loading: loadingRecommended,
+        error: errorRecommended
+    } = useApiData('/books/search/recommendations', isLoggedIn);
+
+    // 사용자 관심 장르 도서 API 호출
+    const {
+        data: interestGenreBooks,
+        loading: loadingInterestGenre,
+        error: errorInterestGenre
+    } = useApiData('/books/search/interestGenre', isLoggedIn);
+
+    console.log('interestgenreBooks :: ' + interestGenreBooks);
+
+    const [startIndexRecommended, setStartIndexRecommended] = useState(0);
+    const [startIndexInterestGenre, setStartIndexInterestGenre] = useState(0);
+
+    const handleNext = (startIndex, setStartIndex, length) => {
+        const newIndex = startIndex + 5;
+        if (newIndex < length) {
+            setStartIndex(newIndex);
+        }
+    };
+
+    const handlePrev = (startIndex, setStartIndex) => {
+        const newIndex = startIndex - 5;
+        if (newIndex >= 0) {
+            setStartIndex(newIndex);
+        }
+    };
+
     const [userData, setUserData] = useState({
         profileImgUrl: null,
         nickname: '',
@@ -36,6 +92,7 @@ function MyPage() {
 
     // Material-UI Dialog 관련 상태
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false); // 로그아웃 확인 다이얼로그 상태 추가
 
     const fetchMemberId = async () => {
         try {
@@ -78,6 +135,16 @@ function MyPage() {
         setIsDeleteDialogOpen(false);
     };
 
+    // Material-UI Logout Dialog 열기
+    const openLogoutDialog = () => {
+        setIsLogoutDialogOpen(true);
+    };
+
+    // Material-UI Logout Dialog 닫기
+    const closeLogoutDialog = () => {
+        setIsLogoutDialogOpen(false);
+    };
+
     const handleDeleteConfirm = async () => {
         try {
             await axiosInstance.delete('/members/delete');
@@ -93,6 +160,23 @@ function MyPage() {
         }
     };
 
+
+    const handleLogoutConfirm = async () => {
+        try {
+            await axiosInstance.post('/members/logout');
+            localStorage.removeItem('accessToken');
+            document.cookie =
+                'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            updateLoginStatus(false);
+            updateSnackbar('로그아웃 되었습니다.', 'success'); // Material-UI Snackbar 호출 (로그아웃 성공 알림)
+            navigate('/member/login');
+        } catch (error) {
+            console.error('Logout error:', error);
+            updateSnackbar('로그아웃 중 오류가 발생했습니다.', 'error'); // Material-UI Snackbar 호출 (로그아웃 실패 알림)
+        } finally {
+            closeLogoutDialog();
+        }
+    };
 
     useEffect(() => {
         const fetchMyPageData = async () => {
@@ -175,152 +259,244 @@ function MyPage() {
         setIsHovering(false);
     };
 
-    const handleLogout = async () => {
-        try {
-            await axiosInstance.post('/members/logout');
-            localStorage.removeItem('accessToken');
-            document.cookie =
-                'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            updateLoginStatus(false);
-            updateSnackbar('로그아웃 되었습니다.', 'success'); // Material-UI Snackbar 호출 (로그아웃 성공 알림)
-            navigate('/member/login');
-        } catch (error) {
-            console.error('Logout error:', error);
-            updateSnackbar('로그아웃 중 오류가 발생했습니다.', 'error'); // Material-UI Snackbar 호출 (로그아웃 실패 알림)
-        }
-    };
+    // const handleLogout = async () => {
+    //     try {
+    //         await axiosInstance.post('/members/logout');
+    //         localStorage.removeItem('accessToken');
+    //         document.cookie =
+    //             'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    //         updateLoginStatus(false);
+    //         updateSnackbar('로그아웃 되었습니다.', 'success'); // Material-UI Snackbar 호출 (로그아웃 성공 알림)
+    //         navigate('/member/login');
+    //     } catch (error) {
+    //         console.error('Logout error:', error);
+    //         updateSnackbar('로그아웃 중 오류가 발생했습니다.', 'error'); // Material-UI Snackbar 호출 (로그아웃 실패 알림)
+    //     }
+    // };
 
     const handleUpdateClick = () => { // 수정하기 버튼 클릭 핸들러
         navigate('/member/update');
     };
 
+    const [randomGenreIds, setRandomGenreIds] = useState([]);
+
+    const handleNextRecommended = () => handleNext(startIndexRecommended, setStartIndexRecommended, recommendedBooks.length);
+    const handlePrevRecommended = () => handlePrev(startIndexRecommended, setStartIndexRecommended);
+    const handleNextInterestGenre = () => handleNext(startIndexInterestGenre, setStartIndexInterestGenre, interestGenreBooks.length);
+    const handlePrevInterestGenre = () => handlePrev(startIndexInterestGenre, setStartIndexInterestGenre);
+
     return (
         <div className="mypage-container">
-            <input
-                type="file"
-                ref={fileInputRef}
-                style={{display: 'none'}}
-                onChange={handleFileChange}
-                accept="image/*"
-            />
-            <div
-                className="profile-image"
-                onClick={handleProfileImageClick}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                style={{cursor: 'pointer'}}
-            >
-                {userData.profileImgUrl ? (
-                    <img src={userData.profileImgUrl} alt="Profile" className="profile-img"/>
-                ) : (
-                    <FaUserCircle className="default-profile-icon"/>
-                )}
-                {isHovering && (
-                    <div className="overlay">
-                        <FaCamera className="camera-icon"/>
+            <div className="mypage-content-wrapper">
+                {/* Section 1: Profile Info */}
+                <div className="mypage-section">
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{display: 'none'}}
+                        onChange={handleFileChange}
+                        accept="image/*"
+                    />
+                    <div
+                        className="profile-image"
+                        onClick={handleProfileImageClick}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        style={{cursor: 'pointer'}}
+                    >
+                        {userData.profileImgUrl ? (
+                            <img src={userData.profileImgUrl} alt="Profile" className="profile-img"/>
+                        ) : (
+                            <FaUserCircle className="default-profile-icon"/>
+                        )}
+                        {isHovering && (
+                            <div className="overlay">
+                                <FaCamera className="camera-icon"/>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
-            <div className="mypage-header">
-                <div className="user-info">
-                    <h2>{userData.nickname}</h2>
-                    <p>{userData.email}</p>
-                </div>
-                <div className="settings-icon" onClick={toggleDropdown}>
-                    <IoSettingsOutline className="settings-icon-comp"/>
-                    {isDropdownOpen && (
-                        <div className="dropdown-menu">
-                            <button onClick={handleLogout} className="dropdown-item logout-button">
-                                로그아웃
-                            </button>
-                            <button onClick={handleUpdateClick}
-                                    className="dropdown-item update-button"> {/* button으로 변경 */}
-                                수정하기
-                            </button>
-                            <button onClick={openDeleteDialog} className="dropdown-item delete-button">
-                                탈퇴하기
-                            </button>
+                    <div className="mypage-header">
+                        <div className="user-info">
+                            <h2>{userData.nickname}</h2>
+                            <p>{userData.email}</p>
                         </div>
-                    )}
-                </div>
-            </div>
-            <div className="mypage-stats">
-                <div className="stat-item">
-                    <span onClick={handleFollowerClick} className="link-button">{followerCount}</span>
-                    <span>팔로워</span>
-                </div>
-                <div className="stat-item">
-                    <span onClick={handleFollowingClick} className="link-button">{followingCount}</span>
-                    <span>팔로잉</span>
-                </div>
-                <div className="stat-item">
-                    <span>{userData.movieHeartCount}</span>
-                    <span>영화 찜</span>
-                </div>
-                <div className="stat-item">
-                    <span>{userData.movieCommentCount}</span>
-                    <span>영화 코멘트</span>
-                </div>
-                <div className="stat-item">
-                    <span>{userData.bookHeartCount}</span>
-                    <span>도서 찜</span>
-                </div>
-                <div className="stat-item">
-                    <span>{userData.bookCommentCount}</span>
-                    <span>도서 코멘트</span>
-                </div>
-            </div>
-            <div className="mypage-genre-list">
-                <h3>선호 장르</h3>
-                <div className="genre-chips">
-                    {genreList.map((genre) => (
-                        <div key={genre.genreId} className="genre-chip">
-                            {genre.genreName}
+                        <div className="settings-icon" onClick={toggleDropdown}>
+                            <IoSettingsOutline className="settings-icon-comp"/>
+                            {isDropdownOpen && (
+                                <div className="dropdown-menu">
+                                    <button onClick={openLogoutDialog} className="dropdown-item logout-button">
+                                        로그아웃
+                                    </button>
+                                    <button onClick={handleUpdateClick}
+                                            className="dropdown-item update-button"> {/* button으로 변경 */}
+                                        수정하기
+                                    </button>
+                                    <button onClick={openDeleteDialog} className="dropdown-item delete-button">
+                                        탈퇴하기
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                    ))}
+                    </div>
+                    <div className="mypage-stats">
+                        <div className="stat-item">
+                            <span onClick={handleFollowerClick} className="link-button">{followerCount}</span>
+                            <span>팔로워</span>
+                        </div>
+                        <div className="stat-item">
+                            <span onClick={handleFollowingClick} className="link-button">{followingCount}</span>
+                            <span>팔로잉</span>
+                        </div>
+                        <div className="stat-item">
+                            <span>{userData.movieHeartCount}</span>
+                            <span>영화 찜</span>
+                        </div>
+                        <div className="stat-item">
+                            <span>{userData.movieCommentCount}</span>
+                            <span>영화 코멘트</span>
+                        </div>
+                        <div className="stat-item">
+                            <span>{userData.bookHeartCount}</span>
+                            <span>도서 찜</span>
+                        </div>
+                        <div className="stat-item">
+                            <span>{userData.bookCommentCount}</span>
+                            <span>도서 코멘트</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            {/* Material-UI Dialog 추가 (유지) */}
-            <Dialog
-                open={isDeleteDialogOpen}
-                onClose={closeDeleteDialog}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-                PaperProps={{ // `PaperProps` to style the Dialog's paper container
-                    style: {
-                        borderRadius: 12,
-                        maxWidth: 500,
-                        width: '25%',
-                    },
-                }}
-            >
-                <DialogTitle id="alert-dialog-title" sx={{
-                    fontWeight: 'bold',
-                    fontSize: '1.5rem',
-                    textAlign: 'center'
-                }}> {/* DialogTitle 스타일 변경 */}
-                    {"회원 탈퇴"}
-                </DialogTitle>
-                <DialogContent sx={{padding: '1.5rem', textAlign: 'center'}}> {/* DialogContent 스타일 변경 */}
-                    <DialogContentText id="alert-dialog-description" sx={{
-                        fontSize: '1rem',
-                        color: 'text.secondary'
-                    }}> {/* DialogContentText 스타일 변경 */}
-                        정말로 탈퇴하시겠습니까? <br/> 탈퇴 후에는 계정 복구가 불가능합니다.
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions sx={{padding: '1.25rem', justifyContent: 'center'}}> {/* DialogActions 스타일 변경 */}
-                    <Button onClick={closeDeleteDialog} color="primary" sx={{minWidth: 100}}> {/* "아니오" 버튼 스타일 변경 */}
-                        아니오
-                    </Button>
-                    <Button onClick={handleDeleteConfirm} color="error" autoFocus
-                            sx={{minWidth: 100}}> {/* "예" 버튼 스타일 변경 */}
-                        예, 탈퇴합니다
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                {/* Section 2: 선호 장르 (Preferred Genres) */}
+                <div className="mypage-section">
+                    <div className="mypage-genre-list">
+                        <h3>선호 장르</h3>
+                        <div className="genre-chips">
+                            {genreList.map((genre) => (
+                                <div key={genre.genreId} className="genre-chip">
+                                    {genre.genreName}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+
+                {/* Section 3: Movie Home */}
+                <div className="mypage-section">
+                    <div className="movie-home">
+                        {isLoggedIn && <RecentHeartSimilarCrewMoviesComponent/>}
+                        {isLoggedIn && <InterestGenreMoviesComponent/>}
+                    </div>
+                </div>
+
+                {/* Section 4: Book Home */}
+                <div className="mypage-section">
+                    <div className="book-home">
+                        {isLoggedIn && interestGenreBooks.length > 0 && (
+                            <BookCarouselRecommend
+                                title="회원님의 취향저격 도서 장르"
+                                books={interestGenreBooks}
+                                startIndex={startIndexInterestGenre}
+                                handlePrev={handlePrevInterestGenre}
+                                handleNext={handleNextInterestGenre}
+                            />
+                        )}
+
+                        {isLoggedIn && recommendedBooks.length > 0 && (
+                            <BookCarouselRecommend
+                                title="회원님이 찜한 책과 닮은 도서들"
+                                books={recommendedBooks}
+                                startIndex={startIndexRecommended}
+                                handlePrev={handlePrevRecommended}
+                                handleNext={handleNextRecommended}
+                            />
+                        )}
+                    </div>
+                </div>
+
+                {/* Material-UI Dialog (Keep it outside sections as it's a modal) */}
+                <Dialog
+                    open={isDeleteDialogOpen}
+                    onClose={closeDeleteDialog}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    PaperProps={{ // `PaperProps` to style the Dialog's paper container
+                        style: {
+                            borderRadius: 12,
+                            maxWidth: 500,
+                            width: '25%',
+                        },
+                    }}
+                >
+                    <DialogTitle id="alert-dialog-title" sx={{
+                        fontWeight: 'bold',
+                        fontSize: '1.5rem',
+                        textAlign: 'center'
+                    }}> {/* DialogTitle 스타일 변경 */}
+                        {"회원 탈퇴"}
+                    </DialogTitle>
+                    <DialogContent sx={{padding: '1.5rem', textAlign: 'center'}}> {/* DialogContent 스타일 변경 */}
+                        <DialogContentText id="alert-dialog-description" sx={{
+                            fontSize: '1rem',
+                            color: 'text.secondary'
+                        }}> {/* DialogContentText 스타일 변경 */}
+                            정말로 탈퇴하시겠습니까? <br/> 탈퇴 후에는 계정 복구가 불가능합니다.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions sx={{padding: '1.25rem', justifyContent: 'center'}}> {/* DialogActions 스타일 변경 */}
+                        <Button onClick={closeDeleteDialog} color="primary" sx={{minWidth: 100}}> {/* "아니오" 버튼 스타일 변경 */}
+                            아니오
+                        </Button>
+                        <Button onClick={handleDeleteConfirm} color="error" autoFocus
+                                sx={{minWidth: 100}}> {/* "예" 버튼 스타일 변경 */}
+                            예, 탈퇴합니다
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                {/* Logout Confirmation Dialog */}
+                <Dialog
+                    open={isLogoutDialogOpen}
+                    onClose={closeLogoutDialog}
+                    aria-labelledby="logout-dialog-title"
+                    aria-describedby="logout-dialog-description"
+                    PaperProps={{
+                        style: {
+                            borderRadius: 12,
+                            maxWidth: 500,
+                            width: '25%',
+                        },
+                    }}
+                >
+                    <DialogTitle id="logout-dialog-title" sx={{
+                        fontWeight: 'bold',
+                        fontSize: '1.5rem',
+                        textAlign: 'center'
+                    }}>
+                        {"로그아웃"}
+                    </DialogTitle>
+                    <DialogContent sx={{padding: '1.5rem', textAlign: 'center'}}>
+                        <DialogContentText id="logout-dialog-description" sx={{
+                            fontSize: '1rem',
+                            color: 'text.secondary'
+                        }}>
+                            정말로 로그아웃 하시겠습니까?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions sx={{padding: '1.25rem', justifyContent: 'center'}}>
+                        <Button onClick={handleLogoutConfirm} color="error" autoFocus sx={{minWidth: 100}}>
+                            예
+                        </Button>
+                        <Button onClick={closeLogoutDialog} color="primary" sx={{minWidth: 100}}>
+                            아니오
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+
+            </div> {/* End of mypage-content-wrapper */}
         </div>
+
     );
 }
 
