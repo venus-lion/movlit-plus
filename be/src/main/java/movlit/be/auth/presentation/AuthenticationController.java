@@ -83,9 +83,6 @@ public class AuthenticationController {
         final String accessToken = jwtTokenUtil.generateAccessToken(email);
         final String refreshToken = jwtTokenUtil.generateRefreshToken(email);
 
-        log.info("======== accessToken={}", accessToken);
-        log.info("======== refreshToken={}", refreshToken);
-
         refreshTokenStorage.saveRefreshToken(email, refreshToken);
 
         authCodeStorage.removeCode(code);

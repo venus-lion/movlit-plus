@@ -3,7 +3,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background-color: #f8f8f8;
+    background-color: #ffffff;
     border-bottom: 1px solid #ddd;
 }
 
@@ -20,7 +20,8 @@
 }
 
 .nav-left .active {
-    color: #ff0000; /* 활성화된 링크 색상 */
+    /*color: #c1edbb; !* 활성화된 링크 색상 *!*/
+    color: #2E8B57;
 }
 
 .nav-right {
@@ -29,10 +30,20 @@
 }
 
 .search-box {
-    padding: 8px;
+    padding: 6px 30px 6px 36px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 2px;
     margin-right: 20px;
+    width: 270px; /* 원하는 만큼 조절 */
+    background: url('./images/search-icon.png') no-repeat 10px center;
+    background-color: #f5f5f5;
+    background-size: 20px 20px; /* 돋보기 아이콘 크기 (원하는 크기로 조절) */
+}
+
+.search-box:focus {
+    outline: none; /* 기본 파란색 아웃라인 제거 */
+    border: 1px solid #c1edbb; /* 원하는 색상으로 테두리 변경 */
+    box-shadow: 0 0 1px #c1edbb; /* 추가로 box-shadow까지 주어 더 자연스럽게 만들 수도 있음 */
 }
 
 .nav-right a {
@@ -47,7 +58,16 @@
 
 .logout-button {
     padding: 8px 15px;
-    background-color: #ff0000;
+    background-color: #c1edbb;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    padding: 8px 15px;
+    background-color: #2E8B57;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -61,7 +81,11 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    background-color: rgb(255, 51, 102);
+    background-color: #c1edbb;
+}
+
+.search-button:hover {
+    background-color: #2E8B57;
 }
 
 .nav-right-logged-in {
@@ -110,6 +134,7 @@
     top: -3px;
     right: -3px;
     background: red;
+    /*background: #2E8B57;*/
     color: white;
     border-radius: 50%;
     width: 15px;
@@ -137,16 +162,19 @@
 
 
 .delete-all-btn {
-
     marginBottom: 20px;
     margin-left: 20px;
     padding: 10px 20px;
-    backgroundColor: #FF6B6B;
     color: white;
     border: none;
     borderRadius: 5px;
     cursor: pointer;
     fontSize: 16px;
+}
+
+.delete-all-btn:hover {
+    background-color: #2E8B57;
+    color: #fff;
 }
 
 

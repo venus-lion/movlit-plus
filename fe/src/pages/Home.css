@@ -48,6 +48,13 @@
     text-align: center;
     text-decoration: none;
     color: inherit;
+
+    transition: transform 0.2s ease-in-out; /* 부드러운 애니메이션 효과 */
+}
+
+.book-card:hover, .movie-card:hover {
+    transform: scale(1.1); /* 1.1배 확대 */
+    z-index: 1; /* 다른 요소 위에 표시 */
 }
 
 .book-rank, .movie-rank {

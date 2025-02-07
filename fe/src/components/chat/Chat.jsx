@@ -160,6 +160,7 @@ const Chat = () => {
                     activeTab={activeTab}
                     searchTerm={searchTerm}
                     onSelectChat={(chat) => setSelectedChat(chat)} // 선택된 채팅방 설정
+
                 />
 
                 {/* 채팅방 생성 버튼 (기존과 동일) */}

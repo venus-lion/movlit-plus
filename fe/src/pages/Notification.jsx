@@ -19,6 +19,8 @@ function Notification() {
                 const response = await axiosInstance.get('/notification');
                 setMyNotifications(response.data);
 
+                console.log(JSON.stringify(response.data, null, 2));
+
                 // 모든 알림 읽음 상태로 update
                 await axiosInstance.put('/notification/markAllAsRead');
             } catch (err) {
@@ -63,11 +65,15 @@ function Notification() {
     // 알림 리스트 클릭 시 해당 알림 url로 이동
     const handleNotificationClick = (url) => {
         // URL이 'http'로 시작하면 절대 경로, 아니면 상대 경로로 처리
-        if (url && url.startsWith('http')) {
-            window.location.href = url; // 절대 URL로 이동
-        } else if (url) {
-            navigate(url); // 상대 URL로 이동
+        if(url){
+            url += '?fromNoti=true';
+            if (url.startsWith('http')) {
+                window.location.href = url; // 절대 URL로 이동
+            } else {
+                navigate(url); // 상대 URL로 이동
+            }
         }
+
     };
 
     return (

@@ -96,7 +96,7 @@ public class MemberReadService {
         entityManager.clear(); // 1차 캐시 초기화 (안하면, 프로필 업데이트된 멤버정보를 제대로 조회 안하고, JPA에서 프로필업데이트되기 전, 멤버정보를 조회한다)
         MemberEntity memberEntity = memberRepository.findEntityById(memberId);
 
-        System.out.println("MemberReadService >>> 찾은 memberEntity " + memberEntity.toStringExceptLazyLoading());
+        System.out.println("::MemberReadService >>> 찾은 memberEntity " + memberEntity.toStringExceptLazyLoading());
         return memberEntity;
     }
 

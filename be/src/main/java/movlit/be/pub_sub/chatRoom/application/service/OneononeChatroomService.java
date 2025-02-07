@@ -2,8 +2,6 @@ package movlit.be.pub_sub.chatRoom.application.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Duration;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.common.exception.FailedDeserializeException;
@@ -14,14 +12,20 @@ import movlit.be.common.util.ids.MemberId;
 import movlit.be.common.util.ids.OneononeChatroomId;
 import movlit.be.member.application.service.MemberReadService;
 import movlit.be.member.domain.entity.MemberEntity;
+import movlit.be.pub_sub.RedisMessagePublisher;
 import movlit.be.pub_sub.chatRoom.domain.MemberROneononeChatroom;
 import movlit.be.pub_sub.chatRoom.domain.OneononeChatroom;
 import movlit.be.pub_sub.chatRoom.domain.repository.OneononeChatroomRepository;
+import movlit.be.pub_sub.chatRoom.presentation.dto.OneononeChatroomCreatePubDto;
+import movlit.be.pub_sub.chatRoom.presentation.dto.OneononeChatroomCreatePubRequest;
 import movlit.be.pub_sub.chatRoom.presentation.dto.OneononeChatroomRequest;
 import movlit.be.pub_sub.chatRoom.presentation.dto.OneononeChatroomResponse;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,7 @@ public class OneononeChatroomService {
     private final OneononeChatroomRepository oneOnOneChatroomRepository;
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final RedisMessagePublisher messagePublisher;
 
     @Transactional
     public OneononeChatroomResponse createOneononeChatroom(MemberId memberId,
@@ -61,6 +66,20 @@ public class OneononeChatroomService {
         this.addOneononeChatroomToRedis(receiver, receiverResponse);
 
         return senderResponse;
+    }
+
+    public void publishOneononeChatroomCreate(MemberId topicSenderId, OneononeChatroomCreatePubRequest request) {
+        MemberEntity topicSender = memberReadService.findEntityByMemberId(topicSenderId);
+        OneononeChatroomCreatePubDto oneononeChatroomCreatePubDto =
+                new OneononeChatroomCreatePubDto(
+                        request.getRoomId(),
+                        request.getTopicReceiverId(),
+                        topicSenderId,
+                        topicSender.getNickname(),
+                        topicSender.getProfileImgUrl(),
+                        request.getChatMessage()
+                );
+        messagePublisher.createOneononeChatroom(oneononeChatroomCreatePubDto);
     }
 
     private void validateAlreadyExist(MemberEntity sender, MemberEntity receiver) {

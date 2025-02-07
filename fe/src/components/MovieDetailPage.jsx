@@ -1,5 +1,5 @@
+import {Link, useParams, useLocation, useNavigate} from 'react-router-dom';
 import React, {useEffect, useRef, useState, useContext} from 'react';
-import {Link, useParams} from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import {FaComment, FaHeart, FaRegHeart, FaRegStar, FaStar, FaStarHalfAlt, FaUserCircle,} from 'react-icons/fa';
 import MovieCarousel from '../pages/MovieCarousel';
@@ -45,6 +45,12 @@ function MovieDetailPage() {
 
     const initialVisibleCrews = 14;
 
+    // 알림(새 그룹채팅방 생성됨)을 통해 상세페이지 접속 -> 바로 "그룹채팅방 입장" 모달 띄우기
+    const location = useLocation(); // 현재 URL의 location 객체 가져오기
+    const params = new URLSearchParams(location.search); // 쿼리 파라미터 읽기
+    const navigate = useNavigate();
+
+    // 관련 영화 데이터 가져오기
     const {
         movies: relatedMovies,
         loading: relatedMoviesLoading,
@@ -158,6 +164,16 @@ function MovieDetailPage() {
             .catch((error) => console.error('Error fetching member id:', error));
     }, [movieId]);
 
+    // 알림(새 그룹채팅방 생성됨)을 통해 상세페이지 접속 -> 바로 "그룹채팅방 입장" 모달 띄우기
+    useEffect(() => {
+        const fromNoti = params.get('fromNoti'); // 'fromNoti' 쿼리 파라미터 값을 가져오기
+
+        if (fromNoti === 'true' && movieId && movieData && crews) {
+            handleJoinGroupChatroom(movieId, movieData.posterUrl, movieData.title, crews);
+        }
+    }, [movieId, params, movieData, crews]); // bookData와 crews를 의존성 배열에 추가
+
+    // Intersection Observer 설정 (코멘트 무한 스크롤)
     useEffect(() => {
         if (!isInitialLoad) {
             const options = {
@@ -211,6 +227,7 @@ function MovieDetailPage() {
         }
     };
 
+    // 코멘트 불러오기 함수
     const fetchComments = (currentPage = 0) => {
         axiosInstance
             .get(`/movies/${movieId}/comments?page=${currentPage}`)
@@ -222,6 +239,7 @@ function MovieDetailPage() {
                 setTotalComments(fetchedTotalComments);
 
                 if (currentPage === 0) {
+                    // 각 코멘트 객체에 isLiked와 commentLikeCount, profileImgUrl이 존재하는지 확인하고, 값이 없으면 false, 0, null으로 설정
                     const updatedComments = response.data.content.map((comment) => ({
                         ...comment,
                         isLiked: comment.isLiked || false,
@@ -233,6 +251,7 @@ function MovieDetailPage() {
                         response.data.content.length > 4 || fetchedTotalComments > 4
                     );
                 } else {
+                    // 마찬가지로 isLiked와 commentLikeCount, profileImgUrl 존재 여부 확인 및 기본값 설정
                     const updatedComments = response.data.content.map((comment) => ({
                         ...comment,
                         isLiked: comment.isLiked || false,
@@ -247,6 +266,7 @@ function MovieDetailPage() {
             .catch((error) => console.error('Error fetching comments:', error));
     };
 
+    // Intersection Observer 콜백 함수
     const handleObserver = (entities) => {
         const target = entities[0];
         if (target.isIntersecting && hasMore && !isInitialLoad) {
@@ -254,7 +274,9 @@ function MovieDetailPage() {
         }
     };
 
+    // 코멘트 별점 클릭 핸들러
     const handleRatingClick = (newRating, e) => {
+        // 클릭 위치에 따라 반 별 또는 온전한 별로 설정
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const halfWidth = rect.width / 2;
@@ -268,11 +290,13 @@ function MovieDetailPage() {
         setShowCommentInput(true);
     };
 
+    // 찜하기/찜해제 처리
     const handleWishClick = async () => {
         try {
             let updatedHeartCount;
 
             if (movieData.isHearted) {
+                // 찜 해제 (DELETE 요청)
                 await axiosInstance.delete(`/movies/${movieId}/hearts`);
                 updatedHeartCount = movieData.heartCount - 1;
                 setMovieData((prevMovieData) => ({
@@ -282,6 +306,7 @@ function MovieDetailPage() {
                 }));
                 updateSnackbar('찜 목록에서 제거되었습니다.', 'success');
             } else {
+                // 찜하기 (POST 요청)
                 const response = await axiosInstance.post(`/movies/${movieId}/hearts`);
                 updatedHeartCount = response.data.movieHeartCnt;
                 setMovieData((prevMovieData) => ({
@@ -292,6 +317,7 @@ function MovieDetailPage() {
                 updateSnackbar('찜 목록에 추가되었습니다.', 'success');
             }
 
+            // 찜 상태에 따라 버튼 및 카운트 업데이트
             const button = document.getElementById('wishButton');
             const heartCountSpan = document.getElementById('heartCount');
 
@@ -336,6 +362,7 @@ function MovieDetailPage() {
 
         try {
             if (userCommentId) {
+                // 코멘트 수정 (PUT 요청)
                 await axiosInstance.put(
                     `/movies/comments/${userCommentId}`,
                     requestBody
@@ -382,12 +409,14 @@ function MovieDetailPage() {
         setVisibleCrews(crews.slice(0, initialVisibleCrews));
     };
 
+    // 코멘트 더보기 처리
     const handleLoadMore = () => {
         setIsInitialLoad(false);
         fetchComments(page);
         setShowLessComments(true);
     };
 
+    // 코멘트 더보기 취소 처리
     const handleShowLessComments = () => {
         setComments(comments.slice(0, 4));
         setShowLessComments(false);
@@ -396,6 +425,7 @@ function MovieDetailPage() {
         setIsInitialLoad(true);
     };
 
+    // 좋아요/좋아요 취소 처리
     const handleLikeClick = async (commentId, isLiked) => {
         try {
             if (isLiked) {
@@ -471,8 +501,16 @@ function MovieDetailPage() {
                     genreName: genre.name
                 })),
             };
+            // 가입 여부 확인 api 호출
             console.log(selectedCard);
+
+            // 모달창 호출 후 fromNoti를 false로 설정
+            params.set('fromNoti', 'false');
+            navigate({ search: params.toString() }, { replace: true });
+
             handleOpenGroupChatInfoModal(selectedCard, "movie");
+
+
 
         } catch (err) {
             console.error('Error fetching room info:', err);
@@ -614,6 +652,7 @@ function MovieDetailPage() {
                                 <div style={styles.stars}>
                                     {renderStars(movieData.voteAverage)}
                                 </div>
+                                {/* Circular Progress Bar 추가 */}
                                 <div style={styles.progressBarContainer}>
                                     <CircularProgressbar
                                         value={movieData.voteAverage * 10}
@@ -669,6 +708,7 @@ function MovieDetailPage() {
                         </div>
                     )}
 
+                    {/* 코멘트 입력 및 수정/삭제 버튼 */}
                     {myRating > 0 && showCommentInput && (
                         <div style={styles.commentSection}>
                             <textarea
@@ -683,6 +723,7 @@ function MovieDetailPage() {
                         </div>
                     )}
 
+                    {/* 코멘트 삭제 및 수정 버튼 */}
                     {!showCommentInput && userComment && (
                         <div style={styles.commentActions}>
                             <button
@@ -796,8 +837,11 @@ function MovieDetailPage() {
                                                 )}
                                                 <span style={styles.commentUser}>{comment.nickname}</span>
                                             </Link>
+                                            {/* 별점 및 좋아요 컨테이너 */}
                                             <div style={styles.commentActions}>
+                                                {/* 코멘트 별점 표시 */}
                                                 <div style={styles.commentRating}>
+                                                    {/* 별 5개로 10점 만점 표현 */}
                                                     {[...Array(5)].map((_, index) => {
                                                         const starIndex = (index + 1);
                                                         return (
@@ -812,7 +856,9 @@ function MovieDetailPage() {
                                                             </span>
                                                         );
                                                     })}
+                                                    {/*<span style={styles.commentScore}>{comment.score}</span>*/}
                                                 </div>
+                                                {/* 좋아요 버튼 및 카운트 컨테이너 */}
                                                 <div style={styles.likeContainer}>
                                                     <button
                                                         style={styles.likeButton}
@@ -821,18 +867,22 @@ function MovieDetailPage() {
                                                         {comment.isLiked ? <FaHeart style={styles.likedIcon}/> :
                                                             <FaRegHeart style={styles.likeIcon}/>}
                                                     </button>
+                                                    {/* 좋아요 카운트 */}
                                                     <span
                                                         style={styles.likeCountContainer}>{comment.commentLikeCount}</span>
                                                 </div>
                                             </div>
                                         </div>
+                                        {/* 코멘트 내용 */}
                                         <div style={styles.commentContent}>
                                             <FaComment style={styles.commentIcon}/>
                                             <p style={styles.commentText}>{comment.comment}</p>
                                         </div>
                                     </div>
                                 ))}
+                                {/* 무한 스크롤 로딩 감지 Element */}
                                 <div ref={loader}/>
+                                {/* 더보기 버튼 */}
                                 {hasMore && isInitialLoad && (
                                     <div style={styles.moreButtonContainer}>
                                         <button style={styles.moreButton} onClick={handleLoadMore}>
@@ -840,6 +890,7 @@ function MovieDetailPage() {
                                         </button>
                                     </div>
                                 )}
+                                {/* 더보기 취소 버튼 */}
                                 {showLessComments && (
                                     <div style={styles.moreButtonContainer}>
                                         <button style={styles.moreButton} onClick={handleShowLessComments}>
@@ -850,6 +901,7 @@ function MovieDetailPage() {
                             </div>
                         </div>
 
+                        {/* 새로운 관련 영화 섹션 */}
                         <div style={styles.section}>
                             <div style={styles.sectionTitle}>관련 영화 추천</div>
                             <div style={styles.sectionContent}>
@@ -870,6 +922,7 @@ function MovieDetailPage() {
                             </div>
                         </div>
 
+                        {/* 관련 도서 섹션 */}
                         <div style={styles.section}>
                             <div style={styles.sectionTitle}>관련 도서 추천</div>
                             <div style={styles.sectionContent}>

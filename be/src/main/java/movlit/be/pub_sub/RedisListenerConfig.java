@@ -38,30 +38,51 @@ RedisListenerConfig { // 클래스명 변경
     }
 
     @Bean
+    public ChannelTopic createOneononeChatroomTopic() {
+        return new ChannelTopic("createOneononeChatroom");
+    }
+
+    @Bean
     public ChannelTopic readMessageTopic() {
         return new ChannelTopic("readMessage");
     }
 
-    /** 메시지 전송을 처리하는 subscriber 설정 추가*/
+    /**
+     * 메시지 전송을 처리하는 subscriber 설정 추가
+     */
     @Bean
     public MessageListenerAdapter listenerAdapterSendMessage(RedisMessageSubscriber subscriber) {
         // subscriber 내의 메서드명을 지정
         return new MessageListenerAdapter(subscriber, "sendMessage");
     }
 
-    /** 채팅방정보 변경을 처리하는 subscriber 설정 추가*/
+    /**
+     * 채팅방정보 변경을 처리하는 subscriber 설정 추가
+     */
     @Bean
     public MessageListenerAdapter listenerAdapterUpdateRoom(RedisMessageSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "updateRoom");
     }
 
-    /** 채팅 읽음을 처리하는 subscriber 설정 추가*/
+    /**
+     * 채팅 읽음을 처리하는 subscriber 설정 추가
+     */
     @Bean
     public MessageListenerAdapter listenerAdapterReadMessage(RedisMessageSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "readMessage");
     }
 
-    /** 알림 메시지를 처리하는 subscriber 설정 추가*/
+    /**
+     * 일대일 채팅방 시작되는 subscriber 설정 추가
+     */
+    @Bean
+    public MessageListenerAdapter listenerAdapterCreateOneononeChatroom(RedisMessageSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "createOneononeChatroom");
+    }
+
+    /**
+     * 알림 메시지를 처리하는 subscriber 설정 추가
+     */
     @Bean
     public MessageListenerAdapter listenerAdapterNotification(RedisNotificationSubscriber notificationSubscriber) {
         return new MessageListenerAdapter(notificationSubscriber, "onNotification"); // 메서드명 변경
@@ -76,10 +97,12 @@ RedisListenerConfig { // 클래스명 변경
             MessageListenerAdapter listenerAdapterSendMessage,
             MessageListenerAdapter listenerAdapterUpdateRoom,
             MessageListenerAdapter listenerAdapterReadMessage,
+            MessageListenerAdapter listenerAdapterCreateOneononeChatroom,
             MessageListenerAdapter listenerAdapterNotification,
             ChannelTopic sendMessageTopic,
             ChannelTopic updateRoomTopic,
             ChannelTopic readMessageTopic,
+            ChannelTopic createOneononeChatroomTopic,
             ChannelTopic notificationTopic
     ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
@@ -88,6 +111,7 @@ RedisListenerConfig { // 클래스명 변경
         container.addMessageListener(listenerAdapterSendMessage, sendMessageTopic);
         container.addMessageListener(listenerAdapterUpdateRoom, updateRoomTopic);
         container.addMessageListener(listenerAdapterReadMessage, readMessageTopic);
+        container.addMessageListener(listenerAdapterCreateOneononeChatroom, createOneononeChatroomTopic);
         container.addMessageListener(listenerAdapterNotification, notificationTopic);
         return container;
     }

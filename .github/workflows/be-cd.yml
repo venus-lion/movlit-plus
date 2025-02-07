@@ -33,7 +33,7 @@ jobs:
         run: |
           chmod +x gradlew
           echo "::group::Gradle Build Logs"
-          ./gradlew build --exclude-task test --exclude-task asciidoctor
+          ./gradlew build --warning-mode all
           echo "::endgroup::"
 
         working-directory: ${{ env.ROOT_PATH }}

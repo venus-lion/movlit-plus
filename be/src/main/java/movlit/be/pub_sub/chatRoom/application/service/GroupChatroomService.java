@@ -132,11 +132,14 @@ public class GroupChatroomService {
         List<MemberId> heartingMemberIds = new ArrayList<>();
         // 콘텐츠명 (영화 이름, 책 이름)
         String contentName = "";
+        // 해당 콘텐츠의 상세페이지 url (채팅방 가입 유도)
+        String url = basicUrl;
 
         if (contentType.equals("MV")) {
             Long movieId = Long.parseLong(pureContentId);
             contentName = movieReadService.fetchByMovieId(movieId).getTitle();
             heartingMemberIds = movieHeartService.fetchHeartingMemberIdsByMovieId(movieId);
+            url += "/movie/" + pureContentId;
         } else if (contentType.equals("BK")) {
             BookId bookId = new BookId(pureContentId);
             String bookName = bookDetailReadService.fetchByBookId(bookId).getTitle();
@@ -148,13 +151,13 @@ public class GroupChatroomService {
             }
             heartingMemberIds =
                     bookHeartReadService.fetchHeartingMemberIdsByBookId(bookId);
+            url += "/book/" + pureContentId;
         }
 
         // 멤버들에게 알림 발송
         if (!heartingMemberIds.isEmpty()) {
             for (MemberId heartigMemberId : heartingMemberIds) {
                 log.info(">> 알림발송할 멤버 " + heartigMemberId.getValue());
-                String url = basicUrl + "/chatMain/" + createdChatroom.getGroupChatroomId().getValue() + "/group";
                 NotificationDto notification = new NotificationDto(
                         heartigMemberId.getValue(),
                         NotificationMessage.generateNewGroupChatroomNotiMessage(contentType, contentName, roomName),

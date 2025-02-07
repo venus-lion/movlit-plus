@@ -2,9 +2,6 @@ package movlit.be.pub_sub;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.common.exception.ContentTypeNotExistException;
@@ -12,11 +9,16 @@ import movlit.be.common.util.ids.GroupChatroomId;
 import movlit.be.pub_sub.chatMessage.presentation.dto.response.ChatMessageDto;
 import movlit.be.pub_sub.chatMessage.presentation.dto.response.MessageType;
 import movlit.be.pub_sub.chatRoom.presentation.dto.GroupChatroomMemberResponse;
+import movlit.be.pub_sub.chatRoom.presentation.dto.OneononeChatroomCreatePubDto;
 import movlit.be.pub_sub.chatRoom.presentation.dto.UpdateRoomDto;
 import movlit.be.pub_sub.chatRoom.presentation.dto.UpdateRoomDto.EventType;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 메시지 수신자(Subscriber) 구현
@@ -105,7 +107,7 @@ public class RedisMessageSubscriber {
                     log.info("RedisMessageSubscriber의 cachedMembers 개수 : {}", cachedMembers.size());
 
                     messagingTemplate.convertAndSend("/topic/chat/room/" + groupChatroomId.getValue(), response);
-                } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_LEAVE)){
+                } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_LEAVE)) {
                     // 기존 멤버 나가는 이벤트 처리
                     // eventMessage와 cachedMembers 함께 전송
                     Map<String, Object> response = new HashMap<>();
@@ -119,6 +121,24 @@ public class RedisMessageSubscriber {
         } catch (Exception e) {
             log.error("Exception in updateRoom {}", e);
         }
+    }
+
+    public void createOneononeChatroom(String publishMessage) {
+        try {
+            OneononeChatroomCreatePubDto oneononeChatroomCreatePubDto = objectMapper.readValue(publishMessage,
+                    OneononeChatroomCreatePubDto.class);
+            log.info("Received message to 'createOneononeChatroom' : {}", publishMessage);
+            messagingTemplate.convertAndSend(
+                    "/topic/oneononeChatroom/create/publish/" + oneononeChatroomCreatePubDto.getTopicReceiverId()
+                            .getValue(),
+                    oneononeChatroomCreatePubDto
+            );
+
+        } catch (Exception e) {
+            log.error("Exception in OneononeChatroom publish : {}", e);
+        }
+
+
     }
 
     public void readMessage(String publishMessage) {

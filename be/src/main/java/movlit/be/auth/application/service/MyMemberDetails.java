@@ -48,7 +48,6 @@ public class MyMemberDetails implements UserDetails, OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        log.info("====== new SimpleGrantedAuthority(member.getRole())={}", new SimpleGrantedAuthority(member.getRole()));
         return Collections.singletonList(
                 new SimpleGrantedAuthority(member.getRole())
         );
@@ -60,7 +59,7 @@ public class MyMemberDetails implements UserDetails, OAuth2User {
     }
 
     public MemberId getMemberId() {
-        if (member != null){
+        if (member != null) {
             return member.getMemberId();
         }
 
@@ -68,7 +67,7 @@ public class MyMemberDetails implements UserDetails, OAuth2User {
     }
 
     public Member getMember() {
-        if (member != null){
+        if (member != null) {
             return member;
         }
 

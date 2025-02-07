@@ -81,7 +81,8 @@ public class FollowWriteService {
         // 알림 메세지 생성 : 'A'님이 'B'님을 팔로우합니다.
         String message = NotificationMessage.generateFollowingMessage(follower.getNickname(), followee.getNickname());
         String memberId = followee.getMemberId().getValue();
-        String url = basicUrl + "/members/" + memberId;
+        // 나를 팔로우한 사람(상대방)의 '마이페이지'로 이동
+        String url = basicUrl + "/members/" + follower.getMemberId().getValue();
 
         // 알림 DTO 생성
         NotificationDto notificationDto = new NotificationDto(

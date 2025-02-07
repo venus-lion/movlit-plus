@@ -25,7 +25,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final AuthCodeStorage authCodeStorage;
     private final JwtTokenUtil jwtTokenUtil;
 
-
     @Value("${share.url}")
     private String url;
 
@@ -36,11 +35,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // OAuth2User로부터 email을 가져옴
         MyMemberDetails oAuth2User = (MyMemberDetails) authentication.getPrincipal();
         String email = oAuth2User.getMember().getEmail();
-        log.info("OAuth2AuthenticationSuccessHandler의 Member email = {}", email);
 
         String code = IdGenerator.generate();
         authCodeStorage.saveCode(code, email);
-        log.info("======== code = {}, email = {}", code, email);
 
         // 헤더 설정
         String accessToken = jwtTokenUtil.generateAccessToken(email);

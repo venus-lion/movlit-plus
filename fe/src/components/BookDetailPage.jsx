@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Link, useParams} from 'react-router-dom';
+import {Link, useParams, useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import {FaComment, FaHeart, FaRegHeart, FaRegStar, FaStar, FaStarHalfAlt, FaUserCircle,} from 'react-icons/fa';
 import BookCarouselRecommend from "../pages/BookCarouselRecommend.jsx";
@@ -51,6 +51,11 @@ function BookDetailPage() {
     const [refreshKey, setRefreshKey] = useState(0); // 채팅 리스트 새로고침 키 추가
     const [currentMemberId, setCurrentMemberId] = useState(null); // 현재 로그인된 memberId 상태 추가
 
+    // 알림(새 그룹채팅방 생성됨)을 통해 상세페이지 접속 -> 바로 "그룹채팅방 입장" 모달 띄우기
+    const location = useLocation(); // 현재 URL의 location 객체 가져오기
+    const params = new URLSearchParams(location.search); // 쿼리 파라미터 읽기
+    const navigate = useNavigate();
+
     useEffect(() => {
         axiosInstance
             .get(`/books/${bookId}/detail`)
@@ -76,8 +81,10 @@ function BookDetailPage() {
             .catch((error) => console.error('Error fetching book data:', error));
 
 
+
         fetchUserComment();
         fetchComments(0);
+
 
         axiosInstance
             .get(`/members/id`)
@@ -86,6 +93,15 @@ function BookDetailPage() {
             })
             .catch((error) => console.error('Error fetching member id:', error));
     }, [bookId]);
+
+    // 알림(새 그룹채팅방 생성됨)을 통해 상세페이지 접속 -> 바로 "그룹채팅방 입장" 모달 띄우기
+    useEffect(() => {
+        const fromNoti = params.get('fromNoti'); // 'fromNoti' 쿼리 파라미터 값을 가져오기
+
+        if (fromNoti === 'true' && bookId && bookData && crews) {
+            handleJoinGroupChatroom(bookId, bookData.bookImgUrl, bookData.title, crews);
+        }
+    }, [bookId, params, bookData, crews]); // bookData와 crews를 의존성 배열에 추가
 
     // Intersection Observer 설정 (코멘트 무한 스크롤)
     useEffect(() => {
@@ -490,6 +506,11 @@ function BookDetailPage() {
             };
 
             console.log(selectedCard);
+
+            // 모달창 호출 후 fromNoti를 false로 설정
+            params.set('fromNoti', 'false');
+            navigate({ search: params.toString() }, { replace: true });
+
             handleOpenGroupChatInfoModal(selectedCard, "book");
 
         } catch (err) {
@@ -538,6 +559,8 @@ function BookDetailPage() {
         setSelectedCard(null);
         setSelectedCategory(null);
     };
+
+
 
     return (
         <div style={styles.container}>
@@ -596,7 +619,7 @@ function BookDetailPage() {
                         그룹채팅 입장
                     </button>
                 </div>
-                `
+
 
                 <div style={styles.info}>
                     <div style={styles.ratingAndWish}>

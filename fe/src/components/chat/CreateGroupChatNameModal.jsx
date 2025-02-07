@@ -100,7 +100,7 @@ const CreateGroupChatNameModal = ({isOpen, onClose, selectedCard, selectedCatego
                     <button className="cancel-button" onClick={onClose}>
                         취소
                     </button>
-                    <button onClick={handleSubmit}>
+                    <button className="modal-confirm" onClick={handleSubmit}>
                         생성
                     </button>
                 </div>

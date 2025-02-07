@@ -164,14 +164,26 @@
     cursor: pointer;
 }
 
+.modal-cancel:hover {
+    background-color: #212121;
+    color: white;
+}
+
 .modal-confirm {
-    background: green;
+    background: #c1edbb;
     color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 }
+
+.modal-confirm:hover {
+    background: #2E8B57;
+    color: white;
+
+}
+
 
 .modal-search-button:hover {
     background-color: #0056b3;
