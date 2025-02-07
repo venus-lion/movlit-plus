@@ -101,7 +101,7 @@ function BookDetailPage() {
         if (fromNoti === 'true' && bookId && bookData && crews) {
             handleJoinGroupChatroom(bookId, bookData.bookImgUrl, bookData.title, crews);
         }
-    }, [bookId, params, bookData, crews]); // bookData와 crews를 의존성 배열에 추가
+    }, [bookId, bookData, crews]); // bookData와 crews를 의존성 배열에 추가
 
     // Intersection Observer 설정 (코멘트 무한 스크롤)
     useEffect(() => {
@@ -495,6 +495,11 @@ function BookDetailPage() {
             const isJoined = response.data
             if (isJoined === true) {
                 alert("이미 가입된 채팅방입니다.");
+
+                // fromNoti를 false로 설정하고 URL 업데이트
+                params.set('fromNoti', 'false');
+                navigate({ search: params.toString() }, { replace: true });
+
                 return;
             }
 
@@ -603,17 +608,18 @@ function BookDetailPage() {
                         <p style={{lineHeight: '1.8', margin: '0'}}><strong>{bookData.stockStatus}</strong></p>
                         <br/>
                         <a href={bookData.mallUrl} target="_blank" rel="noopener noreferrer">
-                            <button>구매하기</button>
+                            <button className="button-common buy-button">구매하기</button>
                         </a>
 
                     </div>
                     <button
                         id="groupChatButton"
-                        style={{
-                            ...styles.button,
-                            backgroundColor: '#FF3366',
-                            marginTop: '20px', // 이미지와 버튼 사이 간격 조절
-                        }}
+                        // style={{
+                        //     ...styles.button,
+                        //     backgroundColor: '#FF3366',
+                        //     marginTop: '20px', // 이미지와 버튼 사이 간격 조절
+                        // }}
+                        className="button-common join-button"
                         onClick={() => handleJoinGroupChatroom(bookId)}
                     >
                         그룹채팅 입장
@@ -687,28 +693,33 @@ function BookDetailPage() {
                             </div>
                         </div>
                         <div style={styles.buttonGroup}>
+                            {/*<button*/}
+                            {/*    id="wishButton"*/}
+                            {/*    style={{*/}
+                            {/*        ...styles.button,*/}
+                            {/*        backgroundColor: bookData.isHearted*/}
+                            {/*            ? '#FF3366'*/}
+                            {/*            : '#4080ff',*/}
+                            {/*    }}*/}
+                            {/*    onClick={handleWishClick}*/}
+                            {/*>*/}
                             <button
                                 id="wishButton"
-                                style={{
-                                    ...styles.button,
-                                    backgroundColor: bookData.isHearted
-                                        ? '#FF3366'
-                                        : '#4080ff',
-                                }}
+                                className={`heart-button ${bookData.isHearted ? 'button-hearted' : 'button-not-hearted'}`}
                                 onClick={handleWishClick}
                             >
                                 {bookData.isHearted ? '찜 완료' : '찜'}
                             </button>
                             <span id="heartCount" style={styles.heartCountContainer}>
-                        {bookData.heartCount}
-              </span>
+                                {bookData.heartCount}
+                            </span>
                         </div>
                     </div>
 
                     {/* 사용자 코멘트 표시 */}
                     {userComment && userComment.score > 0 && (
                         <div style={styles.userCommentDisplay}>
-                            <div style={styles.userInfo}>
+                        <div style={styles.userInfo}>
                                 {userComment.profileImgUrl ? (
                                     <img
                                         src={userComment.profileImgUrl}
@@ -749,7 +760,8 @@ function BookDetailPage() {
                     {!showCommentInput && userComment && (
                         <div style={styles.commentActions}>
                             <button
-                                style={styles.editButton}
+                                // style={styles.editButton}
+                                className="edit-button"
                                 onClick={() => {
                                     setMyRating(userComment.score);
                                     setMyComment(userComment.comment);
@@ -758,7 +770,7 @@ function BookDetailPage() {
                             >
                                 수정하기
                             </button>
-                            <button style={styles.deleteButton} onClick={handleDeleteComment}>
+                            <button className="delete-button" onClick={handleDeleteComment}>
                                 삭제하기
                             </button>
                         </div>

@@ -73,7 +73,7 @@ public class ChatMessageService {
                 chatMessageDto.getSenderId());
 
         String senderNickname = memberReadService.findByMemberId(chatMessageDto.getSenderId()).getNickname();
-        String roomIdStr = roomInfo.getReceiverId().getValue();
+        String roomIdStr = roomInfo.getRoomId().getValue();
         log.info("====== basic url =======, {}", basicUrl);
         String url = basicUrl + "/chatMain/" + roomIdStr + "/personal";
 

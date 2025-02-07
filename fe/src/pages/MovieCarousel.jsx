@@ -26,7 +26,7 @@ function MovieCarousel({title, movies, startIndex, handleNext, handlePrev, hasMo
 
     return (
         <div className="movie-carousel-section">
-            <h2>{title}</h2>
+            <h2 className="carousel-title">{title}</h2>
             <div className="movie-carousel">
                 {startIndex > 0 && (
                     <button className="prev-button" onClick={handlePrev} aria-label="Previous">
@@ -72,7 +72,7 @@ function MovieCarousel({title, movies, startIndex, handleNext, handlePrev, hasMo
                         {'>'}
                     </button>
                 )}
-                {loading && <p>Loading more movies...</p>}
+                {loading && <p>영화들을 가져오는 중입니다!</p>}
             </div>
         </div>
     );

@@ -39,7 +39,10 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
     const [searchResults, setSearchResults] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
     const [hasSearched, setHasSearched] = useState(false); // 검색 여부 상태 추가
-    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
+
+    const [isLoading, setIsLoading] = useState(false);     // 로딩 상태 추가
+    const {updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
+
 
     const handleCategoryChange = (event) => {
         setSearchResults([]);
@@ -60,6 +63,11 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
         setSearchResults([]);
         setSelectedCard(null);
         setHasSearched(true); // 검색 시작 상태 설정
+
+
+        // 로딩 시작
+        setIsLoading(true);
+
 
         try {
             const response = await axiosInstance.get(
@@ -83,6 +91,9 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
         } catch (error) {
             console.error("Error fetching search results:", error);
             setSearchResults([]);
+        } finally {
+            // 로딩 종료
+            setIsLoading(false);
         }
     };
 
@@ -104,7 +115,7 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
         setHasSearched(false); // 검색 상태 초기화
         onClose();
     };
-
+    
     return (
         <Modal
             isOpen={isOpen}
@@ -157,25 +168,38 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
                         </button>
                     </div>
 
-                    {/* 검색 결과 (기존과 동일) */}
+
+                    {/* 검색 결과 영역 */}
                     <div className="result-container">
-                        {hasSearched && ( // 검색이 이루어진 경우에만 결과 표시
+                        {/* 검색이 이루어진 경우에만 결과 섹션 표시 */}
+                        {hasSearched && (
                             <>
                                 <h3>검색 결과</h3>
                                 <div className="results-scroll">
-                                    {searchResults.length > 0 ? (
+                                    {isLoading ? (
+                                        /* (1) 로딩 중 */
+                                        <p>로딩중입니다...</p>
+                                    ) : searchResults.length > 0 ? (
+                                        /* (2) 검색 결과가 있을 때 */
                                         <div className="results-grid">
                                             {searchResults.map((result, index) => (
-                                                <div key={index}
-                                                     className={`result-card ${selectedCard === result ? 'selected' : ''}`}
-                                                     onClick={() => handleCardClick(result)}
+                                                <div
+                                                    key={index}
+                                                    className={`result-card ${
+                                                        selectedCard === result ? 'selected' : ''
+                                                    }`}
+                                                    onClick={() => handleCardClick(result)}
                                                 >
                                                     {selectedCategory === "movie" ? (
                                                         <>
-                                                            <img src={result.posterPath} alt={result.title}
-                                                                 className="result-image"/>
-                                                            <div
-                                                                className="result-title">{truncateTitle(result.title)}</div>
+                                                            <img
+                                                                src={result.posterPath}
+                                                                alt={result.title}
+                                                                className="result-image"
+                                                            />
+                                                            <div className="result-title">
+                                                                {truncateTitle(result.title)}
+                                                            </div>
                                                             <div className="result-rating">
                                                                 ⭐<span>({Math.round(parseFloat(result.voteAverage) * 10) / 10})</span>
                                                             </div>
@@ -187,10 +211,14 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <img src={result.bookImgUrl} alt={result.title}
-                                                                 className="result-image"/>
-                                                            <div
-                                                                className="result-title">{truncateTitle(result.title)}</div>
+                                                            <img
+                                                                src={result.bookImgUrl}
+                                                                alt={result.title}
+                                                                className="result-image"
+                                                            />
+                                                            <div className="result-title">
+                                                                {truncateTitle(result.title)}
+                                                            </div>
                                                             <div>
                                                                 <p className="result-info">
                                                                     {result.crew.join(', ')}
@@ -202,16 +230,23 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
                                             ))}
                                         </div>
                                     ) : (
-                                        hasSearched && <p>검색결과가 없습니다.</p> // 검색 후 결과 없을 시
+                                        /* (3) 검색 결과가 비어 있을 때 */
+                                        <p>검색결과가 없습니다.</p>
+
                                     )}
                                 </div>
                             </>
                         )}
                     </div>
                 </div>
+
                 <div className="modal-footer">
-                    <button className="modal-cancel" onClick={handleCancel}>취소</button>
-                    <button className="modal-confirm" onClick={handleConfirm}>선택</button>
+                    <button className="modal-cancel" onClick={handleCancel}>
+                        취소
+                    </button>
+                    <button className="modal-confirm" onClick={handleConfirm}>
+                        선택
+                    </button>
                 </div>
             </div>
         </Modal>
