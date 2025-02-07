@@ -4,6 +4,7 @@ import SockJS from 'sockjs-client';
 import axiosInstance from '../axiosInstance'; // axios 인스턴스 import
 import './ChatPageGroup.css'; // CSS 파일 import
 import {FaUserCircle} from "react-icons/fa";
+import DateTimeUtil, {getNowDate} from "../util/DateTimeUtil.jsx";
 
 function ChatPage({roomId, roomInfo}) {
     const [messages, setMessages] = useState([]);
@@ -39,7 +40,6 @@ function ChatPage({roomId, roomInfo}) {
                 Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
             },
             debug: (str) => {
-                //console.log('STOMP Debug:', str);
                 console.log("메시지  : " + JSON.stringify(messages, null, 2));
             },
         });
@@ -77,7 +77,7 @@ function ChatPage({roomId, roomInfo}) {
                 roomId: roomId, // roomId 사용
                 senderId: currentUserId, // 현재 사용자 ID (실제로는 인증 정보에서 가져와야 함)
                 message: newMessage,
-                regDt: new Date(),
+                regDt: getNowDate()
             };
 
             stompClient.publish({
@@ -129,7 +129,7 @@ function ChatPage({roomId, roomInfo}) {
                             key={index}
                             className={`message-group ${isCurrentUser ? 'own-message-group' : ''}`}
                         >
-                            {!isCurrentUser && receiver && message && ( // message null 체크
+                            {!isCurrentUser && receiver && (
                                 <div className="message-profile-group">
                                     {/* profileImgUrl이 있으면 이미지를 표시하고, 없으면 FaUserCircle 아이콘을 표시합니다. */}
                                     {receiver.profileImgUrl ? (
@@ -148,11 +148,8 @@ function ChatPage({roomId, roomInfo}) {
                                 <div className={`message-bubble-group ${isCurrentUser ? 'own-bubble' : ''}`}>
                                     {message.message}
                                 </div>
-                                {/*<div className="message-time-group">*/}
-                                {/*    {new Date(message.regDt).toLocaleTimeString()}*/}
-                                {/*</div>*/}
                                 <div className="message-time-group">
-                                    {message.regDt ? new Date(message.regDt).toLocaleTimeString() : 'Invalid Date'}
+                                    {DateTimeUtil(getNowDate())}
                                 </div>
                             </div>
                         </div>

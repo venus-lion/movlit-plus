@@ -1,5 +1,6 @@
 import React from 'react';
 import {parseISO, format, differenceInMinutes, isToday} from 'date-fns';
+import {utcToZonedTime} from 'date-fns-tz';
 import {ko} from 'date-fns/locale';
 
 const formatCustomDate = (dateString) => {
@@ -27,7 +28,7 @@ const formatCustomDate = (dateString) => {
 
 };
 
-const ChatMessageDatetime = (dateString) => {
+const DateTimeUtil = (dateString) => {
     if (dateString === null || dateString === '' || dateString === 'undefined') {
         return '';
     }
@@ -35,4 +36,16 @@ const ChatMessageDatetime = (dateString) => {
     return formatCustomDate(dateString);
 };
 
-export default ChatMessageDatetime;
+export function getNowDate() {
+    // 현재 시각(UTC) 기준으로 Date 객체 생성
+    const nowUtc = new Date();
+
+    // 'Asia/Seoul'로 변환
+    const seoulTime = utcToZonedTime(nowUtc, 'Asia/Seoul');
+
+    // 원하는 형식으로 포맷 (예: 'yyyy-MM-dd HH:mm:ss')
+    const formatted = format(seoulTime, "yyyy-MM-dd'T'HH:mm:ss", {timeZone: 'Asia/Seoul'});
+    return formatted;
+}
+
+export default DateTimeUtil;

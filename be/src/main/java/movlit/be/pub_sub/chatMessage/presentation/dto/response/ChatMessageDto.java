@@ -17,8 +17,7 @@ public class ChatMessageDto {
     private String roomId;
     private MemberId senderId;
     private String message;
-
-    @CreatedDate
+    
     private LocalDateTime regDt;
     private MessageType messageType;
 

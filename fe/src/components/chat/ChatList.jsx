@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import axiosInstance from '../../axiosInstance.js';
 import {Client} from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import ChatMessageDatetime from "../../util/ChatMessageDatetime.jsx";
+import DateTimeUtil, {getNowDate} from "../../util/DateTimeUtil.jsx";
 
 const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
     const [groupChats, setGroupChats] = useState([]);
@@ -216,7 +216,7 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
                                             <strong>[New] </strong>
                                             {chat.recentMessage.message}
                                             <br/>
-                                            {ChatMessageDatetime(chat.recentMessage.regDt)}
+                                            {DateTimeUtil(chat.recentMessage.regDt)}
                                         </div>
                                     </div>
                                 ) : (
@@ -255,7 +255,7 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
                                         <strong>[New] </strong>
                                         {chat.recentMessage.message}
                                         <br/>
-                                        {ChatMessageDatetime(chat.recentMessage.regDt)}
+                                        {DateTimeUtil(chat.recentMessage.regDt)}
                                     </div>
                                 </div>
                             ) : (

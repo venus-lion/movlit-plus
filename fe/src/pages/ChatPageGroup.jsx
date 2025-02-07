@@ -5,6 +5,7 @@ import axiosInstance from '../axiosInstance';
 import './ChatPageGroup.css';
 import {FaUserCircle} from 'react-icons/fa';
 import {useNavigate} from "react-router-dom"; // react-icons에서 기본 프로필 이미지 아이콘을 가져옵니다.
+import DateTimeUtil, {getNowDate} from "../util/DateTimeUtil.jsx";
 
 function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}) {
     const [messages, setMessages] = useState([]);
@@ -22,7 +23,6 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
             .get(`/members/id`)
             .then((response) => {
                 setCurrentUserId(response.data.memberId);
-                console.log('현재 로그인한 사람 :::: ' + response.data.memberId);
             })
             .catch((error) => {
                 console.error('Error fetching current user ID:', error);
@@ -37,9 +37,6 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
                     setMembers(response.data);
                     console.log('fetched members :: (response.data) : ', response.data);
                     response.data.forEach(member => {
-                        console.log("Member ID:", member.memberId);
-                        console.log("Nickname:", member.nickname);
-                        console.log("Profile Image URL:", member.profileImgUrl);
                     });
                 })
                 .catch((error) => {
@@ -63,10 +60,6 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
             client.subscribe(`/topic/chat/message/group/${roomId}`, (message) => {
                 const receivedMessage = JSON.parse(message.body);
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-
-                // console.log('subscriber 이후 받은 roomId :: ' + roomId);
-                // console.log('subscriber 이후 받은 chatMessageDto :: ' + receivedMessage.senderId);
-                // console.log('subscriber 이후 받은 message :: ' + receivedMessage.message);
             });
 
             // 2. /topic/chat/room/{roomId} 구독 (업데이트된 멤버 목록 수신)
@@ -83,7 +76,7 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
                     const updateRoomDto = receivedData.updateRoomDto;
                     const cachedMembers = receivedData.cachedMembers;
 
-                    if (updateRoomDto.eventType === 'MEMBER_JOIN'){
+                    if (updateRoomDto.eventType === 'MEMBER_JOIN') {
                         // MEMBER_JOIN 이벤트 처리
                         setMembers(cachedMembers);
 
@@ -97,10 +90,10 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
                             {
                                 type: 'join', // 메시지 유형을 'join'으로 설정
                                 message: joinMessage,
-                                regDt: new Date(),
+                                regDt: DateTimeUtil(getNowDate()), //new Date(),
                             },
                         ]);
-                    } else if (updateRoomDto.eventType === 'MEMBER_LEAVE'){
+                    } else if (updateRoomDto.eventType === 'MEMBER_LEAVE') {
                         console.log('member leave 이벤트 발행 ... !');
 
                         // MEMBER_LEAVE 이벤트 처리
@@ -116,11 +109,10 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
                             {
                                 type: 'join', // (중요) 나간 멤버 알림 메시지 유형을 'join'으로 설정
                                 message: leaveMessage, // "ㅇㅇ님이 나갔습니다" 메시지 설정
-                                regDt: new Date(),
+                                regDt: DateTimeUtil(getNowDate()), //new Date(),
                             },
                         ]);
                     }
-
 
 
                 }
@@ -151,7 +143,7 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
                 roomId: roomId,
                 senderId: currentUserId,
                 message: newMessage,
-                regDt: new Date(),
+                regDt: getNowDate(),
             };
 
             stompClient.publish({
@@ -183,9 +175,9 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
             // // 채팅방 목록 페이지로 이동
             navigate('/chatMain');
 
-        } catch (error){
-                console.error("Error leaving chatroom:", error);
-                alert("채팅방 나가기 실패: " + error.response.data.message); // 에러 메시지 표시
+        } catch (error) {
+            console.error("Error leaving chatroom:", error);
+            alert("채팅방 나가기 실패: " + error.response.data.message); // 에러 메시지 표시
         }
     };
 
