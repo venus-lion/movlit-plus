@@ -33,13 +33,17 @@ public class BooksRecommendationService {
         // 1. 사용자가 최근에 찜한 도서id 4개 가져오기
         List<String> bookIds = bookHeartReadService.fetchRecentLikedBookIdsByMemberId(memberId, 4);
 
-        // 2. JPA를 사용해, 도서 정보 조회 -> BookES Repository 사용
-        List<BookES> bookESList = bookESService.fetchAllBookESByBookIds(bookIds);
+        if (bookIds != null) {
+            // 2. JPA를 사용해, 도서 정보 조회 -> BookES Repository 사용
+            List<BookES> bookESList = bookESService.fetchAllBookESByBookIds(bookIds);
 
-        // 3. 최근 찜기반 도서 추천
-        Pageable pageable = PageRequest.of(0, 30);
+            // 3. 최근 찜기반 도서 추천
+            Pageable pageable = PageRequest.of(0, 30);
 
-        return bookSearchService.fetchRecommendedBooksByUserRecentHeart(bookIds, bookESList, pageable);
+            return bookSearchService.fetchRecommendedBooksByUserRecentHeart(bookIds, bookESList, pageable);
+        }
+
+        return null;
     }
 
 }
