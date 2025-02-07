@@ -43,6 +43,81 @@ blockquote, q {
     quotes: none;
 }
 
+#footer {
+    background: #f2f5f3; /* Match body background */
+    padding: 4em 0; /* Reduced padding from original #footer style */
+    text-align: center;
+}
+
+#footer .icons {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1.5em;
+    font-size: 1.5em;
+}
+
+#footer .icons li {
+    display: inline-block;
+    margin: 0 0.5em;
+}
+
+#footer .icons li a {
+    display: block;
+    width: 2.5em;
+    height: 2.5em;
+    line-height: 2.5em;
+    border-radius: 50%;
+    background-color: #c1cac5; /* Muted icon background */
+    color: #fff;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#footer .icons li a:hover {
+    background-color: #006376; /* Link color on hover */
+}
+
+#footer .icons li a .label {
+    display: none; /* Hide label text */
+}
+
+#footer .copyright {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0;
+    font-size: 0.9em;
+    color: #6b7770; /* Match text color */
+}
+
+#footer .copyright li {
+    display: inline-block;
+    margin: 0 0.5em;
+}
+
+#footer .copyright li a {
+    color: #006376; /* Link color for copyright links */
+    text-decoration: none;
+}
+
+#footer .copyright li a:hover {
+    text-decoration: underline;
+}
+
+@media screen and (max-width: 736px) {
+    #footer {
+        padding: 3em 0; /* Adjust padding for smaller screens */
+    }
+
+    #footer .icons li {
+        margin: 0 0.3em; /* Slightly reduce icon spacing on small screens */
+    }
+
+    #footer .copyright li {
+        display: block; /* Stack copyright lines on smaller screens */
+        margin: 0.2em 0;
+    }
+}
+
 blockquote:before, blockquote:after, q:before, q:after {
     content: '';
     content: none;
@@ -2560,8 +2635,8 @@ table.default thead {
 /* Main */
 
 #main {
-    background: #fff;
-    border-top: solid 5px #b1ddab;
+    /*background: #fff;*/
+    /*border-top: solid 5px #b1ddab;*/
     border-bottom: solid 5px #c1cac5;
     border-top-width: 35px;
     border-bottom-width: 10px;
@@ -2583,7 +2658,9 @@ table.default thead {
 
 #footer {
     text-align: center;
-    padding: 8em 0 8em 0;
+    padding: 10em 0 5em 0;
+    border-top: solid 1px #c1cac5;
+    border-top-width: 8px;
 }
 
 #footer a {
