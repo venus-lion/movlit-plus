@@ -3,7 +3,7 @@ import axiosInstance from '../axiosInstance';
 import './MyPage.css';
 import {FaCamera, FaUserCircle} from 'react-icons/fa';
 import {IoSettingsOutline} from 'react-icons/io5';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useOutletContext} from 'react-router-dom';
 import {AppContext} from '../App';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -11,8 +11,64 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import DialogContentText from "@mui/material/DialogContentText";
+import RecentHeartSimilarCrewMoviesComponent from "../pages/RecentHeartSimilarCrewMoviesComponent.jsx";
+import InterestGenreMoviesComponent from "../pages/InterestGenreMoviesComponent.jsx";
+import BookCarouselRecommend from "../pages/BookCarouselRecommend.jsx";
+import useApiData from "../hooks/userRecommendBookApi.jsx";
 
 function MyPage() {
+    useEffect(() => {
+
+        // 1부터 16까지 숫자 중 랜덤하게 4개의 숫자 뽑기
+        const getRandomGenreIds = () => {
+
+            const genreIds = [];
+            while (genreIds.length < 4) {
+                const randomId = Math.floor(Math.random() * 16) + 1; // 1 ~ 16 사이의 랜덤 값
+                if (!genreIds.includes(randomId)) {
+                    genreIds.push(randomId);
+                }
+            }
+            return genreIds;
+        };
+        setRandomGenreIds(getRandomGenreIds());
+    }, []);
+
+    const {isLoggedIn} = useOutletContext();
+
+    // 사용자 찜한 도서 기반 추천 도서 API 호출
+    const {
+        data: recommendedBooks,
+        loading: loadingRecommended,
+        error: errorRecommended
+    } = useApiData('/books/search/recommendations', isLoggedIn);
+
+    // 사용자 관심 장르 도서 API 호출
+    const {
+        data: interestGenreBooks,
+        loading: loadingInterestGenre,
+        error: errorInterestGenre
+    } = useApiData('/books/search/interestGenre', isLoggedIn);
+
+    console.log('interestgenreBooks :: ' + interestGenreBooks);
+
+    const [startIndexRecommended, setStartIndexRecommended] = useState(0);
+    const [startIndexInterestGenre, setStartIndexInterestGenre] = useState(0);
+
+    const handleNext = (startIndex, setStartIndex, length) => {
+        const newIndex = startIndex + 5;
+        if (newIndex < length) {
+            setStartIndex(newIndex);
+        }
+    };
+
+    const handlePrev = (startIndex, setStartIndex) => {
+        const newIndex = startIndex - 5;
+        if (newIndex >= 0) {
+            setStartIndex(newIndex);
+        }
+    };
+
     const [userData, setUserData] = useState({
         profileImgUrl: null,
         nickname: '',
@@ -194,6 +250,13 @@ function MyPage() {
         navigate('/member/update');
     };
 
+    const [randomGenreIds, setRandomGenreIds] = useState([]);
+
+    const handleNextRecommended = () => handleNext(startIndexRecommended, setStartIndexRecommended, recommendedBooks.length);
+    const handlePrevRecommended = () => handlePrev(startIndexRecommended, setStartIndexRecommended);
+    const handleNextInterestGenre = () => handleNext(startIndexInterestGenre, setStartIndexInterestGenre, interestGenreBooks.length);
+    const handlePrevInterestGenre = () => handlePrev(startIndexInterestGenre, setStartIndexInterestGenre);
+
     return (
         <div className="mypage-container">
             <input
@@ -320,7 +383,35 @@ function MyPage() {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            <div className="movie-home">
+                {isLoggedIn && <RecentHeartSimilarCrewMoviesComponent/>}
+                {isLoggedIn && <InterestGenreMoviesComponent/>}
+            </div>
+
+            <div className="book-home">
+                {isLoggedIn && interestGenreBooks.length > 0 && (
+                    <BookCarouselRecommend
+                        title="회원님의 취향저격 도서 장르"
+                        books={interestGenreBooks}
+                        startIndex={startIndexInterestGenre}
+                        handlePrev={handlePrevInterestGenre}
+                        handleNext={handleNextInterestGenre}
+                    />
+                )}
+
+                {isLoggedIn && recommendedBooks.length > 0 && (
+                    <BookCarouselRecommend
+                        title="회원님이 찜한 책과 닮은 도서들"
+                        books={recommendedBooks}
+                        startIndex={startIndexRecommended}
+                        handlePrev={handlePrevRecommended}
+                        handleNext={handleNextRecommended}
+                    />
+                )}
+            </div>
         </div>
+
     );
 }
 

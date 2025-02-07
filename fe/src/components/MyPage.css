@@ -226,3 +226,8 @@
     outline: inherit;
 
 }
+
+.book-home, .movie-home {
+    margin-top: 10px;
+    padding: 20px;
+}
