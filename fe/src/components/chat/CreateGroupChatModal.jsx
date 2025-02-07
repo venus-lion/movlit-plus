@@ -39,9 +39,10 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
     const [searchResults, setSearchResults] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
     const [hasSearched, setHasSearched] = useState(false); // 검색 여부 상태 추가
-    const [isLoading, setIsLoading] = useState(false);     // 로딩 상태 추가
 
+    const [isLoading, setIsLoading] = useState(false);     // 로딩 상태 추가
     const {updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
+
 
     const handleCategoryChange = (event) => {
         setSearchResults([]);
@@ -63,8 +64,10 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
         setSelectedCard(null);
         setHasSearched(true); // 검색 시작 상태 설정
 
+
         // 로딩 시작
         setIsLoading(true);
+
 
         try {
             const response = await axiosInstance.get(
@@ -165,6 +168,7 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
                         </button>
                     </div>
 
+
                     {/* 검색 결과 영역 */}
                     <div className="result-container">
                         {/* 검색이 이루어진 경우에만 결과 섹션 표시 */}
@@ -228,6 +232,7 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
                                     ) : (
                                         /* (3) 검색 결과가 비어 있을 때 */
                                         <p>검색결과가 없습니다.</p>
+
                                     )}
                                 </div>
                             </>
