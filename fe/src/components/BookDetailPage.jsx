@@ -101,7 +101,7 @@ function BookDetailPage() {
         if (fromNoti === 'true' && bookId && bookData && crews) {
             handleJoinGroupChatroom(bookId, bookData.bookImgUrl, bookData.title, crews);
         }
-    }, [bookId, params, bookData, crews]); // bookData와 crews를 의존성 배열에 추가
+    }, [bookId, bookData, crews]); // bookData와 crews를 의존성 배열에 추가
 
     // Intersection Observer 설정 (코멘트 무한 스크롤)
     useEffect(() => {
@@ -495,6 +495,11 @@ function BookDetailPage() {
             const isJoined = response.data
             if (isJoined === true) {
                 alert("이미 가입된 채팅방입니다.");
+
+                // fromNoti를 false로 설정하고 URL 업데이트
+                params.set('fromNoti', 'false');
+                navigate({ search: params.toString() }, { replace: true });
+
                 return;
             }
 

@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useContext} from 'react'; // useContext import 추가
 import ChatTabs from './ChatTabs';
 import ChatList from './ChatList';
-import {useNavigate, useOutletContext} from "react-router-dom";
+import {useNavigate, useOutletContext, useLocation, useParams} from "react-router-dom";
 import ChatPage from '../../pages/ChatPage.jsx';
 import CreateGroupChatModal from "./CreateGroupChatModal.jsx";
 import ChatPageGroup from "../../pages/ChatPageGroup.jsx";
@@ -11,7 +11,13 @@ import GetGroupChatInfoModal from "./GetGroupChatInfoModal.jsx"; // axios 임포
 import {AppContext} from "../../App.jsx"; // AppContext import
 
 const Chat = () => {
-    const [activeTab, setActiveTab] = useState('personal'); // 개인 채팅 또는 그룹 채팅
+    // 알림(새로운 채팅 메시지)을 통해 채팅 메뉴 접속 -> 바로 "해당 채팅방" 띄우기
+    const location = useLocation();
+    const params = new URLSearchParams(location.search); // 쿼리 파라미터를 다루기 위해 URLSearchParams 사용
+    const { type, chatId } = useParams(); // URL 파라미터에서 type과 chatId 가져오기
+    const [chatrooms, setChatrooms] = useState([]);
+
+    const [activeTab, setActiveTab] = useState(type || 'personal'); // 기본값 'personal'로 설정하기
     const [searchTerm, setSearchTerm] = useState(''); // 검색어
     const [selectedChat, setSelectedChat] = useState(null); // 현재 선택된 채팅방
     const {isLoggedIn, updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
@@ -25,6 +31,23 @@ const Chat = () => {
     const [selectedCard, setSelectedCard] = useState(null); // 선택된 데이터
     const [selectedCategory, setSelectedCategory] = useState(null);
 
+
+
+    // 알림(새로운 채팅 메시지)을 통해 채팅 메뉴 접속 -> 바로 "해당 채팅방" 띄우기
+    useEffect(() => {
+        const fromNoti = params.get('fromNoti'); // 'fromNoti' 쿼리 파라미터 가져오기
+
+        if (fromNoti === 'true' && chatId) {
+            // *** 알림 클릭 시 해당 채팅방으로 이동하기
+
+            if (type === 'personal') {
+                setSelectedChat({ roomId: chatId }); // *** 개인 채팅방 선택
+            } else if (type === 'group') {
+                setSelectedChat({ groupChatroomId: chatId }); // *** 그룹 채팅방 선택
+            }
+        }
+    }, [location.search, chatId, type]); // *** URL이나 파라미터 변경 시마다 실행
+
     // 로그인 상태 확인 및 리다이렉트 로직 추가
     useEffect(() => {
         if (!isLoggedIn) {
@@ -32,15 +55,49 @@ const Chat = () => {
         }
     }, [isLoggedIn, navigate]);
 
-    // 채팅방 리스트 업데이트 함수 (기존과 동일)
-    const updateChatList = async () => {
+
+    // URL 쿼리 파라미터에서 fromNoti 값 추출하는 함수
+    const useQuery = () => {
+        return new URLSearchParams(location.search);
+    };
+
+    const fetchRoomInfoFromNoti = async () => {
         try {
-            const response = await axiosInstance.get('/chat/group/rooms/my');
-            setSelectedChat(response.data); // 상태 업데이트
+            let response;
+
+            // type에 따라 적절한 API를 호출하여 채팅방 리스트 가져오기
+            if (type === 'group') {
+                response = await axiosInstance.get('/chat/group/rooms/my');
+            } else if (type === 'personal') {
+                response = await axiosInstance.get('/chat/oneOnOne');
+            }
+
+            // 전체 채팅방 리스트 상태에 저장
+            setChatrooms(response.data);
+
+            // chatId에 해당하는 채팅방 찾기
+            const chatRoom = response.data.find(room =>
+                type === 'group' ? room.groupChatroomId === chatId : room.roomId === chatId
+            );
+
+            console.log('@@ 선택된 방 : '+ JSON.stringify(chatRoom, null, 2));
+            if (chatRoom) {
+                setSelectedChat(chatRoom); // 찾은 채팅방 정보를 선택
+            }
         } catch (error) {
-            console.error("채팅 리스트 업데이트 오류:", error);
+            console.error("알림 받은 채팅방 정보 받아오기 오류:", error);
         }
     };
+
+    // 컴포넌트가 마운트될 때 chatId와 fromNoti가 true일 때만 채팅방 리스트 업데이트
+    useEffect(() => {
+        const query = useQuery();
+        const fromNoti = query.get('fromNoti'); // 'fromNoti' 쿼리 파라미터 가져오기
+
+        if (fromNoti === 'true') {
+            fetchRoomInfoFromNoti(); // fromNoti가 true일 때만 비동기 함수 호출
+        }
+    }, [type, chatId, location.search]); // type, chatId, location.search가 변경될 때마다 실행
 
     const handleCreateGroupChatModal = () => {
         setIsCreateGroupChatModalOpen(true);
@@ -160,7 +217,6 @@ const Chat = () => {
                     activeTab={activeTab}
                     searchTerm={searchTerm}
                     onSelectChat={(chat) => setSelectedChat(chat)} // 선택된 채팅방 설정
-
                 />
 
                 {/* 채팅방 생성 버튼 (기존과 동일) */}

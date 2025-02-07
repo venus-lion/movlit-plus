@@ -97,7 +97,7 @@ const router = createBrowserRouter([
                 element: <Chat/>,
                 children: [
                     {
-                        path: ':type/:chatId', // 동적 세그먼트 사용
+                        path: ':chatId/:type', // 동적 세그먼트 사용
                         element: null, // Chat 컴포넌트 내에서 렌더링
                     },
                 ],
