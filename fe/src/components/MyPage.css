@@ -148,70 +148,6 @@
     background-color: #ddd;
 }
 
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 10;
-}
-
-.dropdown-item {
-    display: block;
-    padding: 10px 15px;
-    text-decoration: none;
-    color: #333;
-    white-space: nowrap;
-}
-
-.dropdown-item:hover {
-    background-color: #f5f5f5;
-}
-
-.dropdown-item.delete-button {
-    padding: 10px 15px;
-    border: none;
-    background-color: transparent;
-    text-align: left;
-    font-size: inherit;
-    cursor: pointer;
-    width: 100%;
-}
-
-.dropdown-item.delete-button:hover {
-    background-color: #c1edbb;
-}
-
-.dropdown-item.update-button {
-    padding: 10px 15px;
-    border: none;
-    background-color: transparent;
-    text-align: left;
-    font-size: inherit;
-    cursor: pointer;
-    width: 100%;
-}
-
-.dropdown-item.update-button:hover {
-    background-color: #c1edbb;
-}
-
-.dropdown-item.logout-button {
-    padding: 10px 15px;
-    border: none;
-    background-color: transparent;
-    text-align: left;
-    font-size: inherit;
-    cursor: pointer;
-    width: 100%;
-}
-
-.dropdown-item.logout-button:hover {
-    background-color: #c1edbb;
-}
 
 .overlay {
     position: absolute;
@@ -255,8 +191,11 @@
     outline: inherit;
 }
 
-.book-home, .movie-home {
-    margin-top: 10px;
-    padding: 20px; /* book-home, movie-home 내부 padding 유지 */
-    /* background-color: white;  mypage-section에서 흰색 배경 적용하므로 삭제 */
+/* Material UI Menu Item hover style - Modified to be more specific and ensure default background is transparent */
+.MuiMenuItem-root {
+    background-color: transparent !important; /* Ensure default is transparent */
+}
+
+.MuiMenuItem-root:hover {
+    background-color: #f0f0f0 !important; /* Light grey hover color on hover */
 }
