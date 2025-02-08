@@ -321,63 +321,60 @@ function MyPage() {
                         <div className="user-info">
                             <h2>{userData.nickname}</h2>
                             <p>{userData.email}</p>
+                            <div className="mypage-follow-stats"> {/* mypage-follow-stats 클래스 (팔로워, 팔로잉) - 위치 변경 */}
+                                <div className="stat-item">
+                                    팔로워 <span onClick={handleFollowerClick} className="'link-button">{followerCount}</span>
+                                </div>
+                                <span className="separator" style={{ margin: '0 8px', color: '#ccc' }}>|</span> {/* Separator 추가 */}
+                                <div className="stat-item">
+                                    팔로잉 <span onClick={handleFollowingClick} className="link-button">{followingCount}</span>
+                                </div>
+                            </div>
                         </div>
                         <div className="settings-icon" onClick={handleDropdownOpen}>
                             <IoSettingsOutline className="settings-icon-comp"/>
                         </div>
-                        <Menu
-                            id="basic-menu"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleDropdownClose}
-                            MenuListProps={{
-                                'aria-labelledby': 'basic-button',
-                            }}
-                            PaperProps={{
-                                style: {
-                                    borderRadius: 12,
-                                    boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
-                                },
-                            }}
-                        >
-                            <MenuItem onClick={openLogoutDialog} style={{fontWeight: 'bold', color: '#333', backgroundColor: 'transparent' }}> {/* 로그아웃 - 기본색, 투명 배경 */}
-                                로그아웃
-                            </MenuItem>
-                            <MenuItem onClick={handleUpdateClick} style={{backgroundColor: 'transparent'}}> {/* 수정하기 - bold, 투명 배경 */}
-                                수정하기
-                            </MenuItem>
-                            <Divider sx={{ borderBottomWidth: 2 }} /> {/* Divider 추가 */}
-                            <MenuItem onClick={openDeleteDialog} style={{ color: '#F44336', backgroundColor: 'transparent' }}> {/* 탈퇴하기 - red, 투명 배경 */}
-                                탈퇴하기
-                            </MenuItem>
-                        </Menu>
                     </div>
-                    <div className="mypage-stats">
-                        <div className="stat-item">
-                            <span onClick={handleFollowerClick} className="link-button">{followerCount}</span>
-                            <span>팔로워</span>
-                        </div>
-                        <div className="stat-item">
-                            <span onClick={handleFollowingClick} className="link-button">{followingCount}</span>
-                            <span>팔로잉</span>
-                        </div>
-                        <div className="stat-item">
+                    <div className="mypage-stats-header"> {/* mypage-stats-header 클래스 (평가, 코멘트, 컬렉션) - 위치 변경 */}
+                        <div className="stat-item-header">
                             <span>{userData.movieHeartCount}</span>
-                            <span>영화 찜</span>
+                            <span>평가</span>
                         </div>
-                        <div className="stat-item">
-                            <span>{userData.movieCommentCount}</span>
-                            <span>영화 코멘트</span>
+                        <div className="stat-item-header">
+                            <span>{userData.movieCommentCount + userData.bookCommentCount}</span>
+                            <span>코멘트</span>
                         </div>
-                        <div className="stat-item">
+                        <div className="stat-item-header">
                             <span>{userData.bookHeartCount}</span>
-                            <span>도서 찜</span>
-                        </div>
-                        <div className="stat-item">
-                            <span>{userData.bookCommentCount}</span>
-                            <span>도서 코멘트</span>
+                            <span>컬렉션</span>
                         </div>
                     </div>
+                    <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleDropdownClose}
+                        MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                        }}
+                        PaperProps={{
+                            style: {
+                                borderRadius: 12,
+                                boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={openLogoutDialog} style={{fontWeight: 'bold', color: '#333', backgroundColor: 'transparent' }}>
+                            로그아웃
+                        </MenuItem>
+                        <MenuItem onClick={handleUpdateClick} style={{backgroundColor: 'transparent'}}>
+                            수정하기
+                        </MenuItem>
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        <MenuItem onClick={openDeleteDialog} style={{ color: '#F44336', backgroundColor: 'transparent' }}>
+                            탈퇴하기
+                        </MenuItem>
+                    </Menu>
                 </div>
 
                 {/* Section 2: 선호 장르 (Preferred Genres) */}
