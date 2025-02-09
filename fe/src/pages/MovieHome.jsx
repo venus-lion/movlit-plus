@@ -38,7 +38,8 @@ function MovieHome() {
 
     // Helper function to check if a component's movies are loaded
     const areMoviesLoaded = (movies) => {
-        return movies && movies.length > 0 && movies.every(movie => movie.posterPath); // Check if posterPath exists
+        // return movies && movies.length > 0 && movies.every(movie => movie.posterPath); // Check if posterPath exists
+        return movies && movies.length > 0
     };
 
 
@@ -91,7 +92,7 @@ function MovieHome() {
                 )}
 
                 {/* Interest Genre (Conditional) */}
-                {componentsLoaded.recentHeart && isLoggedIn && (
+                {componentsLoaded.latest && isLoggedIn && (
                     <InterestGenreMoviesComponent
                         onMoviesLoaded={(movies) => updateComponentLoaded('interestGenre', areMoviesLoaded(movies))}
                         hidden={!componentsLoaded.interestGenre}
@@ -99,7 +100,7 @@ function MovieHome() {
                 )}
 
                 {/* Genre Movies (Mapped) */}
-                {componentsLoaded.interestGenre && randomGenreIds.map((genreId, index) => (
+                {componentsLoaded.latest && randomGenreIds.map((genreId, index) => (
                     <GenreMoviesComponent
                         key={genreId}
                         genreId={genreId}
