@@ -2,6 +2,7 @@ package movlit.be.movie.presentation;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import movlit.be.common.aspect.ExecutionTime;
 import movlit.be.movie.application.service.MovieReadService;
 import movlit.be.movie.presentation.dto.response.MovieListByGenreResponseDto;
 import movlit.be.movie.presentation.dto.response.MovieListResponseDto;
@@ -23,6 +24,7 @@ public class MovieReadController {
      * 최신 영화 내림차순 리스트
      * RequestParam - {조회 page 번호, 조회 page size 갯수}
      */
+    @ExecutionTime
     @GetMapping("/latest")
     public ResponseEntity<MovieListResponseDto> getMovieLatest(
             @RequestParam(required = false, defaultValue = "1") int page,
@@ -37,6 +39,7 @@ public class MovieReadController {
      * 인기순 내림차순 리스트
      * RequestParam - {조회 page 번호, 조회 page size 갯수}
      */
+    @ExecutionTime
     @GetMapping("/popular")
     public ResponseEntity<MovieListResponseDto> getMoviePopular(
             @RequestParam(required = false, defaultValue = "1") int page,
@@ -50,8 +53,8 @@ public class MovieReadController {
     /**
      * 장르별 개봉날짜 내림차순 리스트
      * RequestParam - {조회 장르 ID, 조회 page 번호, 조회 page size 갯수}
-     * TODO : RequestDto 만들기
-     * */
+     */
+    @ExecutionTime
     @GetMapping("/genre")
     public ResponseEntity<MovieListByGenreResponseDto> getMovieGroupbyGenre(
             @RequestParam(required = true) Long genreId,
