@@ -15,6 +15,10 @@ import RecentHeartSimilarCrewMoviesComponent from "../pages/RecentHeartSimilarCr
 import InterestGenreMoviesComponent from "../pages/InterestGenreMoviesComponent.jsx";
 import BookCarouselRecommend from "../pages/BookCarouselRecommend.jsx";
 import useApiData from "../hooks/userRecommendBookApi.jsx";
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
+
 
 function MyPage() {
     useEffect(() => {
@@ -79,7 +83,6 @@ function MyPage() {
         bookCommentCount: 0
     });
     const [genreList, setGenreList] = useState([]);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navigate = useNavigate();
     const {updateLoginStatus, updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
     const fileInputRef = useRef(null);
@@ -93,6 +96,19 @@ function MyPage() {
     // Material-UI Dialog 관련 상태
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false); // 로그아웃 확인 다이얼로그 상태 추가
+
+    // Material-UI Menu 관련 상태
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleDropdownOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleDropdownClose = () => {
+        setAnchorEl(null);
+    };
+
 
     const fetchMemberId = async () => {
         try {
@@ -121,13 +137,11 @@ function MyPage() {
         navigate('/my-followings');
     };
 
-    const toggleDropdown = () => {
-        setIsDropdownOpen(!isDropdownOpen);
-    };
 
     // Material-UI Dialog 열기
     const openDeleteDialog = () => {
         setIsDeleteDialogOpen(true);
+        handleDropdownClose(); // 드롭다운 메뉴 닫기
     };
 
     // Material-UI Dialog 닫기
@@ -138,6 +152,7 @@ function MyPage() {
     // Material-UI Logout Dialog 열기
     const openLogoutDialog = () => {
         setIsLogoutDialogOpen(true);
+        handleDropdownClose(); // 드롭다운 메뉴 닫기
     };
 
     // Material-UI Logout Dialog 닫기
@@ -259,23 +274,10 @@ function MyPage() {
         setIsHovering(false);
     };
 
-    // const handleLogout = async () => {
-    //     try {
-    //         await axiosInstance.post('/members/logout');
-    //         localStorage.removeItem('accessToken');
-    //         document.cookie =
-    //             'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    //         updateLoginStatus(false);
-    //         updateSnackbar('로그아웃 되었습니다.', 'success'); // Material-UI Snackbar 호출 (로그아웃 성공 알림)
-    //         navigate('/member/login');
-    //     } catch (error) {
-    //         console.error('Logout error:', error);
-    //         updateSnackbar('로그아웃 중 오류가 발생했습니다.', 'error'); // Material-UI Snackbar 호출 (로그아웃 실패 알림)
-    //     }
-    // };
 
     const handleUpdateClick = () => { // 수정하기 버튼 클릭 핸들러
         navigate('/member/update');
+        handleDropdownClose(); // 드롭다운 메뉴 닫기
     };
 
     const [randomGenreIds, setRandomGenreIds] = useState([]);
@@ -319,51 +321,60 @@ function MyPage() {
                         <div className="user-info">
                             <h2>{userData.nickname}</h2>
                             <p>{userData.email}</p>
-                        </div>
-                        <div className="settings-icon" onClick={toggleDropdown}>
-                            <IoSettingsOutline className="settings-icon-comp"/>
-                            {isDropdownOpen && (
-                                <div className="dropdown-menu">
-                                    <button onClick={openLogoutDialog} className="dropdown-item logout-button">
-                                        로그아웃
-                                    </button>
-                                    <button onClick={handleUpdateClick}
-                                            className="dropdown-item update-button"> {/* button으로 변경 */}
-                                        수정하기
-                                    </button>
-                                    <button onClick={openDeleteDialog} className="dropdown-item delete-button">
-                                        탈퇴하기
-                                    </button>
+                            <div className="mypage-follow-stats"> {/* mypage-follow-stats 클래스 (팔로워, 팔로잉) - 위치 변경 */}
+                                <div className="stat-item">
+                                    팔로워 <span onClick={handleFollowerClick} className="'link-button">{followerCount}</span>
                                 </div>
-                            )}
+                                <span className="separator" style={{ margin: '0 8px', color: '#ccc' }}>|</span> {/* Separator 추가 */}
+                                <div className="stat-item">
+                                    팔로잉 <span onClick={handleFollowingClick} className="link-button">{followingCount}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="settings-icon" onClick={handleDropdownOpen}>
+                            <IoSettingsOutline className="settings-icon-comp"/>
                         </div>
                     </div>
-                    <div className="mypage-stats">
-                        <div className="stat-item">
-                            <span onClick={handleFollowerClick} className="link-button">{followerCount}</span>
-                            <span>팔로워</span>
-                        </div>
-                        <div className="stat-item">
-                            <span onClick={handleFollowingClick} className="link-button">{followingCount}</span>
-                            <span>팔로잉</span>
-                        </div>
-                        <div className="stat-item">
+                    <div className="mypage-stats-header"> {/* mypage-stats-header 클래스 (평가, 코멘트, 컬렉션) - 위치 변경 */}
+                        <div className="stat-item-header">
                             <span>{userData.movieHeartCount}</span>
-                            <span>영화 찜</span>
+                            <span>평가</span>
                         </div>
-                        <div className="stat-item">
-                            <span>{userData.movieCommentCount}</span>
-                            <span>영화 코멘트</span>
+                        <div className="stat-item-header">
+                            <span>{userData.movieCommentCount + userData.bookCommentCount}</span>
+                            <span>코멘트</span>
                         </div>
-                        <div className="stat-item">
+                        <div className="stat-item-header">
                             <span>{userData.bookHeartCount}</span>
-                            <span>도서 찜</span>
-                        </div>
-                        <div className="stat-item">
-                            <span>{userData.bookCommentCount}</span>
-                            <span>도서 코멘트</span>
+                            <span>컬렉션</span>
                         </div>
                     </div>
+                    <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleDropdownClose}
+                        MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                        }}
+                        PaperProps={{
+                            style: {
+                                borderRadius: 12,
+                                boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
+                            },
+                        }}
+                    >
+                        <MenuItem onClick={openLogoutDialog} style={{fontWeight: 'bold', color: '#333', backgroundColor: 'transparent' }}>
+                            로그아웃
+                        </MenuItem>
+                        <MenuItem onClick={handleUpdateClick} style={{backgroundColor: 'transparent'}}>
+                            수정하기
+                        </MenuItem>
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        <MenuItem onClick={openDeleteDialog} style={{ color: '#F44336', backgroundColor: 'transparent' }}>
+                            탈퇴하기
+                        </MenuItem>
+                    </Menu>
                 </div>
 
                 {/* Section 2: 선호 장르 (Preferred Genres) */}

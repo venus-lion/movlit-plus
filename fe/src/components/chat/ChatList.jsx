@@ -11,6 +11,8 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
     const [personalChats, setPersonalChats] = useState([]);
     const [stompClient, setStompClient] = useState(null);
     const [currentUserId, setCurrentUserId] = useState(null);
+    // 선택된 채팅방의 ID를 상태로 관리
+    const [selectedChatId, setSelectedChatId] = useState(null);
 
     useEffect(() => {
         const fetchUserId = async () => {
@@ -34,7 +36,6 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
                     (async () => {
                         const response = await axiosInstance.get('/chat/group/rooms/my');
                         setGroupChats(response.data);
-                        console.log(response.data);
                     })(),
                     (async () => {
                         const response = await axiosInstance.get('/chat/oneOnOne');
@@ -189,6 +190,16 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
         }
     }, [activeTab, searchTerm, personalChats, groupChats]);
 
+    const handleChatSelect = (chat) => {
+        // 선택된 채팅방의 ID를 설정
+        if (activeTab === 'group') {
+            setSelectedChatId(chat.groupChatroomId);
+        }else{
+            setSelectedChatId(chat.roomId);
+        }
+        onSelectChat(chat); // 선택된 채팅방을 상위 컴포넌트에 전달
+    };
+
     // 스타일 객체
     const style = {
         conTitle: {
@@ -235,8 +246,11 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
                                 padding: '10px',
                                 borderBottom: '1px solid #ddd',
                                 cursor: 'pointer',
+                                // 선택된 채팅방에 대해 배경색 변경
+                                backgroundColor: selectedChatId === chat.groupChatroomId ? '#e0f7fa' : '#f9f9f9',
+
                             }}
-                            onClick={() => onSelectChat(chat)}
+                            onClick={() => handleChatSelect(chat)}
                         >
                             <div style={{fontWeight: 'bold', color: 'black'}}>
                                 {chat.roomName}
@@ -274,12 +288,13 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
                             style={{
                                 padding: '15px',
                                 marginBottom: '10px',
-                                backgroundColor: '#f9f9f9',
                                 border: '1px solid #ccc',
                                 borderRadius: '5px',
                                 cursor: 'pointer',
+                                // 선택된 채팅방에 대해 배경색 변경
+                                backgroundColor: selectedChatId === chat.roomId ? '#e0f7fa' : '#f9f9f9',
                             }}
-                            onClick={() => onSelectChat(chat)}
+                            onClick={() => handleChatSelect(chat)}
                         >
                             <div style={{fontWeight: 'bold', color: 'black', fontSize: '1.2em'}}>
                                 {chat.receiverNickname}
