@@ -7,8 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CheckPermission {
-
-    String value();         // 필요한 권한 정의
+public @interface ExecutionTime {
 
 }
