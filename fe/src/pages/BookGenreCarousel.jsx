@@ -1,4 +1,4 @@
-// BookCarousel.jsx
+//BookGenreCarousel.jsx
 import React from 'react';
 import {Link} from 'react-router-dom';
 
