@@ -1,14 +1,16 @@
-import React, {useState} from "react";
-import useBookList from "../hooks/useBookList.jsx";
-import BookCarousel from "./BookCarousel.jsx";
+// NewBooksComponent.jsx
+import React, {useEffect, useState} from 'react';
+import useBookList from '../hooks/useBookList.jsx';
+import BookCarousel from './BookCarousel.jsx';
+import '../assets/css/loading.css';
 
-function NewBooksComponent() {
+function NewBooksComponent({onBooksLoaded, hidden}) {
     const {books, loading, error} = useBookList({
         endpoint: '/books/new',
         params: {limit: 30},
     });
 
-    const [startIndex, setStartIndex] = useState(0); // 화면에 보이는 도서 시작 인덱스
+    const [startIndex, setStartIndex] = useState(0);
 
     const handleNext = () => {
         const newIndex = startIndex + 5;
@@ -24,12 +26,20 @@ function NewBooksComponent() {
         }
     };
 
-    if (loading) return <p>최신 도서들을 가져오는 중입니다!</p>;
-    if (error) return (
-        <div>
-            <p>Error loading popular books.</p>
+    useEffect(() => {
+        if (onBooksLoaded && books) {
+            onBooksLoaded(books);
+        }
+    }, [books, onBooksLoaded]);
+
+    if (loading) return (
+        <div className="loading-container">
+            <div className="spinner"></div>
+            <p>최신 도서들을 가져오는 중입니다!</p>
         </div>
     );
+    if (error) return <div><p>Error loading popular books.</p></div>;
+    if (hidden) return null;
 
     return (
         <BookCarousel
@@ -38,7 +48,7 @@ function NewBooksComponent() {
             startIndex={startIndex}
             handleNext={handleNext}
             handlePrev={handlePrev}
-        ></BookCarousel>
+        />
     );
 }
 
