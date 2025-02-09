@@ -3,6 +3,7 @@ package movlit.be.movie.domain.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -16,7 +17,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Table(name = "movie")
+@Table(
+        name = "movie",
+        indexes = {
+                @Index(name = "idx_release_date", columnList = "releaseDate"),
+                @Index(name = "idx_popularity", columnList = "popularity"),
+                @Index(name = "idx_vote_count", columnList = "voteCount")
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
