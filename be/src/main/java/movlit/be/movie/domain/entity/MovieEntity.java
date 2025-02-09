@@ -7,10 +7,12 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,9 +22,12 @@ import lombok.ToString;
 @Table(
         name = "movie",
         indexes = {
-                @Index(name = "idx_release_date", columnList = "releaseDate"),
+                @Index(name = "idx_release_date", columnList = "releaseDate DESC"),
+                @Index(name = "idx_vote_count", columnList = "voteCount"),
                 @Index(name = "idx_popularity", columnList = "popularity"),
-                @Index(name = "idx_vote_count", columnList = "voteCount")
+                @Index(name = "idx_vote_count_popularity", columnList = "voteCount DESC, popularity DESC"),
+                @Index(name = "idx_release_date_popularity_vote_count", columnList = "releaseDate DESC, popularity DESC, voteCount DESC"),
+
         }
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

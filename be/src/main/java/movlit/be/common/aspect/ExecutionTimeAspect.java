@@ -30,8 +30,8 @@ public class ExecutionTimeAspect {
             return joinPoint.proceed(); // 실제 타겟 호출
         } finally {
             stopWatch.stop();
-            log.info("== ExecutionTime: {} - Total time = {}s",
-                    joinPoint.getSignature().toShortString(),
+            log.info("== ExecutionTime: {}: {} - Total time = {}s",
+                    className, methodName,
                     stopWatch.getTotalTimeMillis()
             );
         }
