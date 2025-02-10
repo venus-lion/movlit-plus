@@ -1,6 +1,5 @@
 // axiosInstance.js
 import axios from 'axios';
-import {useNavigate} from "react-router-dom";
 
 const axiosInstance = axios.create({
     baseURL: process.env.VITE_BASE_URL,
@@ -9,8 +8,6 @@ const axiosInstance = axios.create({
 
 let isRefreshing = false; // RefreshToken 요청 중복 방지 플래그
 let refreshSubscribers = []; // RefreshToken 요청 완료 후 재시도할 요청들을 담는 배열
-
-const navigate = useNavigate();
 
 function subscribeTokenRefresh(cb) {
     refreshSubscribers.push(cb);
@@ -55,9 +52,10 @@ axiosInstance.interceptors.response.use(
                 const refreshToken = localStorage.getItem('refreshToken'); // localStorage에서 refreshToken 가져오기 (refreshToken 저장 로직 필요)
 
                 if (!refreshToken) { // refreshToken이 없으면 (만료 또는 로그아웃)
-                    navigate('/member/login'); // 로그인 페이지로 리다이렉트
-                    console.log("refreshToken이 없습니다. 로그인 페이지로 리다이렉트 필요");
-                    return Promise.reject(error); // 또는 로그인 페이지 리다이렉트
+                    isRefreshing = false; // isRefreshing 플래그 초기화 (refreshToken 없는 경우에도)
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    return Promise.reject(error); // refreshToken 없으면 에러를 던져서 컴포넌트에서 처리하도록 함
                 }
 
                 try {
@@ -76,9 +74,7 @@ axiosInstance.interceptors.response.use(
                     isRefreshing = false;
                     localStorage.removeItem('accessToken'); // accessToken, refreshToken 제거 (refreshToken 저장 로직 필요)
                     localStorage.removeItem('refreshToken');
-                    navigate('/member/login'); // 로그인 페이지로 리다이렉트
-                    console.log("refreshToken 갱신 실패. 로그인 페이지로 리다이렉트 필요");
-                    return Promise.reject(refreshError); // 또는 로그인 페이지 리다이렉트
+                    return Promise.reject(refreshError); // refreshToken 갱신 실패 시 에러를 던져서 컴포넌트에서 처리하도록 함
                 }
             } else {
                 // RefreshToken 갱신 중이면, 재시도 요청을 배열에 담아두고, 갱신 완료 후 재시도
