@@ -43,9 +43,6 @@ public class MemberEntity {
     private String dob;
 
     @Getter
-    private String profileImgId;
-
-    @Getter
     private String profileImgUrl;
 
     @Getter
@@ -76,7 +73,6 @@ public class MemberEntity {
 
     @Builder
     public MemberEntity(MemberId memberId, String email, String nickname, String password, String dob,
-                        String profileImgId,
                         String profileImgUrl, String role, String provider, LocalDateTime regDt, LocalDateTime updDt,
                         List<MemberGenreEntity> memberGenreEntityList, boolean delYn) {
         this.memberId = memberId;
@@ -84,7 +80,6 @@ public class MemberEntity {
         this.nickname = nickname;
         this.password = password;
         this.dob = dob;
-        this.profileImgId = profileImgId;
         this.profileImgUrl = profileImgUrl;
         this.role = role;
         this.provider = provider;
@@ -97,7 +92,6 @@ public class MemberEntity {
     public void updateMember(Member member, List<MemberGenreEntity> memberGenreEntityList) {
         this.nickname = member.getNickname();
         this.password = member.getPassword();
-        // TODO: profileImgId(), profileImgUrl()
         this.dob = member.getDob();
         this.updDt = member.getUpdDt();
         this.memberGenres.replaceWith(memberGenreEntityList);
@@ -128,7 +122,6 @@ public class MemberEntity {
                 ", nickname='" + nickname + '\'' +
                 ", password='" + password + '\'' +
                 ", dob='" + dob + '\'' +
-                ", profileImgId='" + profileImgId + '\'' +
                 ", profileImgUrl='" + profileImgUrl + '\'' +
                 ", role='" + role + '\'' +
                 ", provider='" + provider + '\'' +

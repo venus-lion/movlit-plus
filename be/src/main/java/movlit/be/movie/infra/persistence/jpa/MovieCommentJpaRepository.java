@@ -20,8 +20,8 @@ public interface MovieCommentJpaRepository extends JpaRepository<MovieCommentEnt
                     + "(SELECT COUNT(mcc) FROM MovieCommentEntity mcc WHERE mcc.movieId = :movieId), "
                     + "false, mclc.count, mb.memberId) "
                     + "FROM MovieCommentEntity mc "
-                    + "LEFT JOIN FETCH mc.movieCommentLikeCount mclc " // Fetch Join 적용
-                    + "LEFT JOIN FETCH mc.member mb " // Fetch Join 적용
+                    + "LEFT JOIN MovieCommentLikeCountEntity mclc ON mclc.movieCommentId = mc.movieCommentId "
+                    + "LEFT JOIN MemberEntity mb ON mb.memberId = mc.memberId "
                     + "WHERE mc.movieId = :movieId "
                     + "ORDER BY mc.regDt DESC"
     )
@@ -34,9 +34,9 @@ public interface MovieCommentJpaRepository extends JpaRepository<MovieCommentEnt
                     + "(SELECT COUNT(mcc) FROM MovieCommentEntity mcc WHERE mcc.movieId = :movieId), "
                     + "COALESCE(mcl.isLiked, false), mclc.count, mb.memberId) "
                     + "FROM MovieCommentEntity mc "
-                    + "LEFT JOIN FETCH mc.movieCommentLikeCount mclc " // Fetch Join 적용
-                    + "LEFT JOIN FETCH mc.member mb " // Fetch Join 적용
                     + "LEFT JOIN MovieCommentLikeEntity mcl ON mcl.movieCommentId = mc.movieCommentId AND mcl.memberId = :memberId "
+                    + "LEFT JOIN MovieCommentLikeCountEntity mclc ON mclc.movieCommentId = mc.movieCommentId "
+                    + "LEFT JOIN MemberEntity mb ON mb.memberId = mc.memberId "
                     + "WHERE mc.movieId = :movieId "
                     + "ORDER BY mc.regDt DESC"
     )
@@ -52,8 +52,8 @@ public interface MovieCommentJpaRepository extends JpaRepository<MovieCommentEnt
     @Query("SELECT NEW movlit.be.movie.presentation.dto.response.MovieMyCommentReadResponse"
             + "(mb.nickname, mb.profileImgUrl, mc.movieCommentId, mc.comment, mc.score) "
             + "FROM MovieCommentEntity mc "
-            + "JOIN FETCH mc.member mb " // Fetch Join 적용 (LEFT -> JOIN 변경)
-            + "WHERE mc.movieId = :movieId AND mc.memberId = :memberId")
+            + "LEFT JOIN MemberEntity  mb ON mb.memberId = mc.memberId "
+            + "WHERE mc.movieId = :movieId AND mb.memberId = :memberId")
     MovieMyCommentReadResponse findMyComment(@Param("movieId") Long movieId, @Param("memberId") MemberId memberId);
 
 }

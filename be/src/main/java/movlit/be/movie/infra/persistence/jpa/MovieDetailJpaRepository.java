@@ -16,7 +16,7 @@ public interface MovieDetailJpaRepository extends JpaRepository<MovieEntity, Lon
             + "m.releaseDate, m.productionCountry, m.originalLanguage, "
             + "m.runtime, m.status, m.voteAverage, m.tagline) "
             + "FROM MovieEntity m "
-            + "LEFT JOIN FETCH m.movieHeartCount mhc " // Fetch Join 적용
+            + "LEFT JOIN MovieHeartCountEntity mhc ON mhc.movieId = m.movieId "
             + "WHERE m.movieId = :movieId")
     Optional<MovieDetailResponse> findMovieDetailByMovieId(@Param("movieId") Long movieId);
 
@@ -26,9 +26,9 @@ public interface MovieDetailJpaRepository extends JpaRepository<MovieEntity, Lon
             + "m.releaseDate, m.productionCountry, m.originalLanguage, "
             + "m.runtime, m.status, m.voteAverage, m.tagline) "
             + "FROM MovieEntity m "
-            + "LEFT JOIN FETCH m.movieHeartCount mhc " // Fetch Join 적용
             + "LEFT JOIN MovieHeartEntity mh ON mh.movieId = m.movieId AND mh.memberId = :currentMemberId "
+            + "LEFT JOIN MovieHeartCountEntity mhc ON mhc.movieId = m.movieId "
             + "WHERE m.movieId = :movieId")
-    Optional<MovieDetailResponse> findMovieDetailByMovieIdAndMemberId(@Param("movieId") Long movieId, @Param("currentMemberId") MemberId currentMemberId);
+    Optional<MovieDetailResponse> findMovieDetailByMovieIdAndMemberId(Long movieId, MemberId currentMemberId);
 
 }
