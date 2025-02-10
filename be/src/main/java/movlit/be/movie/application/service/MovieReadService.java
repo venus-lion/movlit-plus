@@ -72,6 +72,7 @@ public class MovieReadService {
         return new MovieListByGenreResponseDto(genreId, genre.getName(), movieList);
     }
 
+    // 장르별 영화 리팩토링
     @Transactional(readOnly = true)
     public MovieMainGenreResponseDto getMovieListByGenre(Long genreId, int page, int pageSize) {
         // genreId -> Genre Enum객체
