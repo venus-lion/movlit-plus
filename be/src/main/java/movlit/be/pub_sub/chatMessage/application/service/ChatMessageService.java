@@ -1,33 +1,26 @@
 package movlit.be.pub_sub.chatMessage.application.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.common.exception.RedisStreamOperationReturnNull;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.common.util.ids.OneononeChatroomId;
-import movlit.be.member.application.service.MemberReadService;
 import movlit.be.pub_sub.RedisMessagePublisher;
-import movlit.be.pub_sub.RedisNotificationPublisher;
 import movlit.be.pub_sub.chatMessage.domain.ChatMessage;
 import movlit.be.pub_sub.chatMessage.infra.persistence.ChatMessageRepository;
 import movlit.be.pub_sub.chatMessage.presentation.dto.response.ChatMessageDto;
 import movlit.be.pub_sub.chatMessage.presentation.dto.response.MessageType;
-import movlit.be.pub_sub.chatRoom.application.service.OneononeChatroomService;
-import movlit.be.pub_sub.chatRoom.presentation.dto.OneononeChatroomResponse;
-import movlit.be.pub_sub.notification.NotificationDto;
-import movlit.be.pub_sub.notification.NotificationMessage;
-import movlit.be.pub_sub.notification.NotificationService;
-import movlit.be.pub_sub.notification.NotificationType;
 import movlit.be.pub_sub.notification.NotificationUseCase;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,13 +30,9 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final RedisMessagePublisher messagePublisher;
     private final RedisTemplate<String, String> redisTemplate;
-    private final RedisNotificationPublisher redisNotificationPublisher;
     private final NotificationUseCase notificationUsecase;
-    private final NotificationService notificationService;
 
     private static final String MESSAGE_QUEUE = "chat_message_queue";   // 큐 이름 (채팅방마다 별도의 큐를 사용할 수 있음)
-    private final MemberReadService memberReadService;
-    private final OneononeChatroomService oneononeChatroomService;
 
     @Value("${share.url}")
     private String basicUrl;
@@ -64,30 +53,7 @@ public class ChatMessageService {
         messagePublisher.sendMessage(chatMessageDto);
 
         // 알림 발행 로직
-        publishOneOnOneNotification(chatMessageDto);
-    }
-
-    private void publishOneOnOneNotification(ChatMessageDto chatMessageDto) {
-        OneononeChatroomId roomId = new OneononeChatroomId(chatMessageDto.getRoomId());
-        OneononeChatroomResponse roomInfo = oneononeChatroomService.fetchChatroomInfo(roomId,
-                chatMessageDto.getSenderId());
-
-        String senderNickname = memberReadService.findByMemberId(chatMessageDto.getSenderId()).getNickname();
-        String roomIdStr = roomInfo.getRoomId().getValue();
-        log.info("====== basic url =======, {}", basicUrl);
-        String url = basicUrl + "/chatMain/" + roomIdStr + "/personal";
-
-        NotificationDto notification = new NotificationDto(
-                roomInfo.getReceiverId().getValue(),    // 메시지 받는 사람 memberId
-                NotificationMessage.generateChatMessage(senderNickname, chatMessageDto.getMessage()),
-                NotificationType.ONE_ON_ONE_CHAT,
-                url
-        );
-
-        // Notification Redis Publish (SSE 알림)
-        redisNotificationPublisher.publishNotification(notification);
-        // Notification MongoDB에 저장
-        notificationService.saveNotification(notification);
+        notificationUsecase.publishOneOnOneChatMessageNotification(chatMessageDto);
     }
 
     // 그룹 채팅방 sendMessage
@@ -100,7 +66,7 @@ public class ChatMessageService {
 
         messagePublisher.sendMessage(chatMessageDto);
 
-        notificationUsecase.groupChatroomMessageNotification(chatMessageDto);   // 그룹 채팅방 메시지 전송 알림
+        notificationUsecase.publishGroupChatMessageNotification(chatMessageDto);   // 그룹 채팅방 메시지 전송 알림
     }
 
     // 해당 채팅방의 읽지 않은 메시지 갯수 return
@@ -113,14 +79,12 @@ public class ChatMessageService {
         return chatMessageRepository.findUnreadMessages(roomId.getValue(), memberId);
     }
 
-    // TODO : 채팅 읽음 처리
+    // 채팅 읽음 처리
     public void updateMessageAsRead(String roomId, MemberId memberId) {
-        
+
     }
 
-    /**
-     * 채팅방의 채팅목록 가져오기
-     */
+    // 채팅방 채팅목록 가져오기
     public List<ChatMessageDto> fetchChatMessages(String roomId) {
         List<ChatMessage> chatMessages = chatMessageRepository.findByRoomId(roomId);
         if (chatMessages.isEmpty()) {
@@ -139,8 +103,8 @@ public class ChatMessageService {
         ).toList();
     }
 
+    // Produce : 메시지를 Redis Stream 에 추가
     private void produceChatMessage(ChatMessageDto chatMessageDto) {
-        // Produce : 메시지를 Redis Stream 에 추가
         RecordId recordId = Optional.ofNullable(redisTemplate.opsForStream().add(
                 MESSAGE_QUEUE, convertToMap(chatMessageDto)
         )).orElseThrow(RedisStreamOperationReturnNull::new);
