@@ -162,6 +162,11 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
                             className="search-input"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyDown={(e) => { // *** 키 이벤트 리스너 추가
+                                if (e.key === 'Enter') { // *** 엔터 키가 눌렸을 때
+                                    handleSearch(); // *** handleSearch 함수 호출
+                                }
+                            }}
                         />
                         <button className="search-button" onClick={handleSearch}>
                             검색
