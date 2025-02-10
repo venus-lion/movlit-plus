@@ -1,14 +1,17 @@
-import React, {createContext, useCallback, useEffect, useState} from 'react';
+import React, {createContext, useCallback, useEffect, useState, useRef } from 'react';
 import {NavLink, Outlet, useNavigate} from 'react-router-dom';
 import axiosInstance from './axiosInstance';
 import './App.css';
 import {FaUserCircle} from 'react-icons/fa';
 import {EventSourcePolyfill} from 'event-source-polyfill';
 import notificationIcon from './images/notification.jpg';
+import NotiDropdown from './pages/Notification.jsx'; // SSE 연결 -> Notificatoin 설정으로 동명파일 import 불가 (NotiDropdown으로 파일명 대체)
+
 
 // Material-UI 컴포넌트 import (Snackbar, Alert 추가)
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import Modal from "react-modal";
 
 export const AppContext = createContext();
 
@@ -25,6 +28,8 @@ function App() {
     }, []);
 
     // 알림 관련 (기존 알림 관련 상태 및 함수 유지)
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 알림 목록 드롭다운
+    const dropdownRef = useRef(null); // 드롭다운 참조
     const [notifications, setNotifications] = useState([]);
     const [newNotification, setNewNotification] = useState(false);
 
@@ -73,8 +78,31 @@ function App() {
     // 알림 클릭 시 (기존과 동일)
     const handleBellClick = () => {
         setNewNotification(false);
-        navigate('/notifications');
+        setIsDropdownOpen((prev) => !prev); // 드롭다운 열기/닫기 토글
+        //navigate('/notifications');
     };
+    const closeDropdown = () => {
+        setIsDropdownOpen(false); // 드롭다운 닫기
+    };
+
+    // 알림 드롭다운 (알림 창 밖의 페이지 클릭 시 드롭다운 사라짐)
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // 드롭다운이 열려있고, 클릭한 요소가 드롭다운 안이 아닐 경우 닫기
+            if (isDropdownOpen && dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                closeDropdown();
+            }
+        };
+
+        // 이벤트 리스너 추가
+        document.addEventListener('mousedown', handleClickOutside);
+
+        // 컴포넌트 언마운트 시 리스너 제거
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isDropdownOpen]);
+
 
 
     useEffect(() => {
@@ -224,6 +252,8 @@ function App() {
     }, [isLoggedIn]);
 
 
+
+
     return (
         <AppContext.Provider value={{updateLoginStatus, isLoggedIn, updateSnackbar}}> {/* updateSnackbar 추가 */}
             <nav className="navbar">
@@ -288,6 +318,14 @@ function App() {
                                 <img src="/images/notification-bell-icon.png" alt="알림" className="noti-img"/>
                                 {newNotification && <span className="badge">N</span>}
                             </div>
+                            {/* 알림 드롭다운 영역 */}
+                            {/* 알림 드롭다운 영역 */}
+                            {isDropdownOpen && (
+                                <div className="notification-dropdown" ref={dropdownRef}>
+                                    <NotiDropdown />
+                                    <button className="close-dropdown-btn" onClick={closeDropdown}>닫기</button>
+                                </div>
+                            )}
 
                             <NavLink
                                 to="/mypage"
