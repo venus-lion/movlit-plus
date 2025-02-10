@@ -51,7 +51,7 @@ RedisListenerConfig { // 클래스명 변경
      * 메시지 전송을 처리하는 subscriber 설정 추가
      */
     @Bean
-    public MessageListenerAdapter listenerAdapterSendMessage(RedisMessageSubscriber subscriber) {
+    public MessageListenerAdapter listenerAdapterSendMessage() {
         // subscriber 내의 메서드명을 지정
         return new MessageListenerAdapter(subscriber, "sendMessage");
     }
@@ -60,7 +60,7 @@ RedisListenerConfig { // 클래스명 변경
      * 채팅방정보 변경을 처리하는 subscriber 설정 추가
      */
     @Bean
-    public MessageListenerAdapter listenerAdapterUpdateRoom(RedisMessageSubscriber subscriber) {
+    public MessageListenerAdapter listenerAdapterUpdateRoom() {
         return new MessageListenerAdapter(subscriber, "updateRoom");
     }
 
@@ -68,7 +68,7 @@ RedisListenerConfig { // 클래스명 변경
      * 채팅 읽음을 처리하는 subscriber 설정 추가
      */
     @Bean
-    public MessageListenerAdapter listenerAdapterReadMessage(RedisMessageSubscriber subscriber) {
+    public MessageListenerAdapter listenerAdapterReadMessage() {
         return new MessageListenerAdapter(subscriber, "readMessage");
     }
 
@@ -76,7 +76,7 @@ RedisListenerConfig { // 클래스명 변경
      * 일대일 채팅방 시작되는 subscriber 설정 추가
      */
     @Bean
-    public MessageListenerAdapter listenerAdapterCreateOneononeChatroom(RedisMessageSubscriber subscriber) {
+    public MessageListenerAdapter listenerAdapterCreateOneononeChatroom() {
         return new MessageListenerAdapter(subscriber, "createOneononeChatroom");
     }
 
@@ -84,7 +84,7 @@ RedisListenerConfig { // 클래스명 변경
      * 알림 메시지를 처리하는 subscriber 설정 추가
      */
     @Bean
-    public MessageListenerAdapter listenerAdapterNotification(RedisNotificationSubscriber notificationSubscriber) {
+    public MessageListenerAdapter listenerAdapterNotification() {
         return new MessageListenerAdapter(notificationSubscriber, "onNotification"); // 메서드명 변경
     }
 

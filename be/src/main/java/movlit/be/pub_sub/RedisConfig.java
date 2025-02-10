@@ -28,8 +28,6 @@ public class RedisConfig {
         config.setPort(redisProperties.getPort());
         config.setPassword(redisProperties.getPassword());
         LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(config);
-//        lettuceConnectionFactory.setShareNativeConnection(true);
-//        lettuceConnectionFactory.afterPropertiesSet(); // 초기화 호출
         log.info("==== redisconnectionfactory 빈 생성 : {}", lettuceConnectionFactory);
         return lettuceConnectionFactory;
     }
@@ -56,10 +54,5 @@ public class RedisConfig {
 
         return redisTemplate;
     }
-
-//    @Bean
-//    public StreamOperations<String, String, String> streamOperations(RedisTemplate<String, Object> redisTemplate) {
-//        return redisTemplate.opsForStream();
-//    }
 
 }
