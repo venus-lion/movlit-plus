@@ -245,7 +245,7 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
                                     {message.message}
                                 </div>
                                 <div className="message-time-group">
-                                    {new Date(message.regDt).toLocaleTimeString()}
+                                    {DateTimeUtil(getNowDate())}
                                 </div>
                             </div>
                         </div>
