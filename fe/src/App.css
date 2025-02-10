@@ -145,18 +145,45 @@
     font-size: 12px;
 }
 
+.notification-dropdown {
+    position: absolute;
+    top: 50px; /* Bell 아이콘 아래에 배치 */
+    right: 20px;
+    width: 400px; /* 드롭다운 너비 */
+    border: 1px solid #ddd;
+    background: #f7f7f5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* 드롭다운이 다른 요소 위에 표시되도록 */
+    border-radius: 5px;
+    padding: 10px;
+}
+/* 삼각형 모양 추가 */
+.notification-dropdown::before {
+    content: '';
+    position: absolute;
+    top: -18px; /* 드롭다운 상단에 위치 */
+    right: 65px; /* 적절한 위치 조정 */
+    width: 20px;
+    border-width: 10px; /* 삼각형 높이 */
+    border-style: solid;
+    border-color: transparent transparent #f7f7f5 transparent; /* 흰색 배경과 맞도록 */
+}
+
 .notification-list {
     padding: 10px;
     border: 1px solid #ccc;
+    max-height: 200px; /* 뷰포트 높이에 맞게 조정 */
+    overflow-y: auto; /* 스크롤 가능하게 */
+    background-color: white;
 }
 
 
 .notification-container {
-    margin-left: 30px;
-    border: 1px solid #ccc;
-    padding: 20px;
-    margin: 20px 0;
-    width: 70%;
+    /*margin-left: 30px;*/
+    /*border: 1px solid #ccc;*/
+    /*padding: 20px;*/
+    /*margin: 20px 0;*/
+    /*width: 70%;*/
 
 }
 
@@ -168,6 +195,7 @@
     color: white;
     border: none;
     borderRadius: 5px;
+    background-color: #abe0a8;
     cursor: pointer;
     fontSize: 16px;
 }
@@ -189,15 +217,19 @@
 }
 
 .noti-icon {
-    max-width: 30px; /* 최대 너비 조정 */
-    max-height: 30px; /* 최대 높이 조정 */
-    margin-right: 15px; /* 이미지와 텍스트 간격을 5px로 설정 */
+    max-width: 20px; /* 최대 너비 조정 */
+    max-height: 20px; /* 최대 높이 조정 */
+    margin-right: 8px; /* 이미지와 텍스트 간격을 5px로 설정 */
 }
 
 .noti-message {
     margin: 0; /* 텍스트 마진을 0으로 설정 */
-    font-size: 15px; /* 텍스트 크기 */
+    font-size: 10px; /* 텍스트 크기 */
     flex-grow: 1; /* 남은 공간을 차지하도록 설정 */
+    line-height: 1.7; /* 줄 간격 조정 */
+    overflow: hidden; /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis; /* '...'으로 표시 */
+    margin-right: 5px;
 }
 
 .delete-btn {
@@ -205,8 +237,47 @@
     border: none;
     color: #da2232;
     cursor: pointer;
-    height: 35px; /* 버튼 높이 */
+    height: 30px; /* 버튼 높이 조정 */
+    width: auto; /* 너비 자동 조정 */
+    padding: 10px; /* 패딩 추가 */
     display: flex;
     align-items: center;
-    justify-content: flex-end; /* 버튼 오른쪽 정렬 */
+    justify-content: center; /* 중앙 정렬 */
+}
+
+.close-dropdown-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* 스크롤바 전체 */
+.notification-list::-webkit-scrollbar {
+    width: 8px; /* 스크롤바 너비 */
+}
+
+/* 스크롤바 배경 */
+.notification-list::-webkit-scrollbar-track {
+    background: #f0f0f0; /* 트랙 배경 색상 */
+    border-radius: 10px; /* 모서리를 둥글게 */
+}
+
+/* 스크롤바 핸들 */
+.notification-list::-webkit-scrollbar-thumb {
+    background: #aaa;; /* 핸들 색상 */
+    border-radius: 10px; /* 모서리를 둥글게 */
+}
+
+/* 스크롤바 핸들에 마우스 오버 시 색상 변화 */
+.notification-list::-webkit-scrollbar-thumb:hover {
+    background: #888; /* 핸들 hover 색상 */
+}
+
+/* 스크롤바 핸들 클릭 시 색상 변화 */
+.notification-list::-webkit-scrollbar-thumb:active {
+    background: #666; /* 핸들 클릭 색상 */
 }

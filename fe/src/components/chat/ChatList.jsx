@@ -3,6 +3,7 @@ import axiosInstance from '../../axiosInstance.js';
 import {Client} from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import DateTimeUtil, {getNowDate} from "../../util/DateTimeUtil.jsx";
+import './ChatList.css';
 
 const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat }) => {
     const [groupChats, setGroupChats] = useState([]);
@@ -233,20 +234,20 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
         },
-        chatListContainer: {
-            maxHeight: '550px',
-            overflowY: 'auto',
-            border: '1px solid #ddd',
-            padding: '10px',
-            borderRadius: '4px',
-        },
+        // chatListContainer: {
+        //     maxHeight: '550px',
+        //     overflowY: 'auto',
+        //     border: '1px solid #ddd',
+        //     padding: '10px',
+        //     borderRadius: '4px',
+        // },
     };
 
     if (loading) return <div>로딩 중...</div>;
     if (error) return <div>오류: {error}</div>;
 
     return (
-        <div style={style.chatListContainer}>
+        <div className="chat-list-container" style={style.chatListContainer}>
             {/* 그룹 채팅 목록 */}
             {activeTab === 'group' && (
 

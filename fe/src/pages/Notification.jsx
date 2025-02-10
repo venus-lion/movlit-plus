@@ -19,7 +19,7 @@ function Notification() {
                 const response = await axiosInstance.get('/notification');
                 setMyNotifications(response.data);
 
-                console.log(JSON.stringify(response.data, null, 2));
+                //console.log(JSON.stringify(response.data, null, 2));
 
                 // 모든 알림 읽음 상태로 update
                 await axiosInstance.put('/notification/markAllAsRead');
