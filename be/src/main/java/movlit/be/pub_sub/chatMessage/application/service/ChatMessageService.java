@@ -78,7 +78,7 @@ public class ChatMessageService {
         String url = basicUrl + "/chatMain/" + roomIdStr + "/personal";
 
         NotificationDto notification = new NotificationDto(
-                roomIdStr,
+                roomInfo.getReceiverId().getValue(),    // 메시지 받는 사람 memberId
                 NotificationMessage.generateChatMessage(senderNickname, chatMessageDto.getMessage()),
                 NotificationType.ONE_ON_ONE_CHAT,
                 url

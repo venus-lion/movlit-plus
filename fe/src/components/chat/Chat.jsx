@@ -32,22 +32,6 @@ const Chat = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
 
 
-
-    // 알림(새로운 채팅 메시지)을 통해 채팅 메뉴 접속 -> 바로 "해당 채팅방" 띄우기
-    useEffect(() => {
-        const fromNoti = params.get('fromNoti'); // 'fromNoti' 쿼리 파라미터 가져오기
-
-        if (fromNoti === 'true' && chatId) {
-            // *** 알림 클릭 시 해당 채팅방으로 이동하기
-
-            if (type === 'personal') {
-                setSelectedChat({ roomId: chatId }); // *** 개인 채팅방 선택
-            } else if (type === 'group') {
-                setSelectedChat({ groupChatroomId: chatId }); // *** 그룹 채팅방 선택
-            }
-        }
-    }, [location.search, chatId, type]); // *** URL이나 파라미터 변경 시마다 실행
-
     // 로그인 상태 확인 및 리다이렉트 로직 추가
     useEffect(() => {
         if (!isLoggedIn) {
@@ -61,6 +45,7 @@ const Chat = () => {
         return new URLSearchParams(location.search);
     };
 
+    // 알림(새로운 채팅 메시지)을 통해 채팅 메뉴 접속 -> 바로 "해당 채팅방" 띄우기
     const fetchRoomInfoFromNoti = async () => {
         try {
             let response;
@@ -89,6 +74,7 @@ const Chat = () => {
         }
     };
 
+    // 알림(새로운 채팅 메시지)을 통해 채팅 메뉴 접속 -> 바로 "해당 채팅방" 띄우기
     // 컴포넌트가 마운트될 때 chatId와 fromNoti가 true일 때만 채팅방 리스트 업데이트
     useEffect(() => {
         const query = useQuery();
@@ -217,6 +203,7 @@ const Chat = () => {
                     activeTab={activeTab}
                     searchTerm={searchTerm}
                     onSelectChat={(chat) => setSelectedChat(chat)} // 선택된 채팅방 설정
+                    selectedChat={selectedChat} // 선택된 채팅방을 ChatList에 전달
                 />
 
                 {/* 채팅방 생성 버튼 (기존과 동일) */}
