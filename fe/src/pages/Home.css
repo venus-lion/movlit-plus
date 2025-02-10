@@ -33,7 +33,7 @@
 .book-list, .movie-list {
     display: flex;
     /*width: 100%;*/
-    /*overflow: hidden;*/
+    overflow: hidden;
     width: 100%;
     justify-content: flex-start;
 
