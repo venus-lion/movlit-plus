@@ -193,7 +193,7 @@ public class GroupChatroomService {
         GroupChatroom groupChatroom = ChatroomConvertor.makeNonReGroupChatroom(data);
         MemberRChatroom memberRChatroom = ChatroomConvertor.makeNonReMemberRChatroom();
 
-        MemberEntity member = memberReadService.findEntityByMemberId(data.getWorkerMemberId());
+        MemberEntity member = memberReadService.fetchEntityByMemberId(data.getWorkerMemberId());
 
         memberRChatroom.updateGroupChatRoom(groupChatroom);
         memberRChatroom.updateMember(member);
@@ -237,7 +237,7 @@ public class GroupChatroomService {
             throws ChatroomAccessDenied {
         GroupChatroom existingGroupChatroom = groupChatRepository.findByChatroomId(groupChatroomId);
         validateAlreadyJoined(memberId, existingGroupChatroom);
-        MemberEntity member = memberReadService.findEntityByMemberId(memberId);
+        MemberEntity member = memberReadService.fetchEntityByMemberId(memberId);
 
         log.info("::GroupChatroomService_joinGroupChatroom::");
         log.info(">> member : " + member.toString());

@@ -42,8 +42,8 @@ public class OneononeChatroomService {
     @Transactional
     public OneononeChatroomResponse createOneOnOneChatroom(MemberId memberId,
                                                            OneononeChatroomRequest request) {
-        MemberEntity sender = memberReadService.findEntityByMemberId(memberId);
-        MemberEntity receiver = memberReadService.findEntityByMemberId(request.getReceiverId());
+        MemberEntity sender = memberReadService.fetchEntityByMemberId(memberId);
+        MemberEntity receiver = memberReadService.fetchEntityByMemberId(request.getReceiverId());
 
         validateAlreadyExist(sender, receiver);
 
@@ -62,8 +62,9 @@ public class OneononeChatroomService {
         return senderResponse;
     }
 
-    public void publishOneOnOneChatroomCreate(MemberId topicSenderId, OneononeChatroomCreatePubRequest request) {
-        MemberEntity topicSender = memberReadService.findEntityByMemberId(topicSenderId);
+    @Transactional
+    public void publishOneOnOneChatroomCreation(MemberId topicSenderId, OneononeChatroomCreatePubRequest request) {
+        MemberEntity topicSender = memberReadService.fetchEntityByMemberId(topicSenderId);
         OneononeChatroomCreatePubDto oneononeChatroomCreatePubDto = ChatroomConvertor.makeOneononeChatroomCreatePubDto(
                 topicSenderId, request, topicSender
         );
@@ -79,7 +80,7 @@ public class OneononeChatroomService {
         }
     }
 
-    private static OneononeChatroomResponse makeOneOnOneChatroomResponse(OneononeChatroom savedOneononeChatroom,
+    private OneononeChatroomResponse makeOneOnOneChatroomResponse(OneononeChatroom savedOneononeChatroom,
                                                                          MemberEntity receiver) {
         return new OneononeChatroomResponse(
                 savedOneononeChatroom.getOneononeChatroomId(),
@@ -89,7 +90,7 @@ public class OneononeChatroomService {
         );
     }
 
-    private static void injectOneOnOneChatroom(OneononeChatroom oneononeChatroom, MemberEntity sender) {
+    private void injectOneOnOneChatroom(OneononeChatroom oneononeChatroom, MemberEntity sender) {
         MemberROneononeChatroom senderChatroom =
                 new MemberROneononeChatroom(IdFactory.createMemberROneOnOneChatroomId());
         senderChatroom.updateOneononeChatroom(oneononeChatroom);
@@ -97,13 +98,9 @@ public class OneononeChatroomService {
         oneononeChatroom.updateMemberROneononeChatroom(senderChatroom);
     }
 
+    @Transactional(readOnly = true)
     public OneononeChatroomResponse fetchChatroomInfo(OneononeChatroomId roomId, MemberId currentMemberId) {
-        MemberEntity otherMember = oneOnOneChatroomRepository.findWithMembersById(roomId)
-                .stream()
-                .filter(mro -> !mro.getMember().getMemberId().equals(currentMemberId))
-                .findFirst()
-                .orElseThrow(MemberNotFoundException::new)
-                .getMember();
+        MemberEntity otherMember = fetchMemberForChatroomInfo(roomId, currentMemberId);
         return new OneononeChatroomResponse(
                 roomId,
                 otherMember.getMemberId(),
@@ -112,6 +109,16 @@ public class OneononeChatroomService {
         );
     }
 
+    private MemberEntity fetchMemberForChatroomInfo(OneononeChatroomId roomId, MemberId currentMemberId) {
+        return oneOnOneChatroomRepository.fetchWithMembersById(roomId)
+                .stream()
+                .filter(mro -> !mro.getMember().getMemberId().equals(currentMemberId))
+                .findFirst()
+                .orElseThrow(MemberNotFoundException::new)
+                .getMember();
+    }
+
+    @Transactional(readOnly = true)
     public List<OneononeChatroomResponse> fetchMyOneOnOneChatList(MemberId memberId) {
 
         String redisKey = "oneononeChatList:" + memberId.getValue();

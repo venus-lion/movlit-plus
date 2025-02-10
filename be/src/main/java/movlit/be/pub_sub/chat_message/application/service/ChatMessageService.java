@@ -6,16 +6,15 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import movlit.be.pub_sub.chat_message.domain.ChatMessage;
-import movlit.be.pub_sub.chat_message.infra.persistence.ChatMessageRepository;
-import movlit.be.pub_sub.chat_message.presentation.dto.response.ChatMessageDto;
-import movlit.be.pub_sub.chat_message.presentation.dto.response.MessageType;
 import movlit.be.common.config.RedisMessagePublisher;
 import movlit.be.common.exception.RedisStreamOperationReturnNull;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.common.util.ids.OneononeChatroomId;
+import movlit.be.pub_sub.chat_message.domain.ChatMessage;
+import movlit.be.pub_sub.chat_message.infra.persistence.ChatMessageRepository;
+import movlit.be.pub_sub.chat_message.presentation.dto.response.ChatMessageDto;
+import movlit.be.pub_sub.chat_message.presentation.dto.response.MessageType;
 import movlit.be.pub_sub.notification.application.service.NotificationUseCase;
-import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +32,7 @@ public class ChatMessageService {
     private static final String MESSAGE_QUEUE = "chat_message_queue";   // 큐 이름 (채팅방마다 별도의 큐를 사용할 수 있음)
 
     // 가장 최근 채팅 메시지 가져오기 (채팅 리스트에서 화면 표시)
+    @Transactional(readOnly = true)
     public ChatMessageDto fetchRecentMessage(String roomId) {
         return chatMessageRepository.findTopByRoomIdOrderByTimestampDesc(roomId);
     }
@@ -65,21 +65,25 @@ public class ChatMessageService {
     }
 
     // 해당 채팅방의 읽지 않은 메시지 갯수 return
+    @Transactional(readOnly = true)
     public Long fetchCountUnreadMessages(OneononeChatroomId roomId, MemberId memberId) {
         return chatMessageRepository.findCountUnreadMessages(roomId.getValue(), memberId);
     }
 
     // 해당 채팅방의 읽지 않은 메시지 return
+    @Transactional(readOnly = true)
     public List<ChatMessage> fetchUnreadMessages(OneononeChatroomId roomId, MemberId memberId) {
         return chatMessageRepository.findUnreadMessages(roomId.getValue(), memberId);
     }
 
     // 채팅 읽음 처리
+    @Transactional
     public void updateMessageAsRead(String roomId, MemberId memberId) {
 
     }
 
     // 채팅방 채팅목록 가져오기
+    @Transactional(readOnly = true)
     public List<ChatMessageDto> fetchChatMessages(String roomId) {
         List<ChatMessage> chatMessages = chatMessageRepository.findByRoomId(roomId);
         if (chatMessages.isEmpty()) {
@@ -100,11 +104,8 @@ public class ChatMessageService {
 
     // Produce : 메시지를 Redis Stream 에 추가
     private void produceChatMessage(ChatMessageDto chatMessageDto) {
-        RecordId recordId = Optional.ofNullable(redisTemplate.opsForStream().add(
-                MESSAGE_QUEUE, convertToMap(chatMessageDto)
-        )).orElseThrow(RedisStreamOperationReturnNull::new);
-
-        String messageId = recordId.toString();
+        Optional.ofNullable(redisTemplate.opsForStream().add(MESSAGE_QUEUE, convertToMap(chatMessageDto)))
+                .orElseThrow(RedisStreamOperationReturnNull::new);
     }
 
     // DTO -> Map 변환

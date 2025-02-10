@@ -13,7 +13,7 @@ public interface OneononeChatroomRepository {
 
     List<OneononeChatroomResponse> fetchOneOnOneChatList(MemberId memberId);
 
-    List<MemberROneononeChatroom> findWithMembersById(OneononeChatroomId roomId);
+    List<MemberROneononeChatroom> fetchWithMembersById(OneononeChatroomId roomId);
 
     boolean existsOneOnOneChatroomBySenderAndReceiver(MemberId senderId, MemberId receiverId);
 

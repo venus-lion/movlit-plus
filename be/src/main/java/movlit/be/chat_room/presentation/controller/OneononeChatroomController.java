@@ -61,7 +61,7 @@ public class OneononeChatroomController {
             @RequestBody OneononeChatroomCreatePubRequest request) {
         log.info("Received OneononeChatroom Create Send : {}", request);
         MemberId topicSenderId = details.getMemberId();
-        oneononeChatroomService.publishOneOnOneChatroomCreate(topicSenderId, request);
+        oneononeChatroomService.publishOneOnOneChatroomCreation(topicSenderId, request);
     }
 
     // TODO : 채팅방 나가기

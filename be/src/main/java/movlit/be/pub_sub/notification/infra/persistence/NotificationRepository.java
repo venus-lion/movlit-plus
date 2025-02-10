@@ -16,6 +16,6 @@ public interface NotificationRepository {
 
     void saveAll(List<Notification> notificationList);
 
-    List<Notification> findByMemberIdAndIsRead(MemberId memberId, Boolean isRead);
+    List<Notification> fetchByMemberIdAndIsRead(MemberId memberId, Boolean isRead);
 
 }
