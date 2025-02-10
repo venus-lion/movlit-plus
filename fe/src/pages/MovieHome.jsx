@@ -38,8 +38,7 @@ function MovieHome() {
 
     // Helper function to check if a component's movies are loaded
     const areMoviesLoaded = (movies) => {
-        // return movies && movies.length > 0 && movies.every(movie => movie.posterPath); // Check if posterPath exists
-        return movies && movies.length > 0
+        return movies && movies.length > 0 && movies.every(movie => movie.posterPath);
     };
 
 
@@ -75,27 +74,12 @@ function MovieHome() {
                     onMoviesLoaded={(movies) => updateComponentLoaded('popular', areMoviesLoaded(movies))}
                     hidden={!componentsLoaded.popular}
                 />
+
                 {/* Latest Movies */}
                 {componentsLoaded.popular && (
                     <LatestMoviesComponent
                         onMoviesLoaded={(movies) => updateComponentLoaded('latest', areMoviesLoaded(movies))}
                         hidden={!componentsLoaded.latest}
-                    />
-                )}
-
-                {/* Recent Heart (Conditional) */}
-                {componentsLoaded.latest && isLoggedIn && (
-                    <RecentHeartSimilarCrewMoviesComponent
-                        onMoviesLoaded={(movies) => updateComponentLoaded('recentHeart', areMoviesLoaded(movies))}
-                        hidden={!componentsLoaded.recentHeart}
-                    />
-                )}
-
-                {/* Interest Genre (Conditional) */}
-                {componentsLoaded.latest && isLoggedIn && (
-                    <InterestGenreMoviesComponent
-                        onMoviesLoaded={(movies) => updateComponentLoaded('interestGenre', areMoviesLoaded(movies))}
-                        hidden={!componentsLoaded.interestGenre}
                     />
                 )}
 
@@ -108,6 +92,22 @@ function MovieHome() {
                         hidden={!componentsLoaded.genre[index]}
                     />
                 ))}
+
+                {/* Recent Heart (Conditional) */}
+                {componentsLoaded.popular && isLoggedIn && (
+                    <RecentHeartSimilarCrewMoviesComponent
+                        onMoviesLoaded={(movies) => updateComponentLoaded('recentHeart', areMoviesLoaded(movies))}
+                        hidden={!componentsLoaded.recentHeart}
+                    />
+                )}
+
+                {/* Interest Genre (Conditional) */}
+                {componentsLoaded.recentHeart && isLoggedIn && (
+                    <InterestGenreMoviesComponent
+                        onMoviesLoaded={(movies) => updateComponentLoaded('interestGenre', areMoviesLoaded(movies))}
+                        hidden={!componentsLoaded.interestGenre}
+                    />
+                )}
             </Suspense>
         </div>
     );
