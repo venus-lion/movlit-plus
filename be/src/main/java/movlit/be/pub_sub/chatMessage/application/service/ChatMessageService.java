@@ -11,7 +11,6 @@ import movlit.be.pub_sub.chatMessage.infra.persistence.ChatMessageRepository;
 import movlit.be.pub_sub.chatMessage.presentation.dto.response.ChatMessageDto;
 import movlit.be.pub_sub.chatMessage.presentation.dto.response.MessageType;
 import movlit.be.pub_sub.notification.NotificationUseCase;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
