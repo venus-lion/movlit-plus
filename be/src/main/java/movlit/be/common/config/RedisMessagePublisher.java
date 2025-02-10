@@ -2,9 +2,9 @@ package movlit.be.common.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import movlit.be.chatMessage.presentation.dto.response.ChatMessageDto;
-import movlit.be.chatRoom.presentation.dto.OneononeChatroomCreatePubDto;
-import movlit.be.chatRoom.presentation.dto.UpdateRoomDto;
+import movlit.be.pub_sub.chat_message.presentation.dto.response.ChatMessageDto;
+import movlit.be.chat_room.presentation.dto.OneononeChatroomCreatePubDto;
+import movlit.be.chat_room.presentation.dto.UpdateRoomDto;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;

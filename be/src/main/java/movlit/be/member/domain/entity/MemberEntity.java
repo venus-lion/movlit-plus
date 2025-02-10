@@ -14,8 +14,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import movlit.be.chatRoom.domain.MemberRChatroom;
-import movlit.be.chatRoom.domain.MemberROneononeChatroom;
+import movlit.be.chat_room.domain.MemberRChatroom;
+import movlit.be.chat_room.domain.MemberROneononeChatroom;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.member.domain.Member;
 

@@ -1,7 +1,7 @@
 package movlit.be.image.application.service;
 
 import lombok.RequiredArgsConstructor;
-import movlit.be.chatRoom.application.service.dto.ProfileImageUpdatedEvent;
+import movlit.be.chat_room.application.service.dto.ProfileImageUpdatedEvent;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.image.application.convertor.ImageConvertor;
 import movlit.be.image.domain.entity.ImageEntity;

@@ -1,27 +1,34 @@
+/* MemberProfilePage.css (수정됨) */
 .memberpage-container {
     padding: 20px;
     max-width: 800px;
-    margin: 0 auto;
+    margin: 20px auto; /* 페이지 중앙 정렬 및 상하 margin 추가 */
+    background-color: #fff; /* MyPage 배경색과 통일 */
+    border-radius: 12px; /* MyPage border-radius 와 통일 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* MyPage box-shadow 와 통일 */
 }
 
 .memberpage-header {
     display: flex;
-    align-items: center;
-    margin-bottom: 30px;
-    margin-top: 30px;
+    align-items: flex-start; /* 상단 정렬 유지 */
+    margin-bottom: 15px; /* MyPage 와 간격 유사하게 조정 */
+    margin-top: 20px; /* MyPage 와 간격 유사하게 조정 */
 }
 
 .profile-image {
-    width: 100px;
-    height: 100px;
+    width: 200px; /* MyPage 프로필 이미지 크기와 통일 */
+    height: 200px; /* MyPage 프로필 이미지 크기와 통일 */
     border-radius: 50%;
     overflow: hidden;
-    margin-right: 20px;
+    margin-right: 25px; /* MyPage 와 간격 유사하게 조정 */
     background-color: #ddd;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
+    flex-shrink: 0;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* MyPage 와 box-shadow 유사하게 적용 */
 }
 
 .profile-image img {
@@ -31,133 +38,135 @@
 }
 
 .default-profile-icon {
-    font-size: 100px;
+    font-size: 200px; /* MyPage 기본 프로필 아이콘 크기와 통일 */
     color: #aaa;
 }
 
 .user-info {
     flex-grow: 1;
+    display: flex;
+    flex-direction: column; /* MyPage 와 동일하게 flex-direction 설정 */
+    justify-content: center; /* MyPage 와 동일하게 justify-content 설정 */
 }
 
 .user-info h2 {
-    margin: 0;
-    font-size: 24px;
+    margin-bottom: 2px; /* MyPage 와 간격 유사하게 조정 */
+    font-size: 22px; /* MyPage 와 폰트 크기 유사하게 조정 */
+    font-weight: 600; /* MyPage 와 font-weight 통일 */
+    color: #222; /* MyPage 와 폰트 색상 통일 */
 }
 
 .user-info p {
-    margin: 5px 0 0;
-    font-size: 14px;
-    color: #666;
+    margin: 0; /* MyPage 와 margin 통일 */
+    font-size: 13px; /* MyPage 와 폰트 크기 유사하게 조정 */
+    color: #777; /* MyPage 와 폰트 색상 통일 */
 }
+
 
 .memberpage-stats {
     display: flex;
     justify-content: space-around;
-    border-top: 1px solid #eee;
-    padding-top: 20px;
-    margin-bottom: 30px;
+    margin-top: 15px; /* MyPage 와 간격 유사하게 조정 */
+    margin-bottom: 15px; /* MyPage 와 간격 유사하게 조정 */
+    border-top: 1px solid #eee; /* MyPage 와 border 스타일 유사하게 적용 */
+    padding-top: 10px; /* MyPage 와 padding 유사하게 적용 */
 }
 
 .stat-item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 0 5px; /* MyPage 와 margin 유사하게 적용 */
 }
 
 .stat-item span:first-child {
-    font-size: 15px;
-    font-weight: bold;
-    margin-bottom: 5px;
+    font-size: 15px; /* MyPage 와 폰트 크기 유사하게 조정 */
+    font-weight: 600; /* MyPage 와 font-weight 통일 */
+    margin-bottom: 2px; /* MyPage 와 margin 유사하게 조정 */
+    color: #333; /* MyPage 와 폰트 색상 통일 */
 }
 
 .stat-item span:last-child {
-    font-size: 14px;
-    color: #666;
+    font-size: 12px; /* MyPage 와 폰트 크기 유사하게 조정 */
+    color: #888; /* MyPage 와 폰트 색상 통일 */
 }
 
 .memberpage-genre-list {
-    margin-top: 20px;
+    margin-top: 20px; /* MyPage 와 margin 유사하게 조정 */
 }
 
 .memberpage-genre-list h3 {
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* MyPage 와 margin 유사하게 조정 */
+    font-size: 18px; /* MyPage 와 폰트 크기 유사하게 조정 */
+    color: #444; /* MyPage 와 폰트 색상 통일 */
 }
 
 .genre-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px; /* MyPage 와 gap 유사하게 조정 */
 }
 
 .genre-chip {
-    background-color: #f0f0f0;
-    color: #333;
-    border: none;
-    border-radius: 16px;
-    padding: 8px 16px;
-    font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f5f5f5; /* MyPage genre-chip 배경색과 통일 */
+    color: #444; /* MyPage genre-chip 폰트 색상과 통일 */
+    border: 1px solid #eee; /* MyPage genre-chip border 와 통일 */
+    border-radius: 20px; /* MyPage genre-chip border-radius 와 통일 */
+    padding: 6px 14px; /* MyPage genre-chip padding 과 통일 */
+    font-size: 13px; /* MyPage genre-chip 폰트 크기와 통일 */
+    box-shadow: none; /* MyPage genre-chip box-shadow 와 통일 */
     cursor: default;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.2s ease;
 }
 
 .genre-chip:hover {
-    background-color: #ddd;
+    background-color: #eee; /* MyPage genre-chip hover 배경색과 통일 */
 }
 
-.profile-img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-}
 
-/* 팔로우 팔로잉 css 추가 */
+/* 팔로우 팔로잉 버튼 스타일 MyPage 와 유사하게 조정 */
 .follow-button {
     margin-top: 10px;
     padding: 8px 16px;
-    background-color: #4080ff; /* 팔로우 버튼 기본 색상 */
+    background-color: #4080ff;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 12px; /* MyPage 와 유사한 border-radius 적용 */
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 14px; /* MyPage 와 유사한 폰트 크기 적용 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* MyPage 와 유사한 box-shadow 적용 */
 }
 
 .follow-button:hover {
-    background-color: #6998ff; /* 팔로우 버튼 호버 색상 */
+    background-color: #6998ff;
 }
 
 .follow-button.following {
-    background-color: #f0f0f0; /* 팔로잉 버튼 기본 색상 */
+    background-color: #f0f0f0;
     color: #333;
 }
 
 .follow-button.following:hover {
-    background-color: #ddd; /* 팔로잉 버튼 호버 색상 */
+    background-color: #ddd;
 }
 
-.stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-right: 10px; /* 간격 추가 */
-    margin-left: 10px; /* 간격 추가 */
-}
 
+/* DM 버튼 스타일 MyPage 와 유사하게 조정 */
 .dm-button {
     margin-top: 10px;
-    margin-left: 10px; /* 팔로우 버튼과의 간격 */
+    margin-left: 10px;
     padding: 8px 16px;
-    background-color: #ff4040; /* DM 버튼 기본 색상 (빨간색) */
+    background-color: #ff4040; /* DM 버튼 색상 유지 */
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 12px; /* MyPage 와 유사한 border-radius 적용 */
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 14px; /* MyPage 와 유사한 폰트 크기 적용 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* MyPage 와 유사한 box-shadow 적용 */
 }
 
 .dm-button:hover {
-    background-color: #ff6969; /* DM 버튼 호버 색상 */
+    background-color: #ff6969;
 }

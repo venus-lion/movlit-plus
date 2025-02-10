@@ -3,8 +3,8 @@ package movlit.be.common.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import movlit.be.notification.NotificationDto;
-import movlit.be.notification.SseEmitterService;
+import movlit.be.pub_sub.notification.NotificationDto;
+import movlit.be.pub_sub.notification.SseEmitterService;
 import org.springframework.stereotype.Service;
 
 /**
