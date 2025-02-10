@@ -4,7 +4,6 @@ import {Client} from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import DateTimeUtil, {getNowDate} from "../../util/DateTimeUtil.jsx";
 import './ChatList.css';
-import DateTimeUtil from "../../util/DateTimeUtil.jsx";
 
 const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat}) => {
     const [groupChats, setGroupChats] = useState([]);
