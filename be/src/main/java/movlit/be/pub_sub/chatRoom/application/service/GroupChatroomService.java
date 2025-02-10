@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.book.application.service.BookDetailReadService;
 import movlit.be.book.application.service.BookHeartReadService;
+import movlit.be.common.aspect.ExecutionTime;
 import movlit.be.common.exception.ChatroomAccessDenied;
 import movlit.be.common.exception.ChatroomNotFoundException;
 import movlit.be.common.exception.GroupChatroomAlreadyExistsException;
@@ -301,20 +302,24 @@ public class GroupChatroomService {
     }
 
     // 특정 그룹채팅 안 멤버 정보 update (멤버 정보 redis 1차 캐시)
-    public List<GroupChatroomMemberResponse> fetchMembersInGroupChatroom(GroupChatroomId groupChatroomId) {
+    @ExecutionTime
+    public List<GroupChatroomMemberResponse> fetchMembersInGroupChatroom(GroupChatroomId groupChatroomId, boolean useCache) {
+        // 파라미터 추가 (캐싱 on/off)
         String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;
 
         try {
-            // Redis에서 캐시된 데이터 조회 (JSON 문자열)
-            String cachedJson = (String) redisTemplate.opsForValue().get(cacheKey);
-            List<GroupChatroomMemberResponse> response;
+            if (useCache) { // 캐시 사용
+                // Redis에서 캐시된 데이터 조회 (JSON 문자열)
+                String cachedJson = (String) redisTemplate.opsForValue().get(cacheKey);
+                List<GroupChatroomMemberResponse> response;
 
-            if (cachedJson != null) {
-                log.info("Cache hit for chatroom: {}", groupChatroomId);
-                // JSON 문자열을 List<GroupChatroomMemberResponse>로 역직렬화
-                response = objectMapper.readValue(cachedJson, new TypeReference<>() {
-                });
-                return response;
+                if (cachedJson != null) {
+                    log.info("Cache hit for chatroom: {}", groupChatroomId);
+                    // JSON 문자열을 List<GroupChatroomMemberResponse>로 역직렬화
+                    response = objectMapper.readValue(cachedJson, new TypeReference<>() {
+                    });
+                    return response;
+                }
             }
 
             log.info("Cache miss for chatroom: {}", groupChatroomId);
@@ -324,7 +329,7 @@ public class GroupChatroomService {
             groupChatRepository.findByChatroomId(groupChatroomId);
 
             // 멤버 정보 조회
-            response = groupChatRepository.findMembersByChatroomId(groupChatroomId);
+            List<GroupChatroomMemberResponse> response = groupChatRepository.findMembersByChatroomId(groupChatroomId);
 
             // 조회 결과를 JSON 문자열로 변환하여 Redis에 캐싱
             String json = objectMapper.writeValueAsString(response);
