@@ -33,7 +33,7 @@ function FollowList({type}) {
 
     return (
         <div className="follow-list-container">
-            <h2>{type === 'followers' ? '나를 팔로우하는 사람들' : '내가 팔로우하는 사람들'}</h2>
+            <h2>{type === 'followers' ? '유저를 팔로우하는 사람들' : '유저를 팔로우하는 사람들'}</h2>
             <div className="follow-list">
                 {followList.map((follow) => (
                     <div key={follow.memberId} className="follow-item">
