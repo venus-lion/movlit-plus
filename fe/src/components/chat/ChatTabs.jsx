@@ -1,5 +1,6 @@
 import React from 'react';
 import "./ChatTabHover.css";
+
 const ChatTabs = ({activeTab, setActiveTab}) => {
     return (
         <div className="chat-tabs">

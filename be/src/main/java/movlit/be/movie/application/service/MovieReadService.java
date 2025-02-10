@@ -1,14 +1,18 @@
 package movlit.be.movie.application.service;
 
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.common.util.Genre;
 import movlit.be.movie.domain.Movie;
 import movlit.be.movie.domain.entity.MovieEntity;
 import movlit.be.movie.domain.repository.MovieRepository;
-import movlit.be.movie.presentation.dto.response.*;
+import movlit.be.movie.presentation.dto.response.GenreDto;
+import movlit.be.movie.presentation.dto.response.MovieListByGenreResponseDto;
+import movlit.be.movie.presentation.dto.response.MovieListResponseDto;
+import movlit.be.movie.presentation.dto.response.MovieMainGenreResponseDto;
+import movlit.be.movie.presentation.dto.response.MovieMainResponseDto;
+import movlit.be.movie.presentation.dto.response.MovieWithGenreDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -55,7 +59,8 @@ public class MovieReadService {
         Long MIN_VOTE_COUNT = 500L;     // 인기순위 최소 vote_count
 
         Pageable pageable = Pageable.ofSize(pageSize).withPage(page - 1);
-        Page<MovieEntity> moviePage = movieRepository.findMovieEntityByVoteCountGreaterThanOrderByPopularityDesc(MIN_VOTE_COUNT,
+        Page<MovieEntity> moviePage = movieRepository.findMovieEntityByVoteCountGreaterThanOrderByPopularityDesc(
+                MIN_VOTE_COUNT,
                 pageable);
 
         return toResponse(moviePage);
@@ -83,7 +88,6 @@ public class MovieReadService {
 
         return toResponse(genre, moviePage);
     }
-
 
     public Movie fetchByMovieId(Long movieId) {
         return movieRepository.findById(movieId);

@@ -14,7 +14,7 @@ import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 
-public class    MovieCommentSteps {
+public class MovieCommentSteps {
 
     public static ExtractableResponse<Response> 영화_코멘트_작성을_요청한다(String accessToken, String movieId,
                                                                 RequestSpecification spec) {

@@ -11,4 +11,5 @@ public record MovieMainGenreResponseDto(
         int totalPage,
         Long totalElements
 ) {
+
 }

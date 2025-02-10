@@ -1,8 +1,6 @@
 package movlit.be.movie.domain.repository;
 
 import java.util.List;
-
-import movlit.be.common.util.ids.MemberId;
 import movlit.be.movie.domain.Movie;
 import movlit.be.movie.domain.entity.MovieEntity;
 import org.springframework.data.domain.Page;
@@ -28,4 +26,5 @@ public interface MovieRepository {
     Page<MovieEntity> findMovieEntityByVoteCountGreaterThanOrderByPopularityDesc(Long minVoteCount, Pageable pageable);
 
     Page<MovieEntity> findMovieEntityByMovieGenreIdForEntity_GenreId(Long genreId, Pageable pageable);
+
 }

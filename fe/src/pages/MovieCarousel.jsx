@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {Link} from "react-router-dom";
-import {FaRegStar, FaStar, FaStarHalfAlt} from 'react-icons/fa'; // 별 아이콘 임포트
 import './Home.css';
 
 function usePreloadImages(imageUrls = []) {
@@ -27,7 +26,7 @@ function usePreloadImages(imageUrls = []) {
     return loaded;
 }
 
-function MovieCarousel({ title, movies, startIndex, handleNext, handlePrev, slideSize = 8 }) {
+function MovieCarousel({title, movies, startIndex, handleNext, handlePrev, slideSize = 8}) {
     // 현재 슬라이드에 해당하는 이미지 URL 배열 만들기
     const imageUrls = movies.slice(startIndex, startIndex + slideSize).map(movie => movie.posterPath || '/default-poster.jpg');
     const allImagesLoaded = usePreloadImages(imageUrls);

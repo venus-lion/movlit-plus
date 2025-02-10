@@ -1,7 +1,6 @@
 package movlit.be.movie.infra.persistence.jpa;
 
 import java.util.List;
-
 import movlit.be.movie.domain.entity.MovieEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +41,7 @@ public interface MovieJpaRepository extends JpaRepository<MovieEntity, Long> {
     // 인기순 : VoteCount 500이상의 영화를 popularity 내림차순으로
     @Query("SELECT m FROM MovieEntity m WHERE m.voteCount >= :voteCount " +
             "ORDER BY m.popularity DESC")
-    Page<MovieEntity> findMovieEntitiesByVoteCountGreaterThanEqualOrderByPopularityDesc(Long voteCount, Pageable pageable);
+    Page<MovieEntity> findMovieEntitiesByVoteCountGreaterThanEqualOrderByPopularityDesc(Long voteCount,
+                                                                                        Pageable pageable);
 
 }

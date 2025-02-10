@@ -9,4 +9,5 @@ public record MovieMainResponseDto(
         int totalPage,
         Long totalElements
 ) {
+
 }

@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from 'react'; // useContext import 추가
+import React, {useContext, useEffect, useState} from 'react'; // useContext import 추가
 import axiosInstance from '../axiosInstance';
 import {Link, useNavigate} from 'react-router-dom';
 import DatePicker from 'react-datepicker';
@@ -15,7 +15,7 @@ const MemberRegister = () => {
     const [genres, setGenres] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
     const navigate = useNavigate();
-    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
+    const {updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
 
     useEffect(() => {
         const fetchGenres = async () => {

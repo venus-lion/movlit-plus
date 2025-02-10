@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Link, useParams, useLocation, useNavigate } from 'react-router-dom';
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import {FaComment, FaHeart, FaRegHeart, FaRegStar, FaStar, FaStarHalfAlt, FaUserCircle,} from 'react-icons/fa';
 import BookCarouselRecommend from "../pages/BookCarouselRecommend.jsx";
@@ -79,7 +79,6 @@ function BookDetailPage() {
                 setCrews(data.book_crew)
             })
             .catch((error) => console.error('Error fetching book data:', error));
-
 
 
         fetchUserComment();
@@ -498,7 +497,7 @@ function BookDetailPage() {
 
                 // fromNoti를 false로 설정하고 URL 업데이트
                 params.set('fromNoti', 'false');
-                navigate({ search: params.toString() }, { replace: true });
+                navigate({search: params.toString()}, {replace: true});
 
                 return;
             }
@@ -514,7 +513,7 @@ function BookDetailPage() {
 
             // 모달창 호출 후 fromNoti를 false로 설정
             params.set('fromNoti', 'false');
-            navigate({ search: params.toString() }, { replace: true });
+            navigate({search: params.toString()}, {replace: true});
 
             handleOpenGroupChatInfoModal(selectedCard, "book");
 
@@ -564,7 +563,6 @@ function BookDetailPage() {
         setSelectedCard(null);
         setSelectedCategory(null);
     };
-
 
 
     return (
@@ -719,7 +717,7 @@ function BookDetailPage() {
                     {/* 사용자 코멘트 표시 */}
                     {userComment && userComment.score > 0 && (
                         <div style={styles.userCommentDisplay}>
-                        <div style={styles.userInfo}>
+                            <div style={styles.userInfo}>
                                 {userComment.profileImgUrl ? (
                                     <img
                                         src={userComment.profileImgUrl}

@@ -6,7 +6,9 @@ public record GenreDto(
         Long genreId,
         String genreName
 ) {
+
     public GenreDto(Long genreId) {
         this(genreId, Genre.of(genreId).getName());
     }
+
 }

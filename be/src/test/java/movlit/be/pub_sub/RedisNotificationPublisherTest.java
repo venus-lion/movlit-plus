@@ -4,9 +4,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import movlit.be.common.config.RedisNotificationPublisher;
 import movlit.be.common.util.IdFactory;
-import movlit.be.pub_sub.notification.NotificationDto;
-import movlit.be.pub_sub.notification.NotificationType;
+import movlit.be.notification.NotificationDto;
+import movlit.be.notification.NotificationType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

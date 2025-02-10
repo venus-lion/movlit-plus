@@ -9,4 +9,5 @@ public record MovieWithGenreDto(
         Double voteAverage,
         List<GenreDto> movieGenreList
 ) {
+
 }

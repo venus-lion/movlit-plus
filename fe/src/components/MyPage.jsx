@@ -325,11 +325,14 @@ function MyPage() {
                             <p>{userData.email}</p>
                             <div className="mypage-follow-stats"> {/* mypage-follow-stats 클래스 (팔로워, 팔로잉) - 위치 변경 */}
                                 <div className="stat-item">
-                                    팔로워 <span onClick={handleFollowerClick} className="'link-button">{followerCount}</span>
+                                    팔로워 <span onClick={handleFollowerClick}
+                                              className="'link-button">{followerCount}</span>
                                 </div>
-                                <span className="separator" style={{ margin: '0 8px', color: '#ccc' }}>|</span> {/* Separator 추가 */}
+                                <span className="separator"
+                                      style={{margin: '0 8px', color: '#ccc'}}>|</span> {/* Separator 추가 */}
                                 <div className="stat-item">
-                                    팔로잉 <span onClick={handleFollowingClick} className="link-button">{followingCount}</span>
+                                    팔로잉 <span onClick={handleFollowingClick}
+                                              className="link-button">{followingCount}</span>
                                 </div>
                             </div>
                         </div>
@@ -366,14 +369,15 @@ function MyPage() {
                             },
                         }}
                     >
-                        <MenuItem onClick={openLogoutDialog} style={{fontWeight: 'bold', color: '#333', backgroundColor: 'transparent' }}>
+                        <MenuItem onClick={openLogoutDialog}
+                                  style={{fontWeight: 'bold', color: '#333', backgroundColor: 'transparent'}}>
                             로그아웃
                         </MenuItem>
                         <MenuItem onClick={handleUpdateClick} style={{backgroundColor: 'transparent'}}>
                             수정하기
                         </MenuItem>
-                        <Divider sx={{ borderBottomWidth: 2 }} />
-                        <MenuItem onClick={openDeleteDialog} style={{ color: '#F44336', backgroundColor: 'transparent' }}>
+                        <Divider sx={{borderBottomWidth: 2}}/>
+                        <MenuItem onClick={openDeleteDialog} style={{color: '#F44336', backgroundColor: 'transparent'}}>
                             탈퇴하기
                         </MenuItem>
                     </Menu>
@@ -457,7 +461,8 @@ function MyPage() {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions sx={{padding: '1.25rem', justifyContent: 'center'}}> {/* DialogActions 스타일 변경 */}
-                        <Button onClick={closeDeleteDialog} color="primary" sx={{minWidth: 100}}> {/* "아니오" 버튼 스타일 변경 */}
+                        <Button onClick={closeDeleteDialog} color="primary"
+                                sx={{minWidth: 100}}> {/* "아니오" 버튼 스타일 변경 */}
                             아니오
                         </Button>
                         <Button onClick={handleDeleteConfirm} color="error" autoFocus
@@ -507,7 +512,8 @@ function MyPage() {
                 </Dialog>
 
 
-            </div> {/* End of mypage-content-wrapper */}
+            </div>
+            {/* End of mypage-content-wrapper */}
         </div>
 
     );

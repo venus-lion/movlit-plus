@@ -142,9 +142,11 @@ operation::movie_comment_unlike_decrement_success[snippets='http-request,http-re
 operation::createGroupChat_success[snippets='http-request,http-response']
 
 ==== 그룹 채팅 가입
+
 operation::joinGroupChat_success[snippets='http-request,http-response']
 
 ==== 그룹 채팅 가입 여부
+
 operation::unJoinMemberCheckGroupChatJoin_success[snippets='http-request,http-response']
 
 operation::joinMemberCheckGroupChatJoin_success[snippets='http-request,http-response']

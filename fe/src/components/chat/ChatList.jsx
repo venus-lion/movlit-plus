@@ -2,9 +2,9 @@ import React, {useEffect, useMemo, useState} from 'react';
 import axiosInstance from '../../axiosInstance.js';
 import {Client} from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import DateTimeUtil, {getNowDate} from "../../util/DateTimeUtil.jsx";
+import DateTimeUtil from "../../util/DateTimeUtil.jsx";
 
-const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat }) => {
+const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat}) => {
     const [groupChats, setGroupChats] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -195,7 +195,7 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat
         // 선택된 채팅방의 ID를 설정
         if (activeTab === 'group') {
             setSelectedChatId(chat.groupChatroomId);
-        }else{
+        } else {
             setSelectedChatId(chat.roomId);
         }
         onSelectChat(chat); // 선택된 채팅방을 상위 컴포넌트에 전달

@@ -59,7 +59,7 @@ axiosInstance.interceptors.response.use(
                 }
 
                 try {
-                    const refreshResponse = await axiosInstance.post('/refresh', { refreshToken }); // 백엔드 /api/refresh 요청
+                    const refreshResponse = await axiosInstance.post('/refresh', {refreshToken}); // 백엔드 /api/refresh 요청
                     const newAccessToken = refreshResponse.data.accessToken;
 
                     localStorage.setItem('accessToken', newAccessToken); // 새로운 accessToken 저장

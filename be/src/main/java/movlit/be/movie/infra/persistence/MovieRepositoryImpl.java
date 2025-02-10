@@ -1,11 +1,9 @@
 package movlit.be.movie.infra.persistence;
 
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.common.exception.MovieNotFoundException;
-import movlit.be.common.util.ids.MemberId;
 import movlit.be.movie.application.converter.main.MovieConverter;
 import movlit.be.movie.domain.Movie;
 import movlit.be.movie.domain.entity.MovieEntity;
@@ -66,13 +64,16 @@ public class MovieRepositoryImpl implements MovieRepository {
     }
 
     @Override
-    public Page<MovieEntity> findMovieEntityByVoteCountGreaterThanOrderByPopularityDesc(Long minVoteCount, Pageable pageable) {
-        return movieJpaRepository.findMovieEntitiesByVoteCountGreaterThanEqualOrderByPopularityDesc(minVoteCount, pageable);
+    public Page<MovieEntity> findMovieEntityByVoteCountGreaterThanOrderByPopularityDesc(Long minVoteCount,
+                                                                                        Pageable pageable) {
+        return movieJpaRepository.findMovieEntitiesByVoteCountGreaterThanEqualOrderByPopularityDesc(minVoteCount,
+                pageable);
     }
 
     @Override
     public Page<MovieEntity> findMovieEntityByMovieGenreIdForEntity_GenreId(Long genreId, Pageable pageable) {
-        return movieJpaRepository.findByMovieGenreEntityList_MovieGenreIdForEntity_GenreIdOrderByReleaseDateDescPopularityDescVoteCountDesc(genreId, pageable);
+        return movieJpaRepository.findByMovieGenreEntityList_MovieGenreIdForEntity_GenreIdOrderByReleaseDateDescPopularityDescVoteCountDesc(
+                genreId, pageable);
     }
 
 }

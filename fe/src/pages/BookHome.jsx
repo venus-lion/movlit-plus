@@ -1,8 +1,9 @@
 // BookHome.jsx
-import React, {useState, useEffect, Suspense, lazy, useCallback} from 'react';
+import React, {lazy, Suspense, useCallback, useState} from 'react';
 import './Home.css';
 import {useOutletContext} from 'react-router-dom';
 import '../assets/css/loading.css';
+import useApiData from "../hooks/userRecommendBookApi.jsx";
 
 // Lazy-load the components
 const BestsellerBooksComponent = lazy(() => import('./BestsellerBooksComponent.jsx'));
@@ -10,7 +11,6 @@ const PopularBooksComponent = lazy(() => import('./PopularBooksComponent.jsx'));
 const NewBooksComponent = lazy(() => import('./NewBooksComponent.jsx'));
 const BookCarouselRecommend = lazy(() => import('./BookCarouselRecommend.jsx'));
 const RandomGenreBooksComponent = lazy(() => import('./RandomGenreBooksComponent.jsx'));
-import useApiData from "../hooks/userRecommendBookApi.jsx";
 
 function BookHome() {
     const {isLoggedIn} = useOutletContext();

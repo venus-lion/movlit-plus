@@ -1,11 +1,11 @@
 // FollowToggleButton.jsx (새 파일 생성)
-import React, {useEffect, useState, useContext} from 'react'; // useContext import 추가
+import React, {useContext, useEffect, useState} from 'react'; // useContext import 추가
 import axiosInstance from '../axiosInstance';
 import {AppContext} from "../App.jsx"; // AppContext import
 
 function FollowToggleButton({memberId}) {
     const [isFollowing, setIsFollowing] = useState(false);
-    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
+    const {updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
 
     const checkFollowStatus = async () => {
         try {

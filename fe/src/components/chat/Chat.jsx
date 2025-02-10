@@ -1,7 +1,7 @@
-import React, {useEffect, useState, useContext} from 'react'; // useContext import 추가
+import React, {useContext, useEffect, useState} from 'react'; // useContext import 추가
 import ChatTabs from './ChatTabs';
 import ChatList from './ChatList';
-import {useNavigate, useOutletContext, useLocation, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import ChatPage from '../../pages/ChatPage.jsx';
 import CreateGroupChatModal from "./CreateGroupChatModal.jsx";
 import ChatPageGroup from "../../pages/ChatPageGroup.jsx";
@@ -14,7 +14,7 @@ const Chat = () => {
     // 알림(새로운 채팅 메시지)을 통해 채팅 메뉴 접속 -> 바로 "해당 채팅방" 띄우기
     const location = useLocation();
     const params = new URLSearchParams(location.search); // 쿼리 파라미터를 다루기 위해 URLSearchParams 사용
-    const { type, chatId } = useParams(); // URL 파라미터에서 type과 chatId 가져오기
+    const {type, chatId} = useParams(); // URL 파라미터에서 type과 chatId 가져오기
     const [chatrooms, setChatrooms] = useState([]);
 
     const [activeTab, setActiveTab] = useState(type || 'personal'); // 기본값 'personal'로 설정하기
@@ -65,7 +65,7 @@ const Chat = () => {
                 type === 'group' ? room.groupChatroomId === chatId : room.roomId === chatId
             );
 
-            console.log('@@ 선택된 방 : '+ JSON.stringify(chatRoom, null, 2));
+            console.log('@@ 선택된 방 : ' + JSON.stringify(chatRoom, null, 2));
             if (chatRoom) {
                 setSelectedChat(chatRoom); // 찾은 채팅방 정보를 선택
             }

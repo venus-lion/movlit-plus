@@ -1,4 +1,4 @@
-import React, {useEffect, useState, Suspense, lazy, useCallback} from 'react';
+import React, {lazy, Suspense, useCallback, useEffect, useState} from 'react';
 import './Home.css';
 import {useOutletContext} from 'react-router-dom';
 import '../assets/css/loading.css';

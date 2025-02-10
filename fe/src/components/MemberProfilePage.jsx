@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from 'react'; // useContext import 추가
+import React, {useContext, useEffect, useState} from 'react'; // useContext import 추가
 import axiosInstance from '../axiosInstance';
 import './MemberProfilePage.css';
 import {FaUserCircle} from 'react-icons/fa';
@@ -23,7 +23,7 @@ function MemberProfilePage() {
     const [followerCount, setFollowerCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [loginMemberId, setLoginMemberId] = useState(null);
-    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
+    const {updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
 
     //현재 로그인한 사용자의 memberId 가져오기 (기존과 동일)
     const fetchLoginMemberId = async () => {

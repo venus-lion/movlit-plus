@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState, useContext} from 'react';
-import {Link, useParams, useLocation, useNavigate} from 'react-router-dom';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import {FaComment, FaHeart, FaRegHeart, FaRegStar, FaStar, FaStarHalfAlt, FaUserCircle,} from 'react-icons/fa';
 import MovieCarousel from '../pages/MovieCarousel';
@@ -41,7 +41,7 @@ function MovieDetailPage() {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [refreshKey, setRefreshKey] = useState(0); // 채팅 리스트 새로고침 키 추가
     const [currentMemberId, setCurrentMemberId] = useState(null); // 현재 로그인된 memberId 상태 추가
-    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
+    const {updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
 
     const initialVisibleCrews = 14;
 
@@ -479,7 +479,7 @@ function MovieDetailPage() {
 
                 // fromNoti를 false로 설정하고 URL 업데이트
                 params.set('fromNoti', 'false');
-                navigate({ search: params.toString() }, { replace: true });
+                navigate({search: params.toString()}, {replace: true});
 
                 return;
             }
@@ -499,10 +499,9 @@ function MovieDetailPage() {
 
             // 모달창 호출 후 fromNoti를 false로 설정
             params.set('fromNoti', 'false');
-            navigate({ search: params.toString() }, { replace: true });
+            navigate({search: params.toString()}, {replace: true});
 
             handleOpenGroupChatInfoModal(selectedCard, "movie");
-
 
 
         } catch (err) {

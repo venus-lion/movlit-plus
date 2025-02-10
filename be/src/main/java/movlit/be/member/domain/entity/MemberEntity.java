@@ -14,10 +14,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import movlit.be.chatRoom.domain.MemberRChatroom;
+import movlit.be.chatRoom.domain.MemberROneononeChatroom;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.member.domain.Member;
-import movlit.be.pub_sub.chatRoom.domain.MemberRChatroom;
-import movlit.be.pub_sub.chatRoom.domain.MemberROneononeChatroom;
 
 @Entity
 @NoArgsConstructor
