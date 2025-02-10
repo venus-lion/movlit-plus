@@ -3,8 +3,9 @@ package movlit.be.pub_sub.notification;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import movlit.be.pub_sub.chat_message.presentation.dto.response.ChatMessageDto;
 import movlit.be.chat_room.application.service.GroupChatroomService;
+import movlit.be.pub_sub.chat_message.presentation.dto.response.ChatMessageDto;
+import movlit.be.chat_room.application.service.GroupChatroomUseCase;
 import movlit.be.chat_room.application.service.OneononeChatroomService;
 import movlit.be.chat_room.presentation.dto.GroupChatroomMemberResponse;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomResponse;
@@ -22,9 +23,10 @@ public class NotificationUseCase {
 
     private final MemberReadService memberReadService;
     private final RedisNotificationPublisher redisNotificationPublisher;
-    private final GroupChatroomService groupChatroomService;
+    private final GroupChatroomUseCase groupChatroomUseCase;
     private final OneononeChatroomService oneononeChatroomService;
     private final NotificationService notificationService;
+    private final GroupChatroomService groupChatroomService;
 
     @Value("${share.url}")
     private String basicUrl;
@@ -34,7 +36,7 @@ public class NotificationUseCase {
         String roomName = groupChatroomService.fetchGroupChatroomById(new GroupChatroomId(chatMessageDto.getRoomId()))
                 .getRoomName();
         GroupChatroomId groupChatroomId = new GroupChatroomId(chatMessageDto.getRoomId());
-        List<GroupChatroomMemberResponse> responseList = groupChatroomService.fetchMembersInGroupChatroom(
+        List<GroupChatroomMemberResponse> responseList = groupChatroomUseCase.fetchMembersInGroupChatroom(
                 groupChatroomId, true);
 
         String senderNickname = memberReadService.findByMemberId(chatMessageDto.getSenderId()).getNickname();
