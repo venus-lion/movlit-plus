@@ -1,10 +1,11 @@
-package movlit.be.pub_sub.notification;
+package movlit.be.pub_sub.notification.application.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.common.util.IdFactory;
 import movlit.be.common.util.ids.MemberId;
+import movlit.be.pub_sub.notification.application.dto.NotificationDto;
 import movlit.be.pub_sub.notification.domain.Notification;
 import movlit.be.pub_sub.notification.infra.persistence.NotificationRepository;
 import org.springframework.stereotype.Service;

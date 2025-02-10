@@ -1,4 +1,4 @@
-package movlit.be.pub_sub.notification;
+package movlit.be.pub_sub.notification.application.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +12,9 @@ import movlit.be.common.config.RedisNotificationPublisher;
 import movlit.be.common.util.ids.GroupChatroomId;
 import movlit.be.common.util.ids.OneononeChatroomId;
 import movlit.be.member.application.service.MemberReadService;
+import movlit.be.pub_sub.notification.application.dto.NotificationDto;
+import movlit.be.pub_sub.notification.domain.NotificationMessage;
+import movlit.be.pub_sub.notification.domain.NotificationType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

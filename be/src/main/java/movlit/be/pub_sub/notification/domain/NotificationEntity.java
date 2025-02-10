@@ -1,4 +1,4 @@
-package movlit.be.pub_sub.notification;
+package movlit.be.pub_sub.notification.domain;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;

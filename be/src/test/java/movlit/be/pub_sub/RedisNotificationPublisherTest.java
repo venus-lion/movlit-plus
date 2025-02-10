@@ -6,8 +6,8 @@ import static org.mockito.Mockito.when;
 
 import movlit.be.common.config.RedisNotificationPublisher;
 import movlit.be.common.util.IdFactory;
-import movlit.be.pub_sub.notification.NotificationDto;
-import movlit.be.pub_sub.notification.NotificationType;
+import movlit.be.pub_sub.notification.application.dto.NotificationDto;
+import movlit.be.pub_sub.notification.domain.NotificationType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

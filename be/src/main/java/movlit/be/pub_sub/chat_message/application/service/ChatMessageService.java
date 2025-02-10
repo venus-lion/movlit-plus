@@ -14,7 +14,7 @@ import movlit.be.common.config.RedisMessagePublisher;
 import movlit.be.common.exception.RedisStreamOperationReturnNull;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.common.util.ids.OneononeChatroomId;
-import movlit.be.pub_sub.notification.NotificationUseCase;
+import movlit.be.pub_sub.notification.application.service.NotificationUseCase;
 import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
