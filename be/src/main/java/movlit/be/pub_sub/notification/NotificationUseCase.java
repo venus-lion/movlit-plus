@@ -31,7 +31,7 @@ public class NotificationUseCase {
                 .getRoomName();
         GroupChatroomId groupChatroomId = new GroupChatroomId(chatMessageDto.getRoomId());
         List<GroupChatroomMemberResponse> responseList = groupChatroomService.fetchMembersInGroupChatroom(
-                groupChatroomId);
+                groupChatroomId, true);
 
         String senderNickname = memberReadService.findByMemberId(chatMessageDto.getSenderId()).getNickname();
         String message = NotificationMessage.generateGroupChatMessage(senderNickname, roomName,
