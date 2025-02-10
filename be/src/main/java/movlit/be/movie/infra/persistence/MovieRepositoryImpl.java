@@ -1,6 +1,7 @@
 package movlit.be.movie.infra.persistence;
 
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.common.exception.MovieNotFoundException;
@@ -60,9 +61,18 @@ public class MovieRepositoryImpl implements MovieRepository {
     }
 
     @Override
-    public Movie findMostRecentMovieHeart(MemberId memberId) {
-        return null;
+    public Page<MovieEntity> findMovieEntityOrderByReleaseDateDesc(Pageable pageable) {
+        return movieJpaRepository.findMovieEntitiesByOrderByReleaseDateDesc(pageable);
+    }
 
+    @Override
+    public Page<MovieEntity> findMovieEntityByVoteCountGreaterThanOrderByPopularityDesc(Long minVoteCount, Pageable pageable) {
+        return movieJpaRepository.findMovieEntitiesByVoteCountGreaterThanEqualOrderByPopularityDesc(minVoteCount, pageable);
+    }
+
+    @Override
+    public Page<MovieEntity> findMovieEntityByMovieGenreIdForEntity_GenreId(Long genreId, Pageable pageable) {
+        return movieJpaRepository.findByMovieGenreEntityList_MovieGenreIdForEntity_GenreIdOrderByReleaseDateDescPopularityDescVoteCountDesc(genreId, pageable);
     }
 
 }

@@ -4,13 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.common.aspect.ExecutionTime;
 import movlit.be.movie.application.service.MovieReadService;
-import movlit.be.movie.presentation.dto.response.MovieListByGenreResponseDto;
-import movlit.be.movie.presentation.dto.response.MovieListResponseDto;
+import movlit.be.movie.presentation.dto.response.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/movies/main")
@@ -26,13 +27,13 @@ public class MovieReadController {
      */
     @ExecutionTime
     @GetMapping("/latest")
-    public ResponseEntity<MovieListResponseDto> getMovieLatest(
+    public ResponseEntity<MovieMainResponseDto> getMovieLatest(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int pageSize) {
 
-        MovieListResponseDto result = movieReadService.getMovieLatest(page, pageSize);
-
-        return ResponseEntity.ok().body(result);
+//        MovieListResponseDto result = movieReadService.getMovieLatest(page, pageSize);
+        MovieMainResponseDto response = movieReadService.getRecentMovieList(page, pageSize);
+        return ResponseEntity.ok().body(response);
     }
 
     /**
@@ -41,13 +42,14 @@ public class MovieReadController {
      */
     @ExecutionTime
     @GetMapping("/popular")
-    public ResponseEntity<MovieListResponseDto> getMoviePopular(
+    public ResponseEntity<MovieMainResponseDto> getMoviePopular(
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int pageSize) {
 
-        MovieListResponseDto result = movieReadService.getMoviePopular(page, pageSize);
+//        MovieListResponseDto result = movieReadService.getMoviePopular(page, pageSize);
+        MovieMainResponseDto response = movieReadService.getPopularMovieList(page, pageSize);
 
-        return ResponseEntity.ok().body(result);
+        return ResponseEntity.ok().body(response);
     }
 
     /**
@@ -56,13 +58,14 @@ public class MovieReadController {
      */
     @ExecutionTime
     @GetMapping("/genre")
-    public ResponseEntity<MovieListByGenreResponseDto> getMovieGroupbyGenre(
+    public ResponseEntity<MovieMainGenreResponseDto> getMovieGroupbyGenre(
             @RequestParam(required = true) Long genreId,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int pageSize) {
 
-        MovieListByGenreResponseDto reponseDto = movieReadService.getMovieGroupbyGenre(genreId, page, pageSize);
-        return ResponseEntity.ok().body(reponseDto);
+//        MovieListByGenreResponseDto reponseDto = movieReadService.getMovieGroupbyGenre(genreId, page, pageSize);
+        MovieMainGenreResponseDto response = movieReadService.getMovieListByGenre(genreId, page, pageSize);
+        return ResponseEntity.ok().body(response);
     }
 
 }

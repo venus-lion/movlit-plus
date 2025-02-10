@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.BatchSize;
 
 @Table(
         name = "movie",
@@ -71,6 +72,7 @@ public class MovieEntity {
     @OneToMany(mappedBy = "movieEntity")
     private List<MovieTagEntity> movieTagEntityList = new ArrayList<>();
 
+    @BatchSize(size = 20)
     @OneToMany(mappedBy = "movieEntity")
     private List<MovieGenreEntity> movieGenreEntityList = new ArrayList<>();
 

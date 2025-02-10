@@ -1,8 +1,11 @@
 package movlit.be.movie.domain.repository;
 
 import java.util.List;
+
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.movie.domain.Movie;
+import movlit.be.movie.domain.entity.MovieEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface MovieRepository {
@@ -15,12 +18,14 @@ public interface MovieRepository {
 
     List<Movie> findAllOrderByReleaseDateDesc(Pageable pageable);      // 개봉순
 
-//    List<Movie> findAllOrderByHeartCountDescVoteCountDescPopularityDesc(Pageable pageable);    // 인기순
-
     List<Movie> findByMovieGenreIdForEntity_GenreId(Long genreId, Pageable pageable);
-
-    Movie findMostRecentMovieHeart(MemberId memberId);      // 유저의 가장 최근 찜한 영화
 
     List<Movie> findByVoteCountGreaterThan500OrderByPopularityDesc(Long minVoteCount, Pageable pageable);
 
+    // 리펙토링
+    Page<MovieEntity> findMovieEntityOrderByReleaseDateDesc(Pageable pageable);
+
+    Page<MovieEntity> findMovieEntityByVoteCountGreaterThanOrderByPopularityDesc(Long minVoteCount, Pageable pageable);
+
+    Page<MovieEntity> findMovieEntityByMovieGenreIdForEntity_GenreId(Long genreId, Pageable pageable);
 }
