@@ -180,6 +180,8 @@ function MyPage() {
         try {
             await axiosInstance.post('/members/logout');
             localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+
             document.cookie =
                 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             updateLoginStatus(false);
