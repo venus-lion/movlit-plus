@@ -34,9 +34,6 @@ public class ChatMessageService {
 
     private static final String MESSAGE_QUEUE = "chat_message_queue";   // 큐 이름 (채팅방마다 별도의 큐를 사용할 수 있음)
 
-    @Value("${share.url}")
-    private String basicUrl;
-
     // 가장 최근 채팅 메시지 가져오기 (채팅 리스트에서 화면 표시)
     public ChatMessageDto fetchRecentMessage(String roomId) {
         return chatMessageRepository.findTopByRoomIdOrderByTimestampDesc(roomId);
