@@ -2,9 +2,11 @@ package movlit.be.common.config;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.pub_sub.chat_message.presentation.dto.response.ChatMessageDto;
@@ -77,7 +79,7 @@ public class RedisMessageSubscriber {
             log.info("RedisMessageSubscriber ::: publisher부터 발행받은 updateRoomDto - Member_Join : "
                     + updateRoomDto.toStringWithJoinMsg());
 
-            GroupChatroomId groupChatroomId = updateRoomDto.getGroupChatroomId();
+            GroupChatroomId groupChatroomId = new GroupChatroomId(updateRoomDto.getRoomId());
 
             // 2. 캐시 키 생성 (roomId 사용)
             String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;

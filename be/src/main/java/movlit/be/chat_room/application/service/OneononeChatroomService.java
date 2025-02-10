@@ -2,8 +2,11 @@ package movlit.be.chat_room.application.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.chat_room.domain.MemberROneononeChatroom;
@@ -36,6 +39,8 @@ public class OneononeChatroomService {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
     private final RedisMessagePublisher messagePublisher;
+
+    private static final String ONE_ON_ONE_CHATROOM_KEY_PREFIX = "oneononeChatList:";
 
     @Transactional
     public OneononeChatroomResponse createOneononeChatroom(MemberId memberId,
@@ -125,12 +130,17 @@ public class OneononeChatroomService {
 
     public List<OneononeChatroomResponse> fetchMyOneOnOneChatList(MemberId memberId) {
 
-        String redisKey = "oneononeChatList:" + memberId.getValue();
+        String redisKey = ONE_ON_ONE_CHATROOM_KEY_PREFIX + memberId.getValue();
 
         // Redis에서 채팅방 목록 조회
-        List<String> cachedData = redisTemplate.opsForList().range(redisKey, 0, -1);
+//        List<String> cachedData = redisTemplate.opsForList().range(redisKey, 0, -1);
+        Map<Object, Object> resultMap = redisTemplate.opsForHash().entries(redisKey);
 
-        if (cachedData != null && !cachedData.isEmpty()) {
+        if (resultMap != null && !resultMap.isEmpty()) {
+            List<String> cachedData = resultMap.values().stream()
+                    .map(value -> (String) value) // value가 문자열로 저장된 경우
+                    .toList();
+
             List<OneononeChatroomResponse> list = cachedData.stream()
                     .map(this::deserializeChatroomResponse)
                     .toList();
@@ -143,8 +153,10 @@ public class OneononeChatroomService {
 
         // Redis에 채팅방 목록 캐시
         response.forEach(chatroom -> {
+            String field = chatroom.getRoomId().getValue();
             String serializedChatroom = this.serializeChatroomResponse(chatroom);
-            redisTemplate.opsForList().rightPush(redisKey, serializedChatroom);
+//            redisTemplate.opsForList().rightPush(redisKey, serializedChatroom);
+            redisTemplate.opsForHash().put(redisKey, field, serializedChatroom);
         });
 
         return response;
@@ -152,11 +164,14 @@ public class OneononeChatroomService {
     }
 
     private void addOneononeChatroomToRedis(MemberEntity memberEntity, OneononeChatroomResponse response) {
-        String redisKey = "oneononeChatList:" + memberEntity.getMemberId().getValue();
+        String redisKey = ONE_ON_ONE_CHATROOM_KEY_PREFIX + memberEntity.getMemberId().getValue();
+        String field = response.getRoomId().getValue();
+
         String serializedChatroom = this.serializeChatroomResponse(response);
 
         // Redis 리스트에 채팅방 추가
-        redisTemplate.opsForList().rightPush(redisKey, serializedChatroom);
+//        redisTemplate.opsForList().rightPush(redisKey, serializedChatroom);
+        redisTemplate.opsForHash().put(redisKey, field, serializedChatroom);
         // TTL 설정 (1시간)
         redisTemplate.expire(redisKey, Duration.ofHours(1));
     }

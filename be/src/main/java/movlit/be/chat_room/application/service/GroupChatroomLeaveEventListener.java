@@ -3,8 +3,10 @@ package movlit.be.chat_room.application.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.pub_sub.chat_message.presentation.dto.response.MessageType;
@@ -47,7 +49,7 @@ public class GroupChatroomLeaveEventListener {
 
         // 2. UpdateRoomDto 생성 및 발행
         UpdateRoomDto updateRoomDto = new UpdateRoomDto(
-                groupChatroomId,
+                groupChatroomId.getValue(),
                 MessageType.GROUP,
                 UpdateRoomDto.EventType.MEMBER_LEAVE,
                 leftMemberId,
