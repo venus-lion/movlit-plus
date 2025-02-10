@@ -183,13 +183,24 @@ function App() {
                                 icon: notificationIcon,
                             });
 
-                            // 알림 종 (기존과 동일)
+                            // 페이지 내 알림 종(bell) 설정 (기존과 동일)
                             setNotifications((prev) => [...prev, notification]);
                             setNewNotification(true); // 새로운 알림 발생
 
+                            // 브라우저 알림 카드 클릭 시
                             noti.onclick = () => {
                                 // window.focus(); // 브라우저 창에 포커스
-                                window.location.href = notification.url; // notification.url로 페이지 이동
+                                console.log('클릭한 URL:', notification.url); // URL 값을 로그로 확인
+                                var url = notification.url;
+                                // URL이 'http'로 시작하면 절대 경로, 아니면 상대 경로로 처리
+                                if (url) {
+                                    url += '?fromNoti=true';
+                                    if (url.startsWith('http')) {
+                                        window.location.href = url; // 절대 URL로 이동
+                                    } else {
+                                        navigate(url); // 상대 URL로 이동
+                                    }
+                                }
                             };
 
                         }

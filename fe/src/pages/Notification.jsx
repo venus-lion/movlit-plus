@@ -83,41 +83,45 @@ function Notification() {
                 <button className="delete-all-btn" onClick={deleteAllmyNotifications}>모두 삭제</button>
             </h1>
             <div className="notification-list">
-                {myNotifications.map((notification) => {
-                    // 각 notification.type에 따라 이미지 경로를 선택
-                    let imgSrc;
-                    switch (notification.type) {
-                        case 'CONTENT_HEART_CHATROOM':
-                            imgSrc = '/images/notification-heartmark-icon.png'; // 하트 아이콘
-                            break;
-                        case 'FOLLOW':
-                            imgSrc = '/images/notification-follow-icon.png'; // 팔로우 아이콘
-                            break;
-                        case 'ONE_ON_ONE_CHAT':
-                            imgSrc = '/images/notification-onechat-icon.png'; // 1대1 채팅 아이콘
-                            break;
-                        case 'GROUP_CHAT':
-                            imgSrc = '/images/notification-groupchat-icon.png'; // 그룹 채팅 아이콘
-                            break;
-                        default:
-                            imgSrc = '/images/notification-bell-icon.png'; // 기본 아이콘
-                    }
+                {myNotifications.length === 0 ? (  // 알림이 없는 경우 체크
+                    <p>알림이 없습니다</p>
+                ) : (
+                    myNotifications.map((notification) => {
+                        // 각 notification.type에 따라 이미지 경로를 선택
+                        let imgSrc;
+                        switch (notification.type) {
+                            case 'CONTENT_HEART_CHATROOM':
+                                imgSrc = '/images/notification-heartmark-icon.png'; // 하트 아이콘
+                                break;
+                            case 'FOLLOW':
+                                imgSrc = '/images/notification-follow-icon.png'; // 팔로우 아이콘
+                                break;
+                            case 'ONE_ON_ONE_CHAT':
+                                imgSrc = '/images/notification-onechat-icon.png'; // 1대1 채팅 아이콘
+                                break;
+                            case 'GROUP_CHAT':
+                                imgSrc = '/images/notification-groupchat-icon.png'; // 그룹 채팅 아이콘
+                                break;
+                            default:
+                                imgSrc = '/images/notification-bell-icon.png'; // 기본 아이콘
+                        }
 
-                    return (
-                        <div
-                            key={notification.id}
-                            className="notification-item"
-                        >
-                            <img src={imgSrc} alt="아이콘" className="noti-icon"/>
-                            <p className="noti-message"
-                               onClick={() => handleNotificationClick(notification.url)} // 클릭 시 URL로 이동
-                               style={{cursor: 'pointer'}}
-                            >{notification.message}</p>
-                            <button className="delete-btn" onClick={() => deleteNotification(notification.id)}>X
-                            </button>
-                        </div>
-                    );
-                })}
+                        return (
+                            <div
+                                key={notification.id}
+                                className="notification-item"
+                            >
+                                <img src={imgSrc} alt="아이콘" className="noti-icon"/>
+                                <p className="noti-message"
+                                   onClick={() => handleNotificationClick(notification.url)} // 클릭 시 URL로 이동
+                                   style={{cursor: 'pointer'}}
+                                >{notification.message}</p>
+                                <button className="delete-btn" onClick={() => deleteNotification(notification.id)}>X
+                                </button>
+                            </div>
+                        );
+                    })
+                )}
             </div>
         </div>
     );

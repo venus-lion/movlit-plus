@@ -234,13 +234,7 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
         },
-        // chatListContainer: {
-        //     maxHeight: '550px',
-        //     overflowY: 'auto',
-        //     border: '1px solid #ddd',
-        //     padding: '10px',
-        //     borderRadius: '4px',
-        // },
+
     };
 
     if (loading) return <div>로딩 중...</div>;
