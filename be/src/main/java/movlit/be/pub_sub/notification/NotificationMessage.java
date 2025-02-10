@@ -23,7 +23,7 @@ public class NotificationMessage {
 
         if (contentType.equals("MV")) {
             return "[영화] " + contentName + " 에 대한 채팅방 ( " + roomName + " ) 이(가) 생성되었습니다.";
-        }else {
+        } else {
             return "[책] " + contentName + " 에 대한 채팅방 ( " + roomName + ") 이(가) 생성되었습니다.";
         }
 

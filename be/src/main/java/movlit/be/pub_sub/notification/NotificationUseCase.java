@@ -3,12 +3,15 @@ package movlit.be.pub_sub.notification;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import movlit.be.pub_sub.chat_message.presentation.dto.response.ChatMessageDto;
+import movlit.be.chat_room.application.service.GroupChatroomService;
+import movlit.be.chat_room.application.service.OneononeChatroomService;
+import movlit.be.chat_room.presentation.dto.GroupChatroomMemberResponse;
+import movlit.be.chat_room.presentation.dto.OneononeChatroomResponse;
+import movlit.be.common.config.RedisNotificationPublisher;
 import movlit.be.common.util.ids.GroupChatroomId;
+import movlit.be.common.util.ids.OneononeChatroomId;
 import movlit.be.member.application.service.MemberReadService;
-import movlit.be.pub_sub.RedisNotificationPublisher;
-import movlit.be.pub_sub.chatMessage.presentation.dto.response.ChatMessageDto;
-import movlit.be.pub_sub.chatRoom.application.service.GroupChatroomService;
-import movlit.be.pub_sub.chatRoom.presentation.dto.GroupChatroomMemberResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,18 +23,19 @@ public class NotificationUseCase {
     private final MemberReadService memberReadService;
     private final RedisNotificationPublisher redisNotificationPublisher;
     private final GroupChatroomService groupChatroomService;
+    private final OneononeChatroomService oneononeChatroomService;
     private final NotificationService notificationService;
 
     @Value("${share.url}")
     private String basicUrl;
 
     // 그룹 채팅방 메시지 전송 알림
-    public void groupChatroomMessageNotification(ChatMessageDto chatMessageDto) {
+    public void publishGroupChatMessageNotification(ChatMessageDto chatMessageDto) {
         String roomName = groupChatroomService.fetchGroupChatroomById(new GroupChatroomId(chatMessageDto.getRoomId()))
                 .getRoomName();
         GroupChatroomId groupChatroomId = new GroupChatroomId(chatMessageDto.getRoomId());
         List<GroupChatroomMemberResponse> responseList = groupChatroomService.fetchMembersInGroupChatroom(
-                groupChatroomId);
+                groupChatroomId, true);
 
         String senderNickname = memberReadService.findByMemberId(chatMessageDto.getSenderId()).getNickname();
         String message = NotificationMessage.generateGroupChatMessage(senderNickname, roomName,
@@ -53,9 +57,34 @@ public class NotificationUseCase {
         notificationDtoList.forEach(notificationDto -> {
             // Notification Redis Publish (SSE 알림)
             redisNotificationPublisher.publishNotification(notificationDto);
+
             // Notification MongoDB에 저장
             notificationService.saveNotification(notificationDto);
         });
+    }
+
+    // 일대일 채팅방 메시지 전송 알림
+    public void publishOneOnOneChatMessageNotification(ChatMessageDto chatMessageDto) {
+        OneononeChatroomId roomId = new OneononeChatroomId(chatMessageDto.getRoomId());
+        OneononeChatroomResponse roomInfo = oneononeChatroomService.fetchChatroomInfo(roomId,
+                chatMessageDto.getSenderId());
+
+        String senderNickname = memberReadService.findByMemberId(chatMessageDto.getSenderId()).getNickname();
+        String roomIdStr = roomInfo.getRoomId().getValue();
+        String url = basicUrl + "/chatMain/" + roomIdStr + "/personal";
+
+        NotificationDto notification = new NotificationDto(
+                roomInfo.getReceiverId().getValue(),    // 메시지 받는 사람 memberId
+                NotificationMessage.generateChatMessage(senderNickname, chatMessageDto.getMessage()),
+                NotificationType.ONE_ON_ONE_CHAT,
+                url
+        );
+
+        // Notification Redis Publish (SSE 알림)
+        redisNotificationPublisher.publishNotification(notification);
+
+        // Notification MongoDB에 저장
+        notificationService.saveNotification(notification);
     }
 
 }

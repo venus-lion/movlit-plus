@@ -2659,8 +2659,9 @@ table.default thead {
 #footer {
     text-align: center;
     padding: 10em 0 5em 0;
-    border-top: solid 1px #c1cac5;
+    border-top: solid 10px #c1cac5;
     border-top-width: 8px;
+    margin-top: 100px;
 }
 
 #footer a {

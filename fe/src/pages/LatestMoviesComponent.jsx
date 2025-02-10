@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import useMovieList from '../hooks/useMovieList';
 import MovieCarousel from './MovieCarousel';
+import '../assets/css/loading.css';
 
-function LatestMoviesComponent() {
+function LatestMoviesComponent({onMoviesLoaded, hidden}) {
     const {movies, loading, error} = useMovieList({
         endpoint: '/movies/main/latest',
         params: {pageSize: 20},
@@ -23,13 +24,25 @@ function LatestMoviesComponent() {
             setStartIndex(newIndex);
         }
     };
+    useEffect(() => {
+        if (onMoviesLoaded && movies) {
+            onMoviesLoaded(movies);
+        }
+    }, [movies, onMoviesLoaded]);
 
-    if (loading) return <p>Loading latest movies...</p>;
+    if (loading) return (
+        <div className="loading-container">
+            <div className="spinner"></div>
+            <p>최근 영화 목록을 불러오는 중입니다!</p>
+        </div>
+    );
     if (error) return (
         <div>
             <p>Error loading latest movies.</p>
         </div>
     );
+
+    if (hidden) return null;
 
     return (
         <MovieCarousel

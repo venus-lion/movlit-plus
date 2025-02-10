@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState, useContext} from 'react';
-import {Link, useParams, useLocation, useNavigate} from 'react-router-dom';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import {FaComment, FaHeart, FaRegHeart, FaRegStar, FaStar, FaStarHalfAlt, FaUserCircle,} from 'react-icons/fa';
 import MovieCarousel from '../pages/MovieCarousel';
@@ -41,7 +41,7 @@ function MovieDetailPage() {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [refreshKey, setRefreshKey] = useState(0); // 채팅 리스트 새로고침 키 추가
     const [currentMemberId, setCurrentMemberId] = useState(null); // 현재 로그인된 memberId 상태 추가
-    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
+    const {updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
 
     const initialVisibleCrews = 14;
 
@@ -479,7 +479,7 @@ function MovieDetailPage() {
 
                 // fromNoti를 false로 설정하고 URL 업데이트
                 params.set('fromNoti', 'false');
-                navigate({ search: params.toString() }, { replace: true });
+                navigate({search: params.toString()}, {replace: true});
 
                 return;
             }
@@ -499,10 +499,9 @@ function MovieDetailPage() {
 
             // 모달창 호출 후 fromNoti를 false로 설정
             params.set('fromNoti', 'false');
-            navigate({ search: params.toString() }, { replace: true });
+            navigate({search: params.toString()}, {replace: true});
 
             handleOpenGroupChatInfoModal(selectedCard, "movie");
-
 
 
         } catch (err) {
@@ -588,11 +587,12 @@ function MovieDetailPage() {
                     <img src={movieData.posterUrl} alt={movieData.title}/>
                     <button
                         id="groupChatButton"
-                        style={{
-                            ...styles.button,
-                            backgroundColor: '#FF3366',
-                            marginTop: '20px',
-                        }}
+                        // style={{
+                        //     ...styles.button,
+                        //     backgroundColor: '#FF3366',
+                        //     marginTop: '20px',
+                        // }}
+                        className="button-common join-button"
                         onClick={() => handleJoinGroupChatroom(movieId)}
                     >
                         그룹채팅 입장
@@ -661,14 +661,19 @@ function MovieDetailPage() {
                             </div>
                         </div>
                         <div style={styles.buttonGroup}>
+                            {/*<button*/}
+                            {/*    id="wishButton"*/}
+                            {/*    style={{*/}
+                            {/*        ...styles.button,*/}
+                            {/*        backgroundColor: movieData.isHearted*/}
+                            {/*            ? '#FF3366'*/}
+                            {/*            : '#4080ff',*/}
+                            {/*    }}*/}
+                            {/*    onClick={handleWishClick}*/}
+                            {/*>*/}
                             <button
                                 id="wishButton"
-                                style={{
-                                    ...styles.button,
-                                    backgroundColor: movieData.isHearted
-                                        ? '#FF3366'
-                                        : '#4080ff',
-                                }}
+                                className={`heart-button ${movieData.isHearted ? 'button-hearted' : 'button-not-hearted'}`}
                                 onClick={handleWishClick}
                             >
                                 {movieData.isHearted ? '찜 완료' : '찜'}
@@ -717,7 +722,8 @@ function MovieDetailPage() {
                     {!showCommentInput && userComment && (
                         <div style={styles.commentActions}>
                             <button
-                                style={styles.editButton}
+                                // style={styles.editButton}
+                                className="edit-button"
                                 onClick={() => {
                                     setMyRating(userComment.score);
                                     setMyComment(userComment.comment);
@@ -726,7 +732,7 @@ function MovieDetailPage() {
                             >
                                 수정하기
                             </button>
-                            <button style={styles.deleteButton} onClick={handleDeleteComment}>
+                            <button className="delete-button" onClick={handleDeleteComment}>
                                 삭제하기
                             </button>
                         </div>

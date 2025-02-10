@@ -64,7 +64,7 @@ function BookSearchDetailPage() {
                 ))}
             </div>
 
-            {loading && <div>Loading...</div>}
+            {loading && <div>열심히 일하고 있어요!</div>}
 
             <div className="pagination-detail">
                 {Array.from({length: totalPages}, (_, index) => index + 1).map((pageNum) => (

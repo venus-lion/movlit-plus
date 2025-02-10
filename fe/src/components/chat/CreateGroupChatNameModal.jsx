@@ -1,4 +1,4 @@
-import React, {useState, useContext} from "react"; // useContext import 추가
+import React, {useContext, useState} from "react"; // useContext import 추가
 import Modal from "react-modal";
 import {FaRegStar, FaStar, FaStarHalfAlt} from 'react-icons/fa';
 import "../../assets/css/CreateGroupChatNameModal.css";
@@ -25,7 +25,7 @@ const CreateGroupChatNameModal = ({isOpen, onClose, selectedCard, selectedCatego
     if (!selectedCard) return null;
 
     const [chatroomName, setChatroomName] = useState("");
-    const { updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
+    const {updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
 
     const handleInputChange = (event) => {
         setChatroomName(event.target.value);

@@ -11,7 +11,6 @@ public interface NotificationMongoRepository extends MongoRepository<Notificatio
 
     List<Notification> findByMemberIdAndIsReadOrderByTimestampDesc(MemberId memberId, Boolean isRead);
 
-
     void deleteAllByMemberId(MemberId memberId);
 
 }

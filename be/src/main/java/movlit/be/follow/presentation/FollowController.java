@@ -89,13 +89,30 @@ public class FollowController {
         return ResponseEntity.status(HttpStatus.OK).body(followResponseList);
     }
 
+    // 나를 팔로우하는 사람들, 내 팔로워 목록 조회
+    @GetMapping("/{memberId}/follow/details")
+    public ResponseEntity<List<FollowResponse>> getFollowerDetail(
+            @PathVariable MemberId memberId
+    ) {
+        List<FollowResponse> followResponseList = followReadService.getMyFollowersDetails(memberId);
+        return ResponseEntity.status(HttpStatus.OK).body(followResponseList);
+    }
+
+    // 내가 팔로우하는 사람들, 내 팔로우 목록 조회
+    @GetMapping("/{memberId}/following/details")
+    public ResponseEntity<List<FollowResponse>> getFollowingDetail(
+            @PathVariable MemberId memberId
+    ) {
+        List<FollowResponse> followResponseList = followReadService.getMyFollowingDetail(memberId);
+        return ResponseEntity.status(HttpStatus.OK).body(followResponseList);
+    }
+
     // 나를 팔로우하는 사람들(팔로워) 개수 조회 - 내 팔로워 개수
     @GetMapping("/{memberId}/followers/count")
     public ResponseEntity<Integer> getMyFollowerCount(
             @PathVariable MemberId memberId
     ) {
         Integer followerCount = followReadService.getFollowerCount(memberId);
-
         return ResponseEntity.status(HttpStatus.OK).body(followerCount);
     }
 

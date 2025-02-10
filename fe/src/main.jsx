@@ -22,6 +22,7 @@ import Notification from "./pages/Notification.jsx";
 import MemberProfilePage from "./components/MemberProfilePage.jsx";
 import PrivateRoute from "./PrivateRoute.jsx";
 import FollowList from "./pages/FollowList.jsx";
+import FollowListPer from "./pages/FollowListPer.jsx";
 
 const router = createBrowserRouter([
     {
@@ -113,6 +114,14 @@ const router = createBrowserRouter([
             {
                 path: '/my-followings',
                 element: <FollowList type="followings"/>
+            },
+            {
+                path: '/members/:memberId/followers',
+                element: <FollowListPer/>
+            },
+            {
+                path: '/members/:memberId/followings',
+                element: <FollowListPer/>
             }
         ],
     },

@@ -14,10 +14,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import movlit.be.chat_room.domain.MemberRChatroom;
+import movlit.be.chat_room.domain.MemberROneononeChatroom;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.member.domain.Member;
-import movlit.be.pub_sub.chatRoom.domain.MemberRChatroom;
-import movlit.be.pub_sub.chatRoom.domain.MemberROneononeChatroom;
 
 @Entity
 @NoArgsConstructor
@@ -41,9 +41,6 @@ public class MemberEntity {
 
     @Getter
     private String dob;
-
-    @Getter
-    private String profileImgId;
 
     @Getter
     private String profileImgUrl;
@@ -76,7 +73,6 @@ public class MemberEntity {
 
     @Builder
     public MemberEntity(MemberId memberId, String email, String nickname, String password, String dob,
-                        String profileImgId,
                         String profileImgUrl, String role, String provider, LocalDateTime regDt, LocalDateTime updDt,
                         List<MemberGenreEntity> memberGenreEntityList, boolean delYn) {
         this.memberId = memberId;
@@ -84,7 +80,6 @@ public class MemberEntity {
         this.nickname = nickname;
         this.password = password;
         this.dob = dob;
-        this.profileImgId = profileImgId;
         this.profileImgUrl = profileImgUrl;
         this.role = role;
         this.provider = provider;
@@ -97,7 +92,6 @@ public class MemberEntity {
     public void updateMember(Member member, List<MemberGenreEntity> memberGenreEntityList) {
         this.nickname = member.getNickname();
         this.password = member.getPassword();
-        // TODO: profileImgId(), profileImgUrl()
         this.dob = member.getDob();
         this.updDt = member.getUpdDt();
         this.memberGenres.replaceWith(memberGenreEntityList);
@@ -128,7 +122,6 @@ public class MemberEntity {
                 ", nickname='" + nickname + '\'' +
                 ", password='" + password + '\'' +
                 ", dob='" + dob + '\'' +
-                ", profileImgId='" + profileImgId + '\'' +
                 ", profileImgUrl='" + profileImgUrl + '\'' +
                 ", role='" + role + '\'' +
                 ", provider='" + provider + '\'' +

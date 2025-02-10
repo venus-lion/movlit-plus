@@ -45,7 +45,7 @@ function FollowList({type}) {
                         <div className="user-info">
                             <div className="nickname">
                                 <Link to={`/members/${follow.memberId}`} className="user-link">
-                                      {follow.nickname} {/* nickname 텍스트를 Link 컴포넌트 안으로 이동 */}
+                                    {follow.nickname} {/* nickname 텍스트를 Link 컴포넌트 안으로 이동 */}
                                 </Link>
                             </div>
                             <div className="email">{follow.email}</div>

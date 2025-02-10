@@ -14,6 +14,7 @@ const useMovieList = ({endpoint, params = {}, pageSize = 20}) => {
                     params: {...params, pageSize},
                 });
                 setMovies(response.data.movieList);  // 영화 목록 저장
+                console.log(response.data);
             } catch (err) {
                 console.error(`Error fetching movies from ${endpoint}:`, err);
                 setError(err);

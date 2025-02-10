@@ -3,6 +3,7 @@ package movlit.be.movie.domain.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -15,8 +16,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.BatchSize;
 
-@Table(name = "movie")
+@Table(
+        name = "movie",
+        indexes = {
+                @Index(name = "idx_release_date", columnList = "releaseDate DESC"),
+                @Index(name = "idx_vote_count", columnList = "voteCount"),
+                @Index(name = "idx_popularity", columnList = "popularity"),
+                @Index(name = "idx_vote_count_popularity", columnList = "voteCount DESC, popularity DESC"),
+                @Index(name = "idx_release_date_popularity_vote_count", columnList = "releaseDate DESC, popularity DESC, voteCount DESC"),
+
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -58,6 +70,7 @@ public class MovieEntity {
     @OneToMany(mappedBy = "movieEntity")
     private List<MovieTagEntity> movieTagEntityList = new ArrayList<>();
 
+    @BatchSize(size = 20)
     @OneToMany(mappedBy = "movieEntity")
     private List<MovieGenreEntity> movieGenreEntityList = new ArrayList<>();
 

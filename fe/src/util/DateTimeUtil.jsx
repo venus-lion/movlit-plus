@@ -1,5 +1,4 @@
-import React from 'react';
-import {parseISO, format, differenceInMinutes, isToday} from 'date-fns';
+import {differenceInMinutes, format, isToday, parseISO} from 'date-fns';
 import {utcToZonedTime} from 'date-fns-tz';
 import {ko} from 'date-fns/locale';
 

@@ -77,17 +77,16 @@ public class NotificationController {
 
     // 읽지 않은 알림 조회 (메인페이지에서 읽지 않은 알림이 있을 시 -> 종 아이콘에 빨간색 뱃지 "N" 표시)
     @GetMapping("/api/notification/unread")
-    public ResponseEntity<List<Notification>> fetchUnreadNotifications(@AuthenticationPrincipal MyMemberDetails details) {
+    public ResponseEntity<List<Notification>> fetchUnreadNotifications(
+            @AuthenticationPrincipal MyMemberDetails details) {
         if (details != null) {
             MemberId memberId = details.getMemberId();
-            List<Notification> unreadNotifications =  notificationService.fetchUnreadNotifications(memberId);
+            List<Notification> unreadNotifications = notificationService.fetchUnreadNotifications(memberId);
             return ResponseEntity.ok().body(unreadNotifications);
         } else {
             return ResponseEntity.badRequest().build();
         }
     }
-
-
 
 
 }

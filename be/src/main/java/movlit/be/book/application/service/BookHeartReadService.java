@@ -4,7 +4,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import movlit.be.book.domain.repository.BookHeartRepository;
 import movlit.be.book.infra.persistence.recommend_jpa.BookHeartRecommendRepository;
-import movlit.be.common.exception.BookHeartNotFoundException;
 import movlit.be.common.util.ids.BookId;
 import movlit.be.common.util.ids.MemberId;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,9 @@ public class BookHeartReadService {
 
         if (bookIds.isEmpty()) {
             // 해당 유저가 찜한 도서가 존재하지 않는다.
-            throw new BookHeartNotFoundException();
+            //throw new BookHeartNotFoundException();
+            System.out.println("BookHeartReadService >>> 회원님이 찜한 도서가 없습니다.");
+            return null;
         }
         return bookIds;
     }

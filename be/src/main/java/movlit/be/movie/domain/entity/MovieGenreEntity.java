@@ -3,6 +3,7 @@ package movlit.be.movie.domain.entity;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
@@ -14,11 +15,17 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "movie_genre")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
 @ToString
+@Table(
+        name = "movie_genre",
+        indexes = {
+                @Index(name = "idx_movie_genre_movie_id", columnList = "movie_id"),
+                @Index(name = "idx_movie_genre_genre_id", columnList = "genre_id")
+        }
+)
 public class MovieGenreEntity {
 
     @EmbeddedId

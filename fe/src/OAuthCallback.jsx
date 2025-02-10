@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
-import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
+import React, {useEffect} from 'react';
+import {useLocation, useNavigate, useOutletContext} from 'react-router-dom';
 import axiosInstance from "./axiosInstance.js";
 
 const OAuthCallback = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { updateLoginStatus } = useOutletContext();
+    const {updateLoginStatus} = useOutletContext();
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -17,8 +17,8 @@ const OAuthCallback = () => {
             if (code) {
                 try {
                     // 엔드포인트 경로를 '/api/token'으로 수정합니다.
-                    const response = await axiosInstance.post('/token', { code });
-                    const { accessToken, refreshToken } = response.data;
+                    const response = await axiosInstance.post('/token', {code});
+                    const {accessToken, refreshToken} = response.data;
 
                     localStorage.setItem('accessToken', accessToken);
 
