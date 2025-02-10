@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import movlit.be.chat_room.application.convertor.ChatroomConvertor;
 import movlit.be.chat_room.domain.MemberROneononeChatroom;
 import movlit.be.chat_room.domain.OneononeChatroom;
 import movlit.be.chat_room.domain.repository.OneononeChatroomRepository;
@@ -39,27 +40,20 @@ public class OneononeChatroomService {
     private final RedisMessagePublisher messagePublisher;
 
     @Transactional
-    public OneononeChatroomResponse createOneononeChatroom(MemberId memberId,
+    public OneononeChatroomResponse createOneOnOneChatroom(MemberId memberId,
                                                            OneononeChatroomRequest request) {
         MemberEntity sender = memberReadService.findEntityByMemberId(memberId);
         MemberEntity receiver = memberReadService.findEntityByMemberId(request.getReceiverId());
 
-        // For Valid
         validateAlreadyExist(sender, receiver);
 
         OneononeChatroom oneononeChatroom = new OneononeChatroom(IdFactory.createOneOnOneChatroomId());
-
-        // sender의 일대일 채팅방 관계 entity set
         injectOneOnOneChatroom(oneononeChatroom, sender);
-
-        // receiver의 일대일 채팅방 관계 entity set
         injectOneOnOneChatroom(oneononeChatroom, receiver);
 
-        // DB 저장
         OneononeChatroom savedOneononeChatroom = oneOnOneChatroomRepository.create(oneononeChatroom);
-
-        OneononeChatroomResponse senderResponse = makeResponse(savedOneononeChatroom, receiver);
-        OneononeChatroomResponse receiverResponse = makeResponse(savedOneononeChatroom, sender);
+        OneononeChatroomResponse senderResponse = makeOneOnOneChatroomResponse(savedOneononeChatroom, receiver);
+        OneononeChatroomResponse receiverResponse = makeOneOnOneChatroomResponse(savedOneononeChatroom, sender);
 
         // Redis에 채팅방 추가
         this.addOneOnOneChatroomToRedis(sender, senderResponse);
@@ -68,17 +62,11 @@ public class OneononeChatroomService {
         return senderResponse;
     }
 
-    public void publishOneononeChatroomCreate(MemberId topicSenderId, OneononeChatroomCreatePubRequest request) {
+    public void publishOneOnOneChatroomCreate(MemberId topicSenderId, OneononeChatroomCreatePubRequest request) {
         MemberEntity topicSender = memberReadService.findEntityByMemberId(topicSenderId);
-        OneononeChatroomCreatePubDto oneononeChatroomCreatePubDto =
-                new OneononeChatroomCreatePubDto(
-                        request.getRoomId(),
-                        request.getTopicReceiverId(),
-                        topicSenderId,
-                        topicSender.getNickname(),
-                        topicSender.getProfileImgUrl(),
-                        request.getChatMessage()
-                );
+        OneononeChatroomCreatePubDto oneononeChatroomCreatePubDto = ChatroomConvertor.makeOneononeChatroomCreatePubDto(
+                topicSenderId, request, topicSender
+        );
         messagePublisher.createOneononeChatroom(oneononeChatroomCreatePubDto);
     }
 
@@ -91,8 +79,8 @@ public class OneononeChatroomService {
         }
     }
 
-    private static OneononeChatroomResponse makeResponse(OneononeChatroom savedOneononeChatroom,
-                                                         MemberEntity receiver) {
+    private static OneononeChatroomResponse makeOneOnOneChatroomResponse(OneononeChatroom savedOneononeChatroom,
+                                                                         MemberEntity receiver) {
         return new OneononeChatroomResponse(
                 savedOneononeChatroom.getOneononeChatroomId(),
                 receiver.getMemberId(),
