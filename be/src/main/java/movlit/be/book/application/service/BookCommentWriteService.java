@@ -34,7 +34,7 @@ public class BookCommentWriteService {
             throws BookCommentAccessDenied {
         // 한 사용자는 하나의 도서에 관해 1개의 리뷰만 등록 가능
         BookCommentResponseDto savedComment = bookCommentRepository.fetchCommentByMemberAndBook(memberId, bookId);
-        Member member = memberReadService.findByMemberId(memberId);
+        Member member = memberReadService.fetchByMemberId(memberId);
         BookVo bookVo = bookDetailReadService.fetchByBookId(bookId);
 
         // 첫 리뷰라면 -> 리뷰 저장
@@ -86,7 +86,7 @@ public class BookCommentWriteService {
     public void deleteBookComment(MemberId memberId, BookId bookId, BookCommentId bookCommentId)
             throws BookCommentAccessDenied {
         BookCommentVo bookCommentVo = bookCommentReadService.fetchByBookCommentId(bookCommentId);
-        Member member = memberReadService.findByMemberId(memberId);
+        Member member = memberReadService.fetchByMemberId(memberId);
         BookVo bookVo = bookDetailReadService.fetchByBookId(bookId);
 
         if (bookCommentVo != null) {

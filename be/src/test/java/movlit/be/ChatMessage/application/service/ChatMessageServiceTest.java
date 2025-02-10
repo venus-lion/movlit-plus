@@ -106,7 +106,7 @@ public class ChatMessageServiceTest extends AcceptanceTest {
         when(oneononeChatroomService.fetchChatroomInfo(mockRoomInfo.getRoomId(),
                 testMessageDto2.getSenderId())).thenReturn(mockRoomInfo);
         Member mockMember = mock(Member.class);
-        when(memberReadService.findByMemberId(testMessageDto2.getSenderId())).thenReturn(mockMember);
+        when(memberReadService.fetchByMemberId(testMessageDto2.getSenderId())).thenReturn(mockMember);
         when(mockMember.getNickname()).thenReturn("테스터2");
     }
 

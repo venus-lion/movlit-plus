@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.common.util.IdFactory;
 import movlit.be.common.util.ids.MemberId;
+import movlit.be.pub_sub.notification.application.convertor.NotificationConvertor;
 import movlit.be.pub_sub.notification.application.dto.NotificationDto;
 import movlit.be.pub_sub.notification.domain.Notification;
 import movlit.be.pub_sub.notification.infra.persistence.NotificationRepository;
@@ -38,16 +39,7 @@ public class NotificationService {
 
     // 알림 MongoDB 저장
     public void saveNotification(NotificationDto notificationdto) {
-
-        // Dto -> Document
-        Notification notification = new Notification(
-                IdFactory.createMemberId(notificationdto.getId()),
-                notificationdto.getMessage(),
-                notificationdto.getType(),
-                notificationdto.getUrl(),
-                notificationdto.getTimestamp()
-        );
-
+        Notification notification = NotificationConvertor.makeNotification(notificationdto);
         notificationRepository.saveNotification(notification);
     }
 

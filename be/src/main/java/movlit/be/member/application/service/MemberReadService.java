@@ -32,7 +32,7 @@ public class MemberReadService {
 
     @Transactional(readOnly = true)
     public Member findByMemberEmail(String email) {
-        return memberRepository.findByEmail(email);
+        return memberRepository.fetchByEmail(email);
     }
 
     public int login(String email, String pwd) {
@@ -48,13 +48,13 @@ public class MemberReadService {
     }
 
     @Transactional(readOnly = true)
-    public Member findByMemberId(MemberId memberId) {
-        return memberRepository.findById(memberId);
+    public Member fetchByMemberId(MemberId memberId) {
+        return memberRepository.fetchById(memberId);
     }
 
     @Transactional(readOnly = true)
     public MemberEntity findEntityByMemberId(MemberId memberId) {
-        return memberRepository.findEntityById(memberId);
+        return memberRepository.fetchEntityById(memberId);
     }
 
     public void validateMemberIdExists(MemberId memberId) {
@@ -65,7 +65,7 @@ public class MemberReadService {
 
     @Transactional(readOnly = true)
     public List<GenreListReadResponse> fetchGenreListById(MemberId memberId) {
-        MemberEntity memberEntity = memberRepository.findEntityById(memberId);
+        MemberEntity memberEntity = memberRepository.fetchEntityById(memberId);
         return memberEntity.getMemberGenreEntityList().stream()
                 .map(genre -> {
                     Long genreId = genre.getGenreId();
@@ -87,14 +87,14 @@ public class MemberReadService {
     @Transactional(readOnly = true)
     public MemberIdResponse fetchMemberId(String accessToken) {
         String email = jwtTokenUtil.extractEmail(accessToken);
-        MemberId memberId = memberRepository.findByEmail(email).getMemberId();
+        MemberId memberId = memberRepository.fetchByEmail(email).getMemberId();
         return MemberIdResponse.of(memberId);
     }
 
     @Transactional(readOnly = false)
     public MemberEntity findEntityById(MemberId memberId) {
         entityManager.clear(); // 1차 캐시 초기화 (안하면, 프로필 업데이트된 멤버정보를 제대로 조회 안하고, JPA에서 프로필업데이트되기 전, 멤버정보를 조회한다)
-        MemberEntity memberEntity = memberRepository.findEntityById(memberId);
+        MemberEntity memberEntity = memberRepository.fetchEntityById(memberId);
 
         System.out.println("::MemberReadService >>> 찾은 memberEntity " + memberEntity.toStringExceptLazyLoading());
         return memberEntity;
