@@ -1,11 +1,45 @@
-import React, {useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axiosInstance from '../axiosInstance';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select from 'react-select';
+import { AppContext } from "../App.jsx";
+import { FaEdit, FaTimes } from 'react-icons/fa';
+import styled from 'styled-components';
+
+const StyledButtonContainer = styled.div`
+    display: flex;
+    justify-content: center; // 버튼들을 중앙 정렬
+    gap: 20px; // 버튼 사이의 간격
+    margin-top: 30px;
+`;
+
+const StyledButton = styled.button`
+    padding: 8px 12px;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    border-radius: 4px; // 약간 둥근 모서리 (선택 사항)
+
+    &.edit-button {
+        background-color: #4CAF50;
+        &:hover {
+            background-color: #367c39;
+        }
+    }
+
+    &.cancel-button {
+        background-color: #f44336;
+        &:hover {
+            background-color: #da190b;
+        }
+    }
+`;
 
 const MemberUpdate = () => {
+    // ... (나머지 코드는 이전과 동일) ...
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
@@ -14,6 +48,7 @@ const MemberUpdate = () => {
     const [genres, setGenres] = useState([]);
     const [selectedGenres, setSelectedGenres] = useState([]);
     const navigate = useNavigate();
+    const { updateSnackbar } = useContext(AppContext);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -59,12 +94,17 @@ const MemberUpdate = () => {
         event.preventDefault();
 
         if (password !== repeatPassword) {
-            alert('패스워드가 일치하지 않습니다.');
+            updateSnackbar('패스워드가 일치하지 않습니다.', 'error');
             return;
         }
 
         if (selectedGenres.length < 3) {
-            alert('최소 3개의 장르를 선택해야 합니다.');
+            updateSnackbar('최소 3개의 장르를 선택해야 합니다.', 'error');
+            return;
+        }
+
+        if (!dob) {
+            updateSnackbar('생년월일을 입력해주세요.', 'error');
             return;
         }
 
@@ -79,48 +119,48 @@ const MemberUpdate = () => {
             });
 
             console.log('Update successful:', response.data);
-            alert('회원 정보가 수정되었습니다.');
+            updateSnackbar('회원 정보가 수정되었습니다.', 'success');
             navigate('/mypage');
         } catch (error) {
             console.error('Update error:', error);
             if (error.response) {
-                alert(error.response.data.message);
+                updateSnackbar(error.response.data.message, 'error');
             } else {
-                alert('요청 중 오류가 발생했습니다.');
+                updateSnackbar('요청 중 오류가 발생했습니다.', 'error');
             }
         }
     };
 
+
     return (
-        // MemberRegister와 유사한 폼 구조를 사용합니다.
         <div className="bg-light">
-            <div className="container" style={{marginTop: '30px'}}>
+            <div className="container" style={{ marginTop: '30px' }}>
                 <div className="row">
                     <div className="col-3"></div>
                     <div className="col-6">
                         <div className="card">
                             <div className="card-body">
                                 <div className="card-title">
-                                    <h3>
+                                    <h2>
                                         <strong>회원 수정</strong>
-                                    </h3>
+                                    </h2>
                                 </div>
-                                <hr/>
+                                <hr />
                                 <form onSubmit={handleSubmit}>
                                     <table className="table table-borderless">
                                         <tbody>
                                         <tr>
-                                            <td style={{width: '45%'}}>
+                                            <td style={{ width: '45%' }}>
                                                 <label className="col-form-label">이메일</label>
                                             </td>
-                                            <td style={{width: '55%'}}>
+                                            <td style={{ width: '55%' }}>
                                                 <input
                                                     type="text"
                                                     name="email"
                                                     className="form-control"
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
-                                                    disabled // 이메일은 변경 불가능하도록 설정
+                                                    disabled
                                                 />
                                             </td>
                                         </tr>
@@ -209,18 +249,15 @@ const MemberUpdate = () => {
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td colSpan="2" className="center-buttons">
-                                                <button
-                                                    className="btn btn-primary"
-                                                    type="submit"
-                                                    style={{marginRight: '5px'}}
-                                                >
-                                                    수정
-                                                </button>
-                                                <button className="btn btn-secondary" type="button"
-                                                        onClick={() => navigate('/mypage')}>
-                                                    취소
-                                                </button>
+                                            <td colSpan="2" >
+                                                <StyledButtonContainer>
+                                                    <StyledButton className="edit-button" type="submit">
+                                                        <FaEdit />
+                                                    </StyledButton>
+                                                    <StyledButton className="cancel-button" type="button" onClick={() => navigate('/mypage')}>
+                                                        <FaTimes />
+                                                    </StyledButton>
+                                                </StyledButtonContainer>
                                             </td>
                                         </tr>
                                         </tbody>
