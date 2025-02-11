@@ -97,12 +97,14 @@ public class RedisMessageSubscriber {
                             OneononeChatroomResponse.class);
                     log.info("== destination : {}, {}", "/topic/chat/room/" + roomId, response);
                     messagingTemplate.convertAndSend("/topic/chat/room/" + roomId, response);
-                    return;
+
                 }
 
             } else {
+                log.info("RedisMessageSubscriber >> :: 그룹채팅 subscriber 실행 ..");
+                GroupChatroomId groupChatroomId = new GroupChatroomId(roomId);
                 // 2. 캐시 키 생성 (roomId 사용)
-                String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + roomId + CHATROOM_MEMBERS_KEY_SUFFIX;
+                String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;
 
                 // 3. Redis에서 캐시된 데이터 조회
                 String cachedJson = (String) redisTemplate.opsForValue().get(cacheKey);

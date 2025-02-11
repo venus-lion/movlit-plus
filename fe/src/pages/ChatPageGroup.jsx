@@ -65,6 +65,8 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
             // 2. /topic/chat/room/{roomId} 구독 (업데이트된 멤버 목록 수신)
             client.subscribe(`/topic/chat/room/${roomId}`, (message => {
                 const receivedData = JSON.parse(message.body);
+                console.log('그룹채팅방 UPDATEDTO, Redis pub/sub으로부터 받음 !!');
+                console.log(receivedData);
 
                 // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
                 if (Array.isArray(receivedData)) {
