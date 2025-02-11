@@ -85,7 +85,7 @@ function MyPage() {
     });
     const [genreList, setGenreList] = useState([]);
     const navigate = useNavigate();
-    const { updateLoginStatus, updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
+    const { updateLoginStatus, updateSnackbar, setUserInfo } = useContext(AppContext); // updateSnackbar context 함수 import  // setUserInfo 추가
     const fileInputRef = useRef(null);
     const [isHovering, setIsHovering] = useState(false);
 
@@ -201,6 +201,11 @@ function MyPage() {
             try {
                 const response = await axiosInstance.get('/members/myPage');
                 setUserData(response.data);
+                // 사용자 정보 컨텍스트 업데이트
+                setUserInfo({
+                    nickname: response.data.nickname,
+                    profileImgUrl: response.data.profileImgUrl
+                });
             } catch (error) {
                 console.error('Error fetching my page data:', error);
             }
@@ -258,8 +263,21 @@ function MyPage() {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            setUserData({ ...userData, profileImgUrl: response.data.imageUrl });
-            updateSnackbar('프로필 사진이 성공적으로 변경되었습니다. 새로고침을 해주세요.', 'success'); // Material-UI Snackbar 호출
+            //setUserData({ ...userData, profileImgUrl: response.data.imageUrl });  // 기존 코드 주석 처리
+            // URL.createObjectURL()을 사용하여 즉시 표시되는 이미지 URL 생성
+            const tempImageUrl = URL.createObjectURL(file);
+            setUserData(prevUserData => ({
+                ...prevUserData,
+                profileImgUrl: tempImageUrl,
+            }));
+            // 사용자 정보 컨텍스트 업데이트
+            setUserInfo(prevUserInfo => ({
+                ...prevUserInfo,
+                profileImgUrl: response.data.imageUrl  // 실제 URL로 업데이트
+            }));
+
+            updateSnackbar('프로필 사진이 성공적으로 변경되었습니다.', 'success'); // Material-UI Snackbar 호출
+
         } catch (error) {
             if (error.response && error.response.status === 413) {
                 updateSnackbar('이미지 크기가 너무 큽니다. 2800KB 이하의 이미지를 업로드해주세요.', 'error'); // Material-UI Snackbar 호출
