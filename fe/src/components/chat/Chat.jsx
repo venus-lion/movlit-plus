@@ -107,128 +107,143 @@ const Chat = () => {
             console.log('WebSocket Connected : ' + currentUserId);
             setIsStompConnected(true);
             // 일대일 채팅방 생성 토픽 구독
-            client.subscribe(`/topic/oneononeChatroom/create/publish/${currentUserId}`, (message) => {
-                try {
-                    const createdChat = JSON.parse(message.body);
-                    setPersonalChats((prevChats) => {
-                        // createdChat.roomId가 이미 존재하는지 검사
-                        const exists = prevChats.some(chat => chat.roomId === createdChat.roomId);
-                        return exists ? prevChats : [...prevChats, createdChat];
-                    });
-                } catch (e) {
-                    console.error("Error parsing message:", e);
-                }
+            const createTopic = `/topic/oneononeChatroom/create/publish/${currentUserId}`;
+            if (!client.subscriptions || !client.subscriptions[createTopic]) {
+                client.subscribe(createTopic, (message) => {
+                    try {
+                        const createdChat = JSON.parse(message.body);
+                        setPersonalChats((prevChats) => {
+                            // createdChat.roomId가 이미 존재하는지 검사
+                            const exists = prevChats.some(chat => chat.roomId === createdChat.roomId);
+                            return exists ? prevChats : [...prevChats, createdChat];
+                        });
+                    } catch (e) {
+                        console.error("Error parsing message:", e);
+                    }
 
-            });
+                });
+            }
 
             personalChats.forEach((chat) => {
                 // 일대일 sendMessage 토픽 구독
-                const subId = `/topic/chat/message/one-on-one/${chat.roomId}`;
-                client.subscribe(subId, (message) => {
-                    const receivedMessage = JSON.parse(message.body);
-                    setPersonalChats((prevChats) =>
-                        prevChats.map((c) =>
-                            c.roomId === receivedMessage.roomId
-                                ? {...c, recentMessage: receivedMessage}
-                                : c
-                        )
-                    );
-                    if (checkIsSelectedChat('personal', receivedMessage)) {
-                        setCurrentChatMessages((prev) => [...prev, receivedMessage]);
-                    }
-                });
+                const msgSubId = `/topic/chat/message/one-on-one/${chat.roomId}`;
+                if (!client.subscriptions || !client.subscriptions[msgSubId]) {
+                    client.subscribe(msgSubId, (message) => {
+                        const receivedMessage = JSON.parse(message.body);
+                        setPersonalChats((prevChats) =>
+                            prevChats.map((c) =>
+                                c.roomId === receivedMessage.roomId
+                                    ? {...c, recentMessage: receivedMessage}
+                                    : c
+                            )
+                        );
+                        if (checkIsSelectedChat('personal', receivedMessage)) {
+                            setCurrentChatMessages((prev) => [...prev, receivedMessage]);
+                        }
+                    });
+                }
 
                 // 일대일 프로필변경 토픽 구독
-                client.subscribe(`/topic/chat/room/${chat.roomId}`, (message) => {
-                    const receivedData = JSON.parse(message.body);
-                    console.log('updateRoom');
-                    console.log(receivedData);
-                    // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
-                    // setRoomInfoData(receivedData);
-                    setPersonalChats((prevChats) =>
-                        prevChats.map((c) =>
-                            c.roomId === receivedData.roomId
-                                ? {...c, receiverProfileImgUrl: receivedData.receiverProfileImgUrl}
-                                : c
-                        )
-                    );
-                });
+                const profileSubId = `/topic/chat/room/${chat.roomId}`;
+                if (!client.subscriptions || !client.subscriptions[profileSubId]) {
+                    client.subscribe(profileSubId, (message) => {
+                        const receivedData = JSON.parse(message.body);
+                        console.log('updateRoom');
+                        console.log(receivedData);
+                        // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
+                        // setRoomInfoData(receivedData);
+                        setPersonalChats((prevChats) =>
+                            prevChats.map((c) =>
+                                c.roomId === receivedData.roomId
+                                    ? {...c, receiverProfileImgUrl: receivedData.receiverProfileImgUrl}
+                                    : c
+                            )
+                        );
+                    });
+                }
             });
 
             groupChats.forEach((chat) => {
                 // 그룹 sendMessage 토픽 구독
-                const subId = `/topic/chat/message/group/${chat.groupChatroomId}`;
-                client.subscribe(subId, (message) => {
-                    const receivedMessage = JSON.parse(message.body);
-                    setGroupChats((prevChats) =>
-                        prevChats.map((c) =>
-                            c.groupChatroomId === receivedMessage.roomId
-                                ? {...c, recentMessage: receivedMessage}
-                                : c
-                        )
-                    );
-                    if (checkIsSelectedChat('group', receivedMessage)) {
-                        setCurrentChatMessages((prev) => [...prev, receivedMessage]);
-                    }
-                });
+                const msgSubId = `/topic/chat/message/group/${chat.groupChatroomId}`;
+                if (!client.subscriptions || !client.subscriptions[groupMsgSubId]) {
+                    client.subscribe(msgSubId, (message) => {
+                        const receivedMessage = JSON.parse(message.body);
+                        setGroupChats((prevChats) =>
+                            prevChats.map((c) =>
+                                c.groupChatroomId === receivedMessage.roomId
+                                    ? {...c, recentMessage: receivedMessage}
+                                    : c
+                            )
+                        );
+                        if (checkIsSelectedChat('group', receivedMessage)) {
+                            setCurrentChatMessages((prev) => [...prev, receivedMessage]);
+                        }
+                    });
+                }
+
+                const groupUpdateSubId = `/topic/chat/room/${chat.groupChatroomId}`;
+                if (!client.subscriptions || !client.subscriptions[groupProfileSubId]) {
+                    client.subscribe(groupUpdateSubId, (message) => {
+                        const receivedData = JSON.parse(message.body);
+                        // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
+
+                        if (selectedChat.groupChatroomId && selectedChat.groupChatroomId === chat.groupChatroomId) {
+                            if (Array.isArray(receivedData)) {
+                                // 1-1. 멤버 프로필 업데이트 이벤트
+                                // setMembers(receivedData);
+
+                                setCurrentGroupChatMembers(receivedData);
+
+
+                            } else if (receivedData.hasOwnProperty('updateRoomDto')) {
+                                // 1-2. receivedData에 updateRoomDto 속성이 있으면, MEMBER_JOIN 이벤트로 간주
+                                const updateRoomDto = receivedData.updateRoomDto;
+                                const cachedMembers = receivedData.cachedMembers;
+
+                                if (updateRoomDto.eventType === 'MEMBER_JOIN') {
+                                    // MEMBER_JOIN 이벤트 처리
+
+                                    setCurrentGroupChatMembers(cachedMembers);
+
+                                    // joinMessage 처리
+                                    const joinMessage = updateRoomDto.eventMessage;
+
+                                    // 1-5. joinMessage를 채팅 메시지와 구분하여 화면에 표시
+                                    setCurrentChatMessages((prevMessages) => [
+                                        ...prevMessages,
+                                        {
+                                            type: 'join', // 메시지 유형을 'join'으로 설정
+                                            message: joinMessage,
+                                            // regDt: DateTimeUtil(getNowDate()), //new Date(),
+                                            regDt: getNowDate(),
+                                        },
+                                    ]);
+
+                                } else if (updateRoomDto.eventType === 'MEMBER_LEAVE') {
+                                    // MEMBER_LEAVE 이벤트 처리
+                                    // setMembers(cachedMembers);
+                                    setCurrentGroupChatMembers(cachedMembers);
+
+                                    const leaveMessage = updateRoomDto.eventMessage;
+                                    // setMessages((prevMessages) => [
+                                    setCurrentChatMessages((prevMessages) => [
+                                        ...prevMessages,
+                                        {
+                                            type: 'join', // (중요) 나간 멤버 알림 메시지 유형을 'join'으로 설정
+                                            message: leaveMessage, // "ㅇㅇ님이 나갔습니다" 메시지 설정
+                                            regDt: getNowDate()
+                                        },
+                                    ]);
+                                }
+                            }
+                        }
+                    });
+                }
             });
+
         };
 
-        // client.onConnect = () => {
-        //     groupChats.forEach((chat) => {
-        //         client.subscribe(`/topic/chat/room/${chat.groupChatroomId}`, (message => {
-        //             const receivedData = JSON.parse(message.body);
-        //             // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
-        //             if (Array.isArray(receivedData)) {
-        //                 // 1-1. 멤버 프로필 업데이트 이벤트
-        //                 // setMembers(receivedData);
-        //                 if (selectedChat.groupChatroomId && selectedChat.groupChatroomId === chat.groupChatroomId) {
-        //                     setCurrentGroupChatMembers(receivedData);
-        //                 }
-        //
-        //             } else if (receivedData.hasOwnProperty('updateRoomDto')) {
-        //                 // 1-2. receivedData에 updateRoomDto 속성이 있으면, MEMBER_JOIN 이벤트로 간주
-        //                 const updateRoomDto = receivedData.updateRoomDto;
-        //                 const cachedMembers = receivedData.cachedMembers;
-        //
-        //                 if (updateRoomDto.eventType === 'MEMBER_JOIN') {
-        //                     // MEMBER_JOIN 이벤트 처리
-        //                     setCurrentGroupChatMembers(cachedMembers);
-        //
-        //                     // joinMessage 처리
-        //                     const joinMessage = updateRoomDto.eventMessage;
-        //
-        //                     // 1-5. joinMessage를 채팅 메시지와 구분하여 화면에 표시
-        //                     setCurrentChatMessages((prevMessages) => [
-        //                         ...prevMessages,
-        //                         {
-        //                             type: 'join', // 메시지 유형을 'join'으로 설정
-        //                             message: joinMessage,
-        //                             regDt: DateTimeUtil(getNowDate()), //new Date(),
-        //                         },
-        //                     ]);
-        //                 } else if (updateRoomDto.eventType === 'MEMBER_LEAVE') {
-        //                     // MEMBER_LEAVE 이벤트 처리
-        //                     // setMembers(cachedMembers);
-        //                     setCurrentGroupChatMembers(cachedMembers);
-        //
-        //                     const leaveMessage = updateRoomDto.eventMessage;
-        //                     // setMessages((prevMessages) => [
-        //                     setCurrentChatMessages((prevMessages) => [
-        //                         ...prevMessages,
-        //                         {
-        //                             type: 'join', // (중요) 나간 멤버 알림 메시지 유형을 'join'으로 설정
-        //                             message: leaveMessage, // "ㅇㅇ님이 나갔습니다" 메시지 설정
-        //                             regDt: DateTimeUtil(getNowDate()), //new Date(),
-        //                         },
-        //                     ]);
-        //                 }
-        //             }
-        //         }))
-        //     });
-        //     // 그룹채팅 멤버 업데이트 구독
-        //
-        // };
 
         client.activate();
         setStompClient(client);
@@ -237,7 +252,7 @@ const Chat = () => {
             if (client.connected) client.deactivate();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentUserId, personalChats, groupChats]);
+    }, [currentUserId, personalChats, groupChats, selectedChat]);
 
 
     // URL 쿼리 파라미터에서 fromNoti 값 추출하는 함수
@@ -364,6 +379,7 @@ const Chat = () => {
             fetchChatMessages(chatId);
         }
     }, [selectedChat, activeTab, navigate]);
+
 
     // 일대일 채팅방 정보 변경될 때
     useEffect(() => {
