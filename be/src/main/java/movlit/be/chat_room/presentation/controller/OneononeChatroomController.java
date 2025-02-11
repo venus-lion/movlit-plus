@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import movlit.be.auth.application.service.MyMemberDetails;
 import movlit.be.chat_room.application.service.FetchMyOneononeChatroomUseCase;
 import movlit.be.chat_room.application.service.OneononeChatroomService;
+import movlit.be.chat_room.presentation.dto.OneOnOneChatroomIdResponse;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomCreatePubRequest;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomRequest;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomResponse;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,6 +64,14 @@ public class OneononeChatroomController {
         log.info("Received OneononeChatroom Create Send : {}", request);
         MemberId topicSenderId = details.getMemberId();
         oneononeChatroomService.publishOneOnOneChatroomCreation(topicSenderId, request);
+    }
+
+    @GetMapping("/api/chat/oneOnOne/{receiverId}")
+    public ResponseEntity<OneOnOneChatroomIdResponse> fetchOneOnOneChatroomId(@PathVariable MemberId receiverId,
+                                                                              @AuthenticationPrincipal MyMemberDetails myMemberDetails) {
+        var response = oneononeChatroomService.fetchChatroomId(myMemberDetails.getMemberId(), receiverId);
+        log.info("response ============{}", response);
+        return ResponseEntity.ok(response);
     }
 
     // TODO : 채팅방 나가기

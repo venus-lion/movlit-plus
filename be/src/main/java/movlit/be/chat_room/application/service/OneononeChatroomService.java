@@ -11,6 +11,7 @@ import movlit.be.chat_room.application.convertor.ChatroomConvertor;
 import movlit.be.chat_room.domain.MemberROneononeChatroom;
 import movlit.be.chat_room.domain.OneononeChatroom;
 import movlit.be.chat_room.domain.repository.OneononeChatroomRepository;
+import movlit.be.chat_room.presentation.dto.OneOnOneChatroomIdResponse;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomCreatePubDto;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomCreatePubRequest;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomRequest;
@@ -96,6 +97,11 @@ public class OneononeChatroomService {
         senderChatroom.updateOneononeChatroom(oneononeChatroom);
         senderChatroom.updateMember(sender);
         oneononeChatroom.updateMemberROneononeChatroom(senderChatroom);
+    }
+
+    @Transactional(readOnly = true)
+    public OneOnOneChatroomIdResponse fetchChatroomId(MemberId senderId, MemberId receiverId) {
+        return oneOnOneChatroomRepository.fetchOneOnOneChatroomIdBySenderAndReceiver(senderId, receiverId);
     }
 
     @Transactional(readOnly = true)

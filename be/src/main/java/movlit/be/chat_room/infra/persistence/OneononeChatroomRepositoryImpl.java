@@ -8,6 +8,7 @@ import movlit.be.chat_room.domain.MemberROneononeChatroom;
 import movlit.be.chat_room.domain.OneononeChatroom;
 import movlit.be.chat_room.domain.repository.OneononeChatroomRepository;
 import movlit.be.chat_room.infra.persistence.jpa.OneononeChatroomJpaRepository;
+import movlit.be.chat_room.presentation.dto.OneOnOneChatroomIdResponse;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomResponse;
 import movlit.be.common.exception.ChatroomNotFoundException;
 import movlit.be.common.util.ids.MemberId;
@@ -65,6 +66,15 @@ public class OneononeChatroomRepositoryImpl implements OneononeChatroomRepositor
     public boolean existsOneOnOneChatroomBySenderAndReceiver(MemberId senderId,
                                                              MemberId receiverId) {
         return oneononeChatroomJpaRepository.findOneOnOneChatroomBySenderAndReceiver(senderId, receiverId).isPresent();
+    }
+
+    @Override
+    public OneOnOneChatroomIdResponse fetchOneOnOneChatroomIdBySenderAndReceiver(MemberId senderId, MemberId receiverId) {
+        OneononeChatroomId oneononeChatroomId = oneononeChatroomJpaRepository.findOneOnOneChatroomBySenderAndReceiver(
+                        senderId, receiverId)
+                .orElseThrow(ChatroomNotFoundException::new)
+                .getOneononeChatroomId();
+        return new OneOnOneChatroomIdResponse(oneononeChatroomId);
     }
 
 }

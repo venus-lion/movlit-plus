@@ -112,15 +112,51 @@ function MemberProfilePage() {
 
     const handleCreateOneononeChatroom = async () => {
         try {
-            const response = await axiosInstance.post(`chat/create/oneOnOne`, {
+            await axiosInstance.post(`chat/create/oneOnOne`, {
                 receiverId: memberId,
             });
+
+            const response = await axiosInstance.get(`chat/oneOnOne/${memberId}`);
+            const roomId = response.data.roomId;
+
+            let url = `http://localhost:3000/chatMain/${roomId}/personal`;
+            // URL이 'http'로 시작하면 절대 경로, 아니면 상대 경로로 처리
+            if (url) {
+                url += '?fromNoti=true';
+                if (url.startsWith('http')) {
+                    window.location.href = url; // 절대 URL로 이동
+                } else {
+                    navigate(url); // 상대 URL로 이동
+                }
+            }
+
             updateSnackbar('개인 채팅방이 생성되었습니다.', 'success');
             console.log('개인 채팅방 생성 응답 : ', response.data);
 
         } catch (error) {
             console.error('Error creating one-on-one chatroom:', error);
-            updateSnackbar('DM 채팅방 생성에 실패했습니다.', 'error');
+            // 에러 메시지를 확인하여 `OneOnOneChatroomAlreadyExistsException` 인 경우에만 navigate
+            if (error.response && error.response.data && error.response.data.message === "해당 컨텐츠의 일대일 채팅이 이미 존재합니다.") {
+                const response = await axiosInstance.get(`chat/oneOnOne/${memberId}`);
+                const roomId = response.data.roomId;
+                console.log('roomId==========', roomId);
+
+                let url = `http://localhost:3000/chatMain/${roomId}/personal`;
+                // URL이 'http'로 시작하면 절대 경로, 아니면 상대 경로로 처리
+                if (url) {
+                    url += '?fromNoti=true';
+                    if (url.startsWith('http')) {
+                        window.location.href = url; // 절대 URL로 이동
+                    } else {
+                        navigate(url); // 상대 URL로 이동
+                    }
+                }
+
+                updateSnackbar('채팅방이 이미 존재하므로 이동하겠습니다.', 'success');
+            }
+            else {
+                updateSnackbar('DM 채팅방 생성에 실패했습니다.', 'error');
+            }
         }
     };
 
