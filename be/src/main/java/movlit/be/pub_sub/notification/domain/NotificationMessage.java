@@ -1,13 +1,9 @@
-package movlit.be.pub_sub.notification;
+package movlit.be.pub_sub.notification.domain;
 
 import lombok.Getter;
 
 @Getter
 public class NotificationMessage {
-
-    private String senderNickname;
-    private String recipientNickname;
-    private String message;
 
     // 생성 예
     public static String generateFollowingMessage(String senderNickname, String recipientNickname) {

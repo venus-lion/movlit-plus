@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import movlit.be.chat_room.application.convertor.ChatroomConvertor;
 import movlit.be.chat_room.domain.MemberROneononeChatroom;
 import movlit.be.chat_room.domain.OneononeChatroom;
 import movlit.be.chat_room.domain.repository.OneononeChatroomRepository;
@@ -38,46 +40,34 @@ public class OneononeChatroomService {
     private final RedisMessagePublisher messagePublisher;
 
     @Transactional
-    public OneononeChatroomResponse createOneononeChatroom(MemberId memberId,
+    public OneononeChatroomResponse createOneOnOneChatroom(MemberId memberId,
                                                            OneononeChatroomRequest request) {
-        MemberEntity sender = memberReadService.findEntityByMemberId(memberId);
-        MemberEntity receiver = memberReadService.findEntityByMemberId(request.getReceiverId());
+        MemberEntity sender = memberReadService.fetchEntityByMemberId(memberId);
+        MemberEntity receiver = memberReadService.fetchEntityByMemberId(request.getReceiverId());
 
-        // For Valid
         validateAlreadyExist(sender, receiver);
 
         OneononeChatroom oneononeChatroom = new OneononeChatroom(IdFactory.createOneOnOneChatroomId());
-
-        // sender의 일대일 채팅방 관계 entity set
         injectOneOnOneChatroom(oneononeChatroom, sender);
-
-        // receiver의 일대일 채팅방 관계 entity set
         injectOneOnOneChatroom(oneononeChatroom, receiver);
 
-        // DB 저장
         OneononeChatroom savedOneononeChatroom = oneOnOneChatroomRepository.create(oneononeChatroom);
-
-        OneononeChatroomResponse senderResponse = makeResponse(savedOneononeChatroom, receiver);
-        OneononeChatroomResponse receiverResponse = makeResponse(savedOneononeChatroom, sender);
+        OneononeChatroomResponse senderResponse = makeOneOnOneChatroomResponse(savedOneononeChatroom, receiver);
+        OneononeChatroomResponse receiverResponse = makeOneOnOneChatroomResponse(savedOneononeChatroom, sender);
 
         // Redis에 채팅방 추가
-        this.addOneononeChatroomToRedis(sender, senderResponse);
-        this.addOneononeChatroomToRedis(receiver, receiverResponse);
+        this.addOneOnOneChatroomToRedis(sender, senderResponse);
+        this.addOneOnOneChatroomToRedis(receiver, receiverResponse);
 
         return senderResponse;
     }
 
-    public void publishOneononeChatroomCreate(MemberId topicSenderId, OneononeChatroomCreatePubRequest request) {
-        MemberEntity topicSender = memberReadService.findEntityByMemberId(topicSenderId);
-        OneononeChatroomCreatePubDto oneononeChatroomCreatePubDto =
-                new OneononeChatroomCreatePubDto(
-                        request.getRoomId(),
-                        request.getTopicReceiverId(),
-                        topicSenderId,
-                        topicSender.getNickname(),
-                        topicSender.getProfileImgUrl(),
-                        request.getChatMessage()
-                );
+    @Transactional
+    public void publishOneOnOneChatroomCreation(MemberId topicSenderId, OneononeChatroomCreatePubRequest request) {
+        MemberEntity topicSender = memberReadService.fetchEntityByMemberId(topicSenderId);
+        OneononeChatroomCreatePubDto oneononeChatroomCreatePubDto = ChatroomConvertor.makeOneononeChatroomCreatePubDto(
+                topicSenderId, request, topicSender
+        );
         messagePublisher.createOneononeChatroom(oneononeChatroomCreatePubDto);
     }
 
@@ -90,8 +80,8 @@ public class OneononeChatroomService {
         }
     }
 
-    private static OneononeChatroomResponse makeResponse(OneononeChatroom savedOneononeChatroom,
-                                                         MemberEntity receiver) {
+    private OneononeChatroomResponse makeOneOnOneChatroomResponse(OneononeChatroom savedOneononeChatroom,
+                                                                         MemberEntity receiver) {
         return new OneononeChatroomResponse(
                 savedOneononeChatroom.getOneononeChatroomId(),
                 receiver.getMemberId(),
@@ -100,21 +90,17 @@ public class OneononeChatroomService {
         );
     }
 
-    private static void injectOneOnOneChatroom(OneononeChatroom oneononeChatroom, MemberEntity sender) {
-        MemberROneononeChatroom senderROneononeChatroom =
+    private void injectOneOnOneChatroom(OneononeChatroom oneononeChatroom, MemberEntity sender) {
+        MemberROneononeChatroom senderChatroom =
                 new MemberROneononeChatroom(IdFactory.createMemberROneOnOneChatroomId());
-        senderROneononeChatroom.updateOneononeChatroom(oneononeChatroom);
-        senderROneononeChatroom.updateMember(sender);
-        oneononeChatroom.updateMemberROneononeChatroom(senderROneononeChatroom);
+        senderChatroom.updateOneononeChatroom(oneononeChatroom);
+        senderChatroom.updateMember(sender);
+        oneononeChatroom.updateMemberROneononeChatroom(senderChatroom);
     }
 
+    @Transactional(readOnly = true)
     public OneononeChatroomResponse fetchChatroomInfo(OneononeChatroomId roomId, MemberId currentMemberId) {
-        MemberEntity otherMember = oneOnOneChatroomRepository.findWithMembersById(roomId)
-                .stream()
-                .filter(mro -> !mro.getMember().getMemberId().equals(currentMemberId))
-                .findFirst()
-                .orElseThrow(MemberNotFoundException::new)
-                .getMember();
+        MemberEntity otherMember = fetchMemberForChatroomInfo(roomId, currentMemberId);
         return new OneononeChatroomResponse(
                 roomId,
                 otherMember.getMemberId(),
@@ -123,6 +109,16 @@ public class OneononeChatroomService {
         );
     }
 
+    private MemberEntity fetchMemberForChatroomInfo(OneononeChatroomId roomId, MemberId currentMemberId) {
+        return oneOnOneChatroomRepository.fetchWithMembersById(roomId)
+                .stream()
+                .filter(mro -> !mro.getMember().getMemberId().equals(currentMemberId))
+                .findFirst()
+                .orElseThrow(MemberNotFoundException::new)
+                .getMember();
+    }
+
+    @Transactional(readOnly = true)
     public List<OneononeChatroomResponse> fetchMyOneOnOneChatList(MemberId memberId) {
 
         String redisKey = "oneononeChatList:" + memberId.getValue();
@@ -130,29 +126,36 @@ public class OneononeChatroomService {
         // Redis에서 채팅방 목록 조회
         List<String> cachedData = redisTemplate.opsForList().range(redisKey, 0, -1);
 
-        if (cachedData != null && !cachedData.isEmpty()) {
-            List<OneononeChatroomResponse> list = cachedData.stream()
-                    .map(this::deserializeChatroomResponse)
-                    .toList();
-            log.info("=== cash Hit : {}", list);
-            return list;
+        if (!Objects.requireNonNull(cachedData).isEmpty()) {
+            return makeOneOnOneChatroomResponseList(cachedData);
         }
 
         // Redis에 데이터가 없으면 DB에서 조회 후 캐싱
         List<OneononeChatroomResponse> response = oneOnOneChatroomRepository.fetchOneOnOneChatList(memberId);
 
         // Redis에 채팅방 목록 캐시
+        cacheOneOnOneChatroomList(response, redisKey);
+
+        return response;
+    }
+
+    private void cacheOneOnOneChatroomList(List<OneononeChatroomResponse> response, String redisKey) {
         response.forEach(chatroom -> {
             String serializedChatroom = this.serializeChatroomResponse(chatroom);
             redisTemplate.opsForList().rightPush(redisKey, serializedChatroom);
         });
-
-        return response;
-
     }
 
-    private void addOneononeChatroomToRedis(MemberEntity memberEntity, OneononeChatroomResponse response) {
-        String redisKey = "oneononeChatList:" + memberEntity.getMemberId().getValue();
+    private List<OneononeChatroomResponse> makeOneOnOneChatroomResponseList(List<String> cachedData) {
+        List<OneononeChatroomResponse> list = cachedData.stream()
+                .map(this::deserializeChatroomResponse)
+                .toList();
+        log.info("=== cash Hit : {}", list);
+        return list;
+    }
+
+    private void addOneOnOneChatroomToRedis(MemberEntity memberEntity, OneononeChatroomResponse response) {
+        String redisKey = "oneOnOneChatList:" + memberEntity.getMemberId().getValue();
         String serializedChatroom = this.serializeChatroomResponse(response);
 
         // Redis 리스트에 채팅방 추가

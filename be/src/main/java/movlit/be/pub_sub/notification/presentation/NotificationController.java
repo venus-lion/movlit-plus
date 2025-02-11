@@ -1,10 +1,12 @@
-package movlit.be.pub_sub.notification;
+package movlit.be.pub_sub.notification.presentation;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.auth.application.service.MyMemberDetails;
 import movlit.be.common.util.ids.MemberId;
+import movlit.be.pub_sub.notification.application.service.NotificationService;
+import movlit.be.pub_sub.notification.application.service.SseEmitterService;
 import movlit.be.pub_sub.notification.domain.Notification;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

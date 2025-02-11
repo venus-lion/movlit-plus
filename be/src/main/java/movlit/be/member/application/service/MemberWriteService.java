@@ -60,14 +60,14 @@ public class MemberWriteService {
     }
 
     public void updateMember(MemberId memberId, MemberUpdateRequest request) {
-        MemberEntity memberEntity = memberRepository.findEntityById(memberId);
+        MemberEntity memberEntity = memberRepository.fetchEntityById(memberId);
         Member member = MemberConverter.toMemberForUpdate(request);
         memberEntity.updateMember(member, makeMemberGenreEntities(memberEntity.getMemberId(), request.getGenreIds()));
     }
 
     public void deleteMember(MemberId memberId, String accessToken) {
         logout(accessToken);
-        Member member = memberRepository.findById(memberId);
+        Member member = memberRepository.fetchById(memberId);
         memberRepository.softDeleteByMemberId(member.getMemberId());
     }
 

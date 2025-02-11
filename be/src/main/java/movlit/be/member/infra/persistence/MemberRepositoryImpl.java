@@ -30,20 +30,20 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Member findById(MemberId memberId) {
+    public Member fetchById(MemberId memberId) {
         MemberEntity memberEntity = memberJpaRepository.findByMemberId(memberId)
                 .orElseThrow(MemberNotFoundException::new);
         return MemberConverter.toDomain(memberEntity);
     }
 
     @Override
-    public MemberEntity findEntityById(MemberId memberId) {
+    public MemberEntity fetchEntityById(MemberId memberId) {
         return memberJpaRepository.findByMemberId(memberId)
                 .orElseThrow(MemberNotFoundException::new);
     }
 
     @Override
-    public Member findByEmail(String email) {
+    public Member fetchByEmail(String email) {
         MemberEntity memberEntity = memberJpaRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
 
