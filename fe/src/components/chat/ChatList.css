@@ -101,3 +101,21 @@
 .chat-list-container::-webkit-scrollbar-thumb:active {
     background: #666; /* 핸들 클릭 색상 */
 }
+
+/* 일대일 채팅리스트 */
+.profile-image { /* 프로필 이미지 스타일 */
+    width: 50px;
+    height: 50px; /* 정사각형으로 */
+    border-radius: 50%; /* 원형으로 */
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.receiver-nickname { /* 수신자 닉네임 스타일 */
+    font-weight: bold;
+    color: black;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
