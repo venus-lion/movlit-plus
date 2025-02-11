@@ -119,7 +119,7 @@ function MemberProfilePage() {
             const response = await axiosInstance.get(`chat/oneOnOne/${memberId}`);
             const roomId = response.data.roomId;
 
-            let url = `http://localhost:3000/chatMain/${roomId}/personal`;
+            let url = `${import.meta.env.VITE_BASE_URL_FOR_FRONT}/chatMain/${roomId}/personal`;
             // URL이 'http'로 시작하면 절대 경로, 아니면 상대 경로로 처리
             if (url) {
                 url += '?fromNoti=true';
@@ -141,7 +141,7 @@ function MemberProfilePage() {
                 const roomId = response.data.roomId;
                 console.log('roomId==========', roomId);
 
-                let url = `http://localhost:3000/chatMain/${roomId}/personal`;
+                let url = `${import.meta.env.VITE_BASE_URL_FOR_FRONT}/chatMain/${roomId}/personal`;
                 // URL이 'http'로 시작하면 절대 경로, 아니면 상대 경로로 처리
                 if (url) {
                     url += '?fromNoti=true';
