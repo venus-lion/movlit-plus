@@ -211,25 +211,7 @@ const Chat = () => {
 
                     <button
                         onClick={handleCreateGroupChatModal}
-                        style={{
-                            backgroundColor: 'green',
-                            color: 'white',
-                            borderRadius: '15px',
-                            width: '50px',
-                            height: '50px',
-                            aspectRatio: '1 / 1', // 가로 세로 비율 유지 (원형 유지)
-                            fontSize: '30px',
-                            cursor: 'pointer',
-                            boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                            position: 'absolute', // 사이드바 내부에서 절대 위치 설정
-                            bottom: '40px', // 하단 여백
-                            right: '15px', // 오른쪽 정렬
-                            display: 'flex',   // 중앙 정렬을 위한 flex 적용
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,  // 부모 flex 영향을 받지 않도록 고정
-                            overflow: 'hidden' // 내부 요소 넘침 방지
-                        }}
+                        className="add-groupchat-btn"
                     >
                         +
                     </button>

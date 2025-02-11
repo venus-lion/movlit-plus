@@ -713,7 +713,7 @@ function MovieDetailPage() {
                                 value={userComment ? myComment : comment}
                                 onChange={handleCommentChange}
                             />
-                            <button style={styles.submitButton} onClick={handleSubmitComment}>
+                            <button className="submit-btn" onClick={handleSubmitComment}>
                                 {userComment ? '수정하기' : '코멘트 남기기'}
                             </button>
                         </div>
@@ -781,7 +781,7 @@ function MovieDetailPage() {
                                 {!showMoreCrews && crews.length > initialVisibleCrews && (
                                     <div style={styles.moreButtonContainer}>
                                         <button
-                                            style={styles.moreButton}
+                                            className="more-btn"
                                             onClick={handleShowMoreCrews}
                                         >
                                             더보기
@@ -791,7 +791,7 @@ function MovieDetailPage() {
                                 {showMoreCrews && (
                                     <div style={styles.moreButtonContainer}>
                                         <button
-                                            style={styles.moreButton}
+                                            className="more-btn"
                                             onClick={handleShowLessCrews}
                                         >
                                             더보기 취소
@@ -1109,15 +1109,6 @@ const styles = {
         resize: 'vertical',
         height: '100px',
     },
-    submitButton: {
-        padding: '10px 20px',
-        backgroundColor: '#4080ff',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        alignSelf: 'flex-end',
-    },
     commentCount: {
         fontSize: '16px',
         color: '#656565',
@@ -1147,14 +1138,6 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         marginTop: '10px',
-    },
-    moreButton: {
-        padding: '5px 10px',
-        backgroundColor: '#4080ff',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
     },
     userCommentDisplay: {
         marginTop: '20px',

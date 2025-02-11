@@ -121,11 +121,12 @@
     top: 50%;
     transform: translateY(-50%); /* 수직 가운데 정렬 */
     z-index: 2; /* 리스트 위로 표시되도록 */
-    border: 1px solid #ccc;
+    border: 1px solid #fcfafa;
     border-radius: 5px;
     padding: 10px 15px;
     cursor: pointer;
-    background-color: #c1edbb; /* 기본 색상 */
+    background-color: #00AE68;
+    color: white;
     width: 40px; /* 버튼 폭을 40px로 고정 */
     height: 40px; /* 버튼 높이를 40px로 고정 */
     /*margin: 0 10px;*/
@@ -149,7 +150,8 @@
 
 .prev-button:hover,
 .next-button:hover {
-    background-color: #2E8B57; /* 호버했을 때 색상 */
+    background-color: #236540;
+    color: #fff;
 }
 
 .loading-message {
