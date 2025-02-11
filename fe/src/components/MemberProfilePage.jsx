@@ -136,23 +136,27 @@ function MemberProfilePage() {
                         )}
                     </div>
                     <div className="mypage-header">
-                        <div className="user-info">
-                            <h2>{userData.nickname}</h2>
-                            <p>{userData.email}</p>
-                            <div className="mypage-follow-stats">
-                                <div className="stat-item">
-                                    <span className="stat-label">팔로워</span>
-                                    <span onClick={handleFollowerClick} className="link-button count-button">
-                                        {followerCount}
-                                    </span>
-                                </div>
-                                <div className="stat-item">
-                                    <span className="stat-label">팔로잉</span>
-                                    <span onClick={handleFollowingClick} className="link-button count-button">
-                                        {followingCount}
-                                    </span>
+                        {/* user-info와 button-group을 감싸는 div 추가 */}
+                        <div className="user-info-button-wrapper">
+                            <div className="user-info">
+                                <h2>{userData.nickname}</h2>
+                                <p>{userData.email}</p>
+                                <div className="mypage-follow-stats">
+                                    <div className="stat-item">
+                                        <span className="stat-label">팔로워</span>
+                                        <span onClick={handleFollowerClick} className="link-button count-button">
+                                            {followerCount}
+                                        </span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">팔로잉</span>
+                                        <span onClick={handleFollowingClick} className="link-button count-button">
+                                            {followingCount}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+
                             {loginMemberId !== memberId && (
                                 <div className="button-group">
                                     <button onClick={handleFollowToggle} className={`follow-button ${isFollowing ? 'following' : ''}`}>
@@ -164,7 +168,6 @@ function MemberProfilePage() {
                                 </div>
                             )}
                         </div>
-
                     </div>
                     <div className="mypage-stats-header">
                         <div className="stat-item-header">
@@ -190,7 +193,6 @@ function MemberProfilePage() {
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );

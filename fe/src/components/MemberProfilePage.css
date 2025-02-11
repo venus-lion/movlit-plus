@@ -61,8 +61,16 @@
     color: #aaa;
 }
 
+/* user-info와 button-group을 감싸는 div 스타일 */
+.user-info-button-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
 .user-info {
-    flex-grow: 1;
+    flex-grow: 1; /* 남은 공간을 모두 차지 */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -192,17 +200,18 @@
 }
 
 .button-group {
-    margin-top: 10px;
+    /* margin-top: 10px;  제거 */
     display: flex;
     gap: 10px;
     align-items: center;
+    /* margin-left: auto; 오른쪽 정렬 */
 }
 
 .follow-button, .dm-button {
-    padding: 0;  /* 내부 패딩 제거 */
+    padding: 0;
     border: none;
-    border-radius: 50%; /* 원형 버튼 */
-    font-size: 24px; /* 아이콘 크기 증가 */
+    border-radius: 50%;
+    font-size: 24px;
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
     display: flex;
@@ -210,12 +219,11 @@
     justify-content: center;
     width: 40px;
     height: 40px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* 그림자 효과 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-
 .follow-button svg, .dm-button svg {
-    margin: 0; /* 아이콘 마진 제거 */
+    margin: 0;
 }
 
 .follow-button {
@@ -240,4 +248,18 @@
 
 .dm-button:hover {
     background-color: #1976D2;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .user-info-button-wrapper {
+        flex-direction: column; /* 화면이 작으면 세로로 배열 */
+        align-items: flex-start; /* 왼쪽 정렬 */
+    }
+    .user-info{
+        margin-bottom: 1rem;
+    }
+    .button-group {
+        margin-left: 0; /* 왼쪽 마진 제거 */
+    }
 }
