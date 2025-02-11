@@ -48,11 +48,44 @@ const CreateGroupChatNameModal = ({isOpen, onClose, selectedCard, selectedCatego
             console.log("채팅방 생성 성공:", response.data);
             updateSnackbar('채팅방을 생성했습니다.', 'success'); // toast.success -> updateSnackbar
             onUpdateChatList();
+            // 1초 후 생성된 채팅방으로 이동
+            setTimeout(() => {
+                toChatRoomUrl();
+            }, 1000);
             onClose();
         } catch (error) {
             updateSnackbar('채팅방 생성에 실패했습니다.', 'error'); // toast.error -> updateSnackbar
         }
     };
+
+    const toChatRoomUrl = async () => {
+        const param = {
+            contentId: selectedCategory === "movie" ? selectedCard.movieId : selectedCard.bookId,
+            contentType: selectedCategory,
+        };
+
+        const response = await axiosInstance.post(`/chat/group/checkJoin`, param);
+        const checkJoinedRes = response.data;
+        const isJoined = checkJoinedRes.isJoined;
+        console.log('%%%% 가입여부 ' + JSON.stringify(response, null, 2))
+        if (isJoined === true) {
+            var url = checkJoinedRes.url;
+            if (url) {
+                url += '?fromNoti=true';
+                if (url.startsWith('http')) {
+                    window.location.href = url; // 절대 URL로 이동
+                } else {
+                    navigate(url); // 상대 URL로 이동
+                }
+            }
+            ;
+            // fromNoti를 false로 설정하고 URL 업데이트
+            params.set('fromNoti', 'false');
+            navigate({search: params.toString()}, {replace: true});
+
+            return;
+        }
+    }
 
     return (
         <Modal isOpen={isOpen} onRequestClose={onClose} className="custom-modal-2" overlayClassName="custom-overlay"

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import movlit.be.chat_room.domain.GroupChatroom;
 import movlit.be.chat_room.domain.repository.GroupChatRepository;
 import movlit.be.chat_room.presentation.dto.CheckJoinGroupChatroomRequest;
+import movlit.be.chat_room.presentation.dto.CheckJoinGroupChatroomResponse;
 import movlit.be.chat_room.presentation.dto.GroupChatroomMemberResponse;
 import movlit.be.chat_room.presentation.dto.GroupChatroomRequest;
 import movlit.be.chat_room.presentation.dto.GroupChatroomResponseDto;
@@ -81,6 +82,46 @@ public class GroupChatroomService {
             return true;
         }
     }
+
+
+    // 해당 멤버가 그룹채팅방에 가입되어 있는지 체크 -> 가입되어있으면 채팅방 url 반환
+    public CheckJoinGroupChatroomResponse checkIsJoined(MemberId memberId, CheckJoinGroupChatroomRequest request) {
+        String contentId = ("movie".equals(request.contentType())) ? "MV_" + request.contentId() : "BK_" + request.contentId();
+
+        Optional<GroupChatroom> groupChatroom;
+        try {
+            groupChatroom = Optional.ofNullable(groupChatRepository.fetchEntityByContentId(contentId));
+        } catch (GroupChatroomNotFoundException e) {
+            // 해당 contentId의 그룹 채팅방이 존재하지 않는 경우
+            return new CheckJoinGroupChatroomResponse(false, "");
+        }
+
+        if (groupChatroom.isEmpty()) {
+            return new CheckJoinGroupChatroomResponse(false, ""); // 이 부분은 실제로 실행되지 않음.
+        }
+
+        boolean isJoined = isMemberJoined(memberId, groupChatroom.get());
+
+        if (isJoined) {
+            String url = basicUrl + "/chatMain/" + groupChatroom.get().getGroupChatroomId().getValue() + "/group";
+            return new CheckJoinGroupChatroomResponse(true, url);
+        } else {
+            return new CheckJoinGroupChatroomResponse(false, "");
+        }
+    }
+
+    // 해당 멤버가 그룹채팅방에 가입되어 있는지 체크
+    private boolean isMemberJoined(MemberId memberId, GroupChatroom groupChatroom) {
+        try {
+            validateAlreadyJoined(memberId, groupChatroom);
+            return false; // 가입되어 있지 않음
+        } catch (GroupChatroomAlreadyJoinedException e) {
+            return true; // 이미 가입됨
+        }
+    }
+
+}
+
     private void validateAlreadyJoined(MemberId memberId, GroupChatroom existingGroupChatroom) {
         if (existingGroupChatroom.getMemberRChatroom().stream()
                 .anyMatch(rChatroom -> rChatroom.getMember().getMemberId().equals(memberId))) {
@@ -88,3 +129,4 @@ public class GroupChatroomService {
         }
     }
 }
+
