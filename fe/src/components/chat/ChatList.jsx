@@ -15,27 +15,14 @@ const ChatList = ({
                       onSelectChat,
                       selectedChat
                   }) => {
-    // const [groupChats, setGroupChats] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    // const [personalChats, setPersonalChats] = useState([]);
     const [stompClient, setStompClient] = useState(null);
-    // const [currentUserId, setCurrentUserId] = useState(null);
     // 선택된 채팅방의 ID를 상태로 관리
     const [selectedChatId, setSelectedChatId] = useState(null);
 
-    // useEffect(() => {
-    //     const fetchUserId = async () => {
-    //         try {
-    //             const response = await axiosInstance.get('/members/id');
-    //             setCurrentUserId(response.data.memberId); // 여기서 state에 저장
-    //             console.log(response.data.memberId);
-    //         } catch (error) {
-    //             console.error('Error fetching current user ID:', error);
-    //         }
-    //     };
-    //     fetchUserId();
-    // }, []);
+    const [posterImages, setPosterImages] = useState({}); // 포스터 이미지 URL 상태
+
 
     // fetch 관련 로직만 별도 useEffect로 분리 (refreshKey 변화에 따라 재호출)
     useEffect(() => {
@@ -221,15 +208,27 @@ const ChatList = ({
             padding: '10px',
             cursor: 'pointer',
             borderBottom: '1px solid #ddd',
+            display: 'flex',         // Flexbox 사용
+            justifyContent: 'space-between', // 텍스트와 이미지 사이 간격 최대화
+            alignItems: 'center',    // 수직 중앙 정렬
         };
     };
 
     // 스타일 객체
     const style = {
+        textContainer: { // 텍스트 영역 (roomName, contentName, recentMessage)
+            display: 'flex',
+            flexDirection: 'column', // 세로로 쌓이도록
+            flexGrow: 1,          // 남은 공간 차지
+            marginRight: '10px',   // 이미지와의 간격
+        },
+        roomName: {
+            fontWeight: 'bold',
+            color: 'black',
+        },
         conTitle: {
             fontSize: '0.9em',
             color: 'black',
-            width: '70%',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -239,14 +238,76 @@ const ChatList = ({
             color: '#666',
             backgroundColor: '#faf9d7',
             padding: '5px',
-            width: '100%',
             borderRadius: '10px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
         },
-
+        posterImage: {
+            width: '50px',
+            height: '70px',
+            objectFit: 'cover',
+        },
+        noMessage: { // 메시지 없음 스타일 (필요한 경우)
+            fontSize: '0.9em',
+            color: '#666',
+            backgroundColor: '#faf9d7', // 배경색 추가
+            padding: '5px',          // 패딩 추가
+            borderRadius: '10px',     // 둥근 모서리
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+        }
     };
+
+
+    // 포스터 이미지 URL 가져오는 함수
+    const fetchPosterImage = async (contentId) => {
+        if (!contentId) return;
+        console.log('contentId :: ', contentId);
+
+        const [contentType, id] = contentId.split('_');
+        let url = '';
+
+        try {
+            if (contentType === 'MV') {
+                const response = await axiosInstance.get(`/movies/${id}/detail`);
+                url = response.data.posterPath;
+            } else if (contentType === 'BK') {
+                console.log('BK에서 fetchPosterIMage 실행 !!');
+
+                const response = await axiosInstance.get(`/books/${id}/detail`);
+                url = response.data.book_img_url;
+
+            }
+            if (url) {
+                setPosterImages(prevImages => ({
+                    ...prevImages,
+                    [contentId]: url
+                }));
+            }
+
+
+        } catch (error) {
+            console.error("Error fetching poster image:", error);
+
+        }
+    };
+
+    // groupChats가 변경될 때마다 포스터 이미지 가져오기
+    useEffect(() => {
+        console.log('ChatList -- groupChats 변경될 때마다..');
+
+        if (activeTab === 'group') {
+            groupChats.forEach(chat => {
+                console.log(chat);
+                if (chat.contentId && !posterImages[chat.contentId]) {
+                    fetchPosterImage(chat.contentId);
+                }
+            });
+        }
+    }, [groupChats, activeTab, posterImages]);
+
 
     // if (loading) return <div>로딩 중...</div>;
     if (error) return <div>오류: {error}</div>;
@@ -255,35 +316,40 @@ const ChatList = ({
         <div className="chat-list-container" style={style.chatListContainer}>
             {/* 그룹 채팅 목록 */}
             {activeTab === 'group' && (
-
                 <div>
                     {filteredChats.map((chat) => (
                         <div
                             key={chat.groupChatroomId}
                             style={getChatItemStyle(chat)}
-                            onClick={() => handleChatSelect(chat)} // 클릭 시 채팅방 선택
+                            onClick={() => handleChatSelect(chat)}
                         >
-                            <div style={{fontWeight: 'bold', color: 'black'}}>
-                                {chat.roomName}
-                            </div>
-                            <div style={style.conTitle}>
-                                [콘텐츠] <strong>{chat.contentName}</strong>
-                            </div>
-                            <div>
-                                {chat.recentMessage ? (
-                                    <div>
+                            <div style={style.textContainer}>
+                                <div style={style.roomName}>
+                                    {chat.roomName}
+                                </div>
+                                <div style={style.conTitle}>
+                                    [콘텐츠] <strong>{chat.contentName}</strong>
+                                </div>
+                                <div>
+                                    {chat.recentMessage ? (
                                         <div style={style.recentMsg}>
                                             {chat.recentMessage.message}
-                                            <br/>
+                                            <br />
                                             {DateTimeUtil(chat.recentMessage.regDt)}
                                         </div>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <div style={style.recentMsg}>메시지 없음</div>
-                                    </div>
-                                )}
+                                    ) : (
+                                        <div style={style.noMessage}>메시지 없음</div>
+                                    )}
+                                </div>
                             </div>
+                            {/* 포스터 이미지 */}
+                            {posterImages[chat.contentId] && (
+                                <img
+                                    src={posterImages[chat.contentId]}
+                                    alt="Poster"
+                                    style={style.posterImage}
+                                />
+                            )}
                         </div>
                     ))}
                 </div>
