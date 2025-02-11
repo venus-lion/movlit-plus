@@ -195,7 +195,8 @@ const ChatList = ({
         } else {
             setSelectedChatId(chat.roomId);
         }
-        onSelectChat(chat); // 선택된 채팅방을 상위 컴포넌트에 전달
+        onSelectChat(activeTab, chat);
+        // onSelectChat(chat);
     };
 
     // 선택된 채팅방에 따라 배경색 변하게 하기
@@ -317,34 +318,34 @@ const ChatList = ({
                             className='chat-item' // chat-item 클래스 적용
                             onClick={() => handleChatSelect(chat)}
                         >
-                        {/* 포스터 이미지 */}
-                        {posterImages[chat.contentId] && (
-                            <img
-                                src={posterImages[chat.contentId]}
-                                alt="Poster"
-                                className="poster-image" // 클래스 적용
-                            />
-                        )}
-
-                        <div className="chat-info"> {/* 채팅 정보 컨테이너 */}
-                            <div className="room-name">
-                                {chat.roomName}
-                            </div>
-                            <div className="con-title">
-                                <strong>{chat.contentName}</strong>
-                            </div>
-                            {chat.recentMessage ? (
-                                <div className="recent-message">
-                                    {chat.recentMessage.message}
-                                </div>
-                            ) : (
-                                <div className="recent-message">메시지 없음</div>
+                            {/* 포스터 이미지 */}
+                            {posterImages[chat.contentId] && (
+                                <img
+                                    src={posterImages[chat.contentId]}
+                                    alt="Poster"
+                                    className="poster-image" // 클래스 적용
+                                />
                             )}
-                        </div>
-                        {/* 시간 */}
-                        <div className="message-time">
-                            {chat.recentMessage ? DateTimeUtil(chat.recentMessage.regDt) : ""}
-                        </div>
+
+                            <div className="chat-info"> {/* 채팅 정보 컨테이너 */}
+                                <div className="room-name">
+                                    {chat.roomName}
+                                </div>
+                                <div className="con-title">
+                                    <strong>{chat.contentName}</strong>
+                                </div>
+                                {chat.recentMessage ? (
+                                    <div className="recent-message">
+                                        {chat.recentMessage.message}
+                                    </div>
+                                ) : (
+                                    <div className="recent-message">메시지 없음</div>
+                                )}
+                            </div>
+                            {/* 시간 */}
+                            <div className="message-time">
+                                {chat.recentMessage ? DateTimeUtil(chat.recentMessage.regDt) : ""}
+                            </div>
                         </div>
                     ))}
                 </div>

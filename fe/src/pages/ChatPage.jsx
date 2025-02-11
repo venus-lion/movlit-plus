@@ -7,7 +7,7 @@ import {FaUserCircle} from "react-icons/fa";
 import DateTimeUtil, {getNowDate} from "../util/DateTimeUtil.jsx";
 import {Link} from "react-router-dom";
 
-function ChatPage({roomId, roomInfo, onReceiveMessage, stompClient, isStompConnected, messages}) {
+function ChatPage({key, roomId, roomInfo, currentUserId, stompClient, isStompConnected, messages}) {
     // const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     // const [stompClient, setStompClient] = useState(null);
@@ -16,7 +16,7 @@ function ChatPage({roomId, roomInfo, onReceiveMessage, stompClient, isStompConne
     const focusDivRef = useRef(null); // 포커스를 주기 위한 ref
     const messagesContainerRef = useRef(null); // 스크롤 컨테이너에 대한 ref
     // const {isLoggedIn} = useOutletContext();  // 로그인 상태
-    const [currentUserId, setCurrentUserId] = useState(null);
+    // const [currentUserId, setCurrentUserId] = useState(null);
     const [isComposing, setIsComposing] = useState(false);
     const [roomInfoData, setRoomInfoData] = useState(roomInfo);
 
@@ -34,18 +34,6 @@ function ChatPage({roomId, roomInfo, onReceiveMessage, stompClient, isStompConne
         //     .catch((error) => {
         //         console.error('Error fetching chat history:', error);
         //     });
-    }, []);
-
-    useEffect(() => {
-        axiosInstance
-            .get(`/members/id`)
-            .then((response) => {
-                setCurrentUserId(response.data.memberId);
-                console.log('현재 로그인 유저: ', currentUserId);
-            })
-            .catch((error) => {
-                console.error('Error fetching current user ID:', error);
-            });
     }, []);
 
     // useEffect(() => {
@@ -200,7 +188,8 @@ function ChatPage({roomId, roomInfo, onReceiveMessage, stompClient, isStompConne
                                     {message.message}
                                 </div>
                                 <div className="message-time-group">
-                                    {DateTimeUtil(getNowDate())}
+                                    {/*{DateTimeUtil(getNowDate())}*/}
+                                    {DateTimeUtil(message.regDt)}
                                 </div>
                             </div>
                         </div>

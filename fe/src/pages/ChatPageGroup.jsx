@@ -10,14 +10,14 @@ import DateTimeUtil, {getNowDate} from "../util/DateTimeUtil.jsx";
 function ChatPageGroup({
                            roomId,
                            roomInfo,
-                           onReceiveMessage,
                            stompClient,
                            isStompConnected,
                            refreshChatList,
                            refreshChatComponent,
                            messages,
                            currentUserId,
-                           currentGroupChatMembers
+                           currentGroupChatMembers,
+                           onReceiveMessage
                        }) {
     // const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -30,10 +30,16 @@ function ChatPageGroup({
     const [posterUrl, setPosterUrl] = useState(null);
 
     const navigate = useNavigate();
+    console.log('groupchat init!!');
+    console.log(roomId);
 
     useEffect(() => {
         setRoomInfoData(roomInfo);
     }, [roomInfo]);
+
+    useEffect(() => {
+        setMembers(currentGroupChatMembers);
+    }, [currentGroupChatMembers]);
 
     // 포스터 URL 가져오는 로직
     useEffect(() => {
@@ -180,7 +186,7 @@ function ChatPageGroup({
     // }, [roomId]);
 
     const sendMessage = () => {
-        if (stompClient && newMessage && currentUserId) {
+        if (stompClient && isStompConnected && newMessage && currentUserId) {
             const chatMessage = {
                 roomId: roomId,
                 senderId: currentUserId,
@@ -250,10 +256,10 @@ function ChatPageGroup({
                 display: 'flex',
                 flexDirection: 'column',
                 height: '90%',
-                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${posterUrl})`, // 배경 이미지 설정
-                backgroundSize: 'cover',          // 이미지가 컨테이너를 꽉 채우도록
-                backgroundPosition: 'center',     // 이미지 중앙 정렬
-                backgroundRepeat: 'no-repeat',     // 이미지 반복 방지
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${posterUrl})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
             }}
         >
             <div className="chat-header-group">
@@ -264,13 +270,12 @@ function ChatPageGroup({
                 {messages.map((message, index) => {
                     const sender = members.find((m) => m.memberId === message.senderId);
                     const isCurrentUser = message.senderId === currentUserId;
-                    const isJoinMessage = message.type === 'join'; // join 메세지 여부 확인
-
+                    const isJoinMessage = message.type === 'join';
                     return (
                         <div
                             key={index}
                             className={`message-group ${isCurrentUser ? 'own-message-group' : ''} ${
-                                isJoinMessage ? 'join-message-group' : '' // join 메시지에 대한 CSS 클래스 추가
+                                isJoinMessage ? 'join-message-group' : ''
                             }`}
                         >
                             {!isCurrentUser && sender && !isJoinMessage && (
@@ -278,11 +283,8 @@ function ChatPageGroup({
                                       style={{textDecoration: 'none', color: 'inherit'}}>
                                     <div className="message-profile-group">
                                         {sender && sender.profileImgUrl ? (
-                                            <img
-                                                src={sender.profileImgUrl}
-                                                alt="Profile"
-                                                className="profile-img-group"
-                                            />
+                                            <img src={sender.profileImgUrl} alt="Profile"
+                                                 className="profile-img-group"/>
                                         ) : (
                                             <FaUserCircle size={40} className="profile-img"/>
                                         )}
@@ -295,7 +297,7 @@ function ChatPageGroup({
                                     className={`message-bubble-group ${isCurrentUser ? 'own-bubble' : ''} ${
                                         isJoinMessage ? 'join-bubble' : ''
                                     }`}
-                                    style={isJoinMessage ? {whiteSpace: 'nowrap'} : {}} // joinMessage인 경우 한 줄로 표시
+                                    style={isJoinMessage ? {whiteSpace: 'nowrap'} : {}}
                                 >
                                     {message.message}
                                 </div>
@@ -322,6 +324,8 @@ function ChatPageGroup({
                 <button onClick={sendMessage}>보내기</button>
             </div>
         </div>
+
+
     );
 }
 
