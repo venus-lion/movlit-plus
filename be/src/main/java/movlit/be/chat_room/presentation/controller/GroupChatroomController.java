@@ -7,6 +7,7 @@ import movlit.be.auth.application.service.MyMemberDetails;
 import movlit.be.chat_room.application.service.FetchGroupChatroomUseCase;
 import movlit.be.chat_room.application.service.GroupChatroomService;
 import movlit.be.chat_room.presentation.dto.CheckJoinGroupChatroomRequest;
+import movlit.be.chat_room.presentation.dto.CheckJoinGroupChatroomResponse;
 import movlit.be.chat_room.presentation.dto.GroupChatroomMemberResponse;
 import movlit.be.chat_room.presentation.dto.GroupChatroomRequest;
 import movlit.be.chat_room.presentation.dto.GroupChatroomResponse;
@@ -110,13 +111,13 @@ public class GroupChatroomController {
 
     // 채팅방 가입 여부
     @PostMapping("/api/chat/group/checkJoin")
-    public ResponseEntity<Boolean> checkJoin(
+    public ResponseEntity<CheckJoinGroupChatroomResponse> checkJoin(
             @AuthenticationPrincipal MyMemberDetails details,
             @RequestBody CheckJoinGroupChatroomRequest request) {
         MemberId memberId = details.getMemberId();
-        boolean isJoin = groupChatroomService.checkIfGroupChatroomJoin(memberId, request);
+        CheckJoinGroupChatroomResponse isJoinedRes = groupChatroomService.checkIsJoined(memberId, request);
 
-        return ResponseEntity.status(HttpStatus.OK).body(isJoin);
+        return ResponseEntity.status(HttpStatus.OK).body(isJoinedRes);
 
     }
 

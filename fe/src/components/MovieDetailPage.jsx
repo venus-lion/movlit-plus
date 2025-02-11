@@ -467,22 +467,8 @@ function MovieDetailPage() {
 
     const handleJoinGroupChatroom = async (movieId) => {
         try {
-            const param = {
-                contentId: movieId,
-                contentType: "movie",
-            };
 
-            const response = await axiosInstance.post(`/chat/group/checkJoin`, param);
-            const isJoined = response.data
-            if (isJoined === true) {
-                alert("이미 가입된 채팅방입니다.");
-
-                // fromNoti를 false로 설정하고 URL 업데이트
-                params.set('fromNoti', 'false');
-                navigate({search: params.toString()}, {replace: true});
-
-                return;
-            }
+            toChatRoomUrl(false); // 해당 채팅방 페이지로 이동
 
             const selectedCard = {
                 movieId: movieId,
@@ -509,6 +495,39 @@ function MovieDetailPage() {
         }
     }
 
+    // 해당 채팅방 페이지로 이동
+    const toChatRoomUrl = async (shouldShowAlert = false) => {
+        const param = {
+            contentId: movieId,
+            contentType: "movie",
+        };
+
+        const response = await axiosInstance.post(`/chat/group/checkJoin`, param);
+        const checkJoinedRes = response.data;
+        const isJoined = checkJoinedRes.isJoined;
+        console.log('%%%% 가입여부 ' + JSON.stringify(response, null, 2));
+        if (isJoined === true ) {
+            if (shouldShowAlert === false) { // 매개변수를 사용하여 알림 표시 여부 결정 **//*******
+                alert("이미 가입된 채팅방입니다. ");
+            }
+            var url = checkJoinedRes.url;
+            if (url) {
+                url += '?fromNoti=true';
+                if (url.startsWith('http')) {
+                    window.location.href = url; // 절대 URL로 이동
+                } else {
+                    navigate(url); // 상대 URL로 이동
+                }
+            }
+
+            // fromNoti를 false로 설정하고 URL 업데이트
+            // params.set('fromNoti', 'false');
+            // navigate({search: params.toString()}, {replace: true});
+
+            return;
+        }
+    }
+
     const handleJoinRoom = async (existingRoomInfo) => {
         if (!existingRoomInfo || !existingRoomInfo.groupChatroomId) {
             alert("채팅방 정보가 유효하지 않습니다.");
@@ -521,6 +540,7 @@ function MovieDetailPage() {
             alert("채팅방 가입에 성공하였습니다.");
             setRefreshKey(prevKey => prevKey + 1);
             handleCloseGroupChatInfoModal();
+            toChatRoomUrl(true); // 해당 채팅방 페이지로 이동
         } catch (err) {
             alert("채팅방 가입에 실패했습니다.");
         }

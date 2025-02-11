@@ -129,7 +129,7 @@ const GetGroupChatInfoModal = ({
                                     <button className="cancel-button" onClick={onClose}>
                                         취소
                                     </button>
-                                    <button onClick={handleJoinRoom}>가입하기</button>
+                                    <button className="modal-confirm" onClick={handleJoinRoom}>가입하기</button>
                                 </div>
                             </div>
                         ) : (
