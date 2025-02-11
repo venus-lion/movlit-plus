@@ -17,6 +17,9 @@ function ChatPage({roomId, roomInfo}) {
     // const {isLoggedIn} = useOutletContext();  // 로그인 상태
     const [currentUserId, setCurrentUserId] = useState(null);
     const [isComposing, setIsComposing] = useState(false);
+
+    const [currentRoomInfo, setCurrentRoomInfo] = useState(roomInfo);
+
     console.log('roomInfo: ', roomInfo);
 
     useEffect(() => {
@@ -30,6 +33,11 @@ function ChatPage({roomId, roomInfo}) {
                 console.error('Error fetching current user ID:', error);
             });
     }, []);
+
+    useEffect(() => {
+        // 초기 roomInfo 설정
+        setCurrentRoomInfo(roomInfo);
+    }, [roomInfo]);
 
     // WebSocket 연결 설정
     useEffect(() => {
@@ -51,6 +59,28 @@ function ChatPage({roomId, roomInfo}) {
             client.subscribe(`/topic/chat/message/one-on-one/${roomId}`, (message) => {
                 const receivedMessage = JSON.parse(message.body);
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+            });
+
+            // 프로필 업데이트 구독
+            client.subscribe(`/topic/chat/room/${roomId}`, (message) => {
+                const updateRoomDto = JSON.parse(message.body);
+
+                console.log('개인채팅방 프로필 업데이트 구독 이후, 받는 메세지 !!');
+                console.log(updateRoomDto);
+
+                // UpdateRoomDto에서 memberId와 profileImgUrl 추출
+                if (updateRoomDto.eventType === "MEMBER_PROFILE_UPDATE") {
+                    const { memberId, profileImgUrl } = updateRoomDto;
+
+                    // 현재 채팅 상대방의 프로필 정보를 업데이트
+                    if (currentRoomInfo.receiverId === memberId) {
+                        setCurrentRoomInfo(prevRoomInfo => ({
+                            ...prevRoomInfo,
+                            receiverProfileImgUrl: profileImgUrl
+                        }));
+                    }
+                }
+
             });
 
             // 과거 메시지 로드

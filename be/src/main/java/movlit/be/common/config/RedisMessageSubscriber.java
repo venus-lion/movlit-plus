@@ -30,7 +30,6 @@ public class RedisMessageSubscriber {
 
     private final ObjectMapper objectMapper;
     private final SimpMessageSendingOperations messagingTemplate;
-   // private final GroupChatroomUseCase groupChatroomUseCase;
     private final RedisTemplate<String, Object> redisTemplate;
 
     private static final String CHATROOM_MEMBERS_KEY_PREFIX = "chatroom:";
@@ -83,45 +82,102 @@ public class RedisMessageSubscriber {
                         + updateRoomDto.toStringWithEventMsg());
             }
 
-            //GroupChatroomId groupChatroomId = updateRoomDto.getGroupChatroomId();
-            GroupChatroomId groupChatroomId = new GroupChatroomId(updateRoomDto.getRoomId());
+            if (updateRoomDto.getEventType().equals(EventType.MEMBER_PROFILE_UPDATE)) {
+                // 멤버 프로필 업데이트 이벤트 처리
+                if (updateRoomDto.getMessageType().equals(MessageType.ONE_ON_ONE)) {
+                    // 1:1 채팅방:  UpdateRoomDto 자체를 전달
+                    messagingTemplate.convertAndSend("/topic/chat/room/" + updateRoomDto.getRoomId(), updateRoomDto);
+                } else if (updateRoomDto.getMessageType().equals(MessageType.GROUP)) {
+                    GroupChatroomId groupChatroomId = new GroupChatroomId(updateRoomDto.getRoomId());
 
-            // 2. 캐시 키 생성 (roomId 사용)
-            String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;
+                    // 그룹 채팅방: 캐시된 멤버 목록을 조회하여 전달
+                    String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;
+                    String cachedJson = (String) redisTemplate.opsForValue().get(cacheKey);
 
-            // 3. Redis에서 캐시된 데이터 조회
-            String cachedJson = (String) redisTemplate.opsForValue().get(cacheKey);
+                    if (cachedJson != null) {
+                        List<GroupChatroomMemberResponse> cachedMembers = objectMapper.readValue(cachedJson,
+                                new TypeReference<>() {});
+                        messagingTemplate.convertAndSend("/topic/chat/room/" + updateRoomDto.getRoomId(), cachedMembers);
+                    }
+                }
+            } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_JOIN)) {
+                // 그룹채팅, 새로운 멤버가입 이벤트 처리
+                // eventMessage와 cachedMembers를 함께 전송
+                GroupChatroomId groupChatroomId = new GroupChatroomId(updateRoomDto.getRoomId());
+                String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;
 
-            if (cachedJson != null) {
-                // 캐시된 데이터(Json 문자열)를 List<GroupChatroomMemberResponse>로 역직렬화
-                List<GroupChatroomMemberResponse> cachedMembers = objectMapper.readValue(cachedJson,
-                        new TypeReference<>() {
-                        });
+                // 3. Redis에서 캐시된 데이터 조회
+                String cachedJson = (String) redisTemplate.opsForValue().get(cacheKey);
+                if (cachedJson != null) {
+                    List<GroupChatroomMemberResponse> cachedMembers = objectMapper.readValue(cachedJson,
+                            new TypeReference<>() {
+                            });
 
-                // WebSocket 클라이언트한테 업데이트된 멤버정보 전송
-                System.out.println("RedisMessageSubscriber >>>> roomId :: " + groupChatroomId);
-
-                if (updateRoomDto.getEventType().equals(EventType.MEMBER_PROFILE_UPDATE)) {
-                    // 멤버 프로필 업데이트 이벤트 처리
-                    messagingTemplate.convertAndSend("/topic/chat/room/" + groupChatroomId.getValue(), cachedMembers);
-                } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_JOIN)) {
-                    // 새로운 멤버가입 이벤트 처리
-                    // eventMessage와 cachedMembers를 함께 전송
                     Map<String, Object> response = new HashMap<>();
                     response.put("updateRoomDto", updateRoomDto);
                     response.put("cachedMembers", cachedMembers);
 
-                    messagingTemplate.convertAndSend("/topic/chat/room/" + groupChatroomId.getValue(), response);
-                } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_LEAVE)) {
-                    // 기존 멤버 나가는 이벤트 처리
-                    // eventMessage와 cachedMembers 함께 전송
+                    messagingTemplate.convertAndSend("/topic/chat/room/" + updateRoomDto.getRoomId(), response);
+                }
+
+            } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_LEAVE)) {
+                // 그룹채팅, 기존 멤버 나가는 이벤트 처리
+                // eventMessage와 cachedMembers 함께 전송
+                GroupChatroomId groupChatroomId = new GroupChatroomId(updateRoomDto.getRoomId());
+                String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;
+
+                // 3. Redis에서 캐시된 데이터 조회
+                String cachedJson = (String) redisTemplate.opsForValue().get(cacheKey);
+                if (cachedJson != null) {
+                    List<GroupChatroomMemberResponse> cachedMembers = objectMapper.readValue(cachedJson,
+                            new TypeReference<>() {
+                            });
                     Map<String, Object> response = new HashMap<>();
                     response.put("updateRoomDto", updateRoomDto);
                     response.put("cachedMembers", cachedMembers);
 
-                    messagingTemplate.convertAndSend("/topic/chat/room/" + groupChatroomId.getValue(), response);
+                    messagingTemplate.convertAndSend("/topic/chat/room/" + updateRoomDto.getRoomId(), response);
                 }
             }
+
+//            GroupChatroomId groupChatroomId = new GroupChatroomId(updateRoomDto.getRoomId());
+//
+//            // 2. 캐시 키 생성 (roomId 사용)
+//            String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;
+//
+//            // 3. Redis에서 캐시된 데이터 조회
+//            String cachedJson = (String) redisTemplate.opsForValue().get(cacheKey);
+//
+//            if (cachedJson != null) {
+//                // 캐시된 데이터(Json 문자열)를 List<GroupChatroomMemberResponse>로 역직렬화
+//                List<GroupChatroomMemberResponse> cachedMembers = objectMapper.readValue(cachedJson,
+//                        new TypeReference<>() {
+//                        });
+//
+//                // WebSocket 클라이언트한테 업데이트된 멤버정보 전송
+//                System.out.println("RedisMessageSubscriber >>>> roomId :: " + groupChatroomId);
+//
+//                if (updateRoomDto.getEventType().equals(EventType.MEMBER_PROFILE_UPDATE)) {
+//                    // 멤버 프로필 업데이트 이벤트 처리
+//                    messagingTemplate.convertAndSend("/topic/chat/room/" + groupChatroomId.getValue(), cachedMembers);
+//                } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_JOIN)) {
+//                    // 새로운 멤버가입 이벤트 처리
+//                    // eventMessage와 cachedMembers를 함께 전송
+//                    Map<String, Object> response = new HashMap<>();
+//                    response.put("updateRoomDto", updateRoomDto);
+//                    response.put("cachedMembers", cachedMembers);
+//
+//                    messagingTemplate.convertAndSend("/topic/chat/room/" + groupChatroomId.getValue(), response);
+//                } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_LEAVE)) {
+//                    // 기존 멤버 나가는 이벤트 처리
+//                    // eventMessage와 cachedMembers 함께 전송
+//                    Map<String, Object> response = new HashMap<>();
+//                    response.put("updateRoomDto", updateRoomDto);
+//                    response.put("cachedMembers", cachedMembers);
+//
+//                    messagingTemplate.convertAndSend("/topic/chat/room/" + groupChatroomId.getValue(), response);
+//                }
+//            }
 
         } catch (Exception e) {
             log.error("Exception in updateRoom {}", e);
