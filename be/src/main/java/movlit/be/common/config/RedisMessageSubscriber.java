@@ -1,0 +1,179 @@
+package movlit.be.common.config;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import movlit.be.chat_room.application.service.GroupChatroomUseCase;
+import movlit.be.chat_room.presentation.dto.OneononeChatroomResponse;
+import movlit.be.member.domain.entity.MemberEntity;
+import movlit.be.pub_sub.chat_message.presentation.dto.response.ChatMessageDto;
+import movlit.be.pub_sub.chat_message.presentation.dto.response.MessageType;
+import movlit.be.chat_room.presentation.dto.GroupChatroomMemberResponse;
+import movlit.be.chat_room.presentation.dto.OneononeChatroomCreatePubDto;
+import movlit.be.chat_room.presentation.dto.UpdateRoomDto;
+import movlit.be.chat_room.presentation.dto.UpdateRoomDto.EventType;
+import movlit.be.common.exception.ContentTypeNotExistException;
+import movlit.be.common.util.ids.GroupChatroomId;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.stereotype.Service;
+
+/**
+ * 메시지 수신자(Subscriber) 구현
+ */
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class RedisMessageSubscriber {
+
+    private final ObjectMapper objectMapper;
+    private final SimpMessageSendingOperations messagingTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> stringRedisTemplate;
+
+    private static final String CHATROOM_MEMBERS_KEY_PREFIX = "chatroom:";
+    private static final String CHATROOM_MEMBERS_KEY_SUFFIX = ":members";
+    private static final String ONE_ON_ONE_CHATROOM_KEY_PREFIX = "oneononeChatList:";
+
+    /**
+     * Redis에서 메시지가 발행(publish)되면
+     * 대기하고 있던 Redis Subscriber가 해당 메시지를 받아 처리한다.
+     */
+    public void sendMessage(String publishMessage) {
+        try {
+            ChatMessageDto chatMessageDto = objectMapper.readValue(publishMessage, ChatMessageDto.class);
+
+            // 1:1 채팅 메시지
+            if (chatMessageDto.getMessageType() == MessageType.ONE_ON_ONE) {
+                log.info("1:1 채팅 메시지");
+                messagingTemplate.convertAndSend(
+                        "/topic/chat/message/one-on-one/" + chatMessageDto.getRoomId(), chatMessageDto
+                );
+                return;
+            }
+
+            // 그룹 채팅 메시지
+            if (chatMessageDto.getMessageType() == MessageType.GROUP) {
+                log.info("일반 그룹 채팅 메시지");
+                messagingTemplate.convertAndSend(
+                        "/topic/chat/message/group/" + chatMessageDto.getRoomId(), chatMessageDto
+                );
+                return;
+            }
+
+            throw new ContentTypeNotExistException();
+
+        } catch (Exception e) {
+            log.error("Exception {}", e);
+        }
+    }
+
+    public void updateRoom(String publishMessage) throws JsonProcessingException {
+        try {
+            // 1. publisher로부터 발행받은 updateRoomDto 체크
+            UpdateRoomDto updateRoomDto = objectMapper.readValue(publishMessage, UpdateRoomDto.class);
+            log.info("RedisMessageSubscriber ::: publisher부터 발행받은 updateRoomDto - Profile_Update : "
+                    + updateRoomDto.toString());
+            log.info("RedisMessageSubscriber ::: publisher부터 발행받은 updateRoomDto - Member_Join : "
+                    + updateRoomDto.toStringWithEventMsg());
+
+            String roomId = updateRoomDto.getRoomId();
+
+            if (MessageType.ONE_ON_ONE.equals(updateRoomDto.getMessageType())) {
+                // 일대일 채팅방은 updateProfile만
+                String cacheKey = ONE_ON_ONE_CHATROOM_KEY_PREFIX + updateRoomDto.getMemberId().getValue();
+                Object cachedData = stringRedisTemplate.opsForHash().get(cacheKey, roomId);
+                log.info("== one on one updateprofile");
+                if (cachedData != null) {
+                    String jsonString = (String) cachedData;
+                    OneononeChatroomResponse response = objectMapper.readValue(jsonString,
+                            OneononeChatroomResponse.class);
+                    log.info("== destination : {}, {}", "/topic/chat/room/" + roomId, response);
+                    messagingTemplate.convertAndSend("/topic/chat/room/" + roomId, response);
+
+                }
+
+            } else {
+                log.info("RedisMessageSubscriber >> :: 그룹채팅 subscriber 실행 ..");
+                GroupChatroomId groupChatroomId = new GroupChatroomId(roomId);
+                // 2. 캐시 키 생성 (roomId 사용)
+                String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;
+
+                // 3. Redis에서 캐시된 데이터 조회
+                String cachedJson = (String) redisTemplate.opsForValue().get(cacheKey);
+
+                if (cachedJson != null) {
+                    // 캐시된 데이터(Json 문자열)를 List<GroupChatroomMemberResponse>로 역직렬화
+                    List<GroupChatroomMemberResponse> cachedMembers = objectMapper.readValue(cachedJson,
+                            new TypeReference<>() {
+                            });
+
+                    // WebSocket 클라이언트한테 업데이트된 멤버정보 전송
+                    System.out.println("RedisMessageSubscriber >>>> roomId :: " + roomId);
+
+                    if (updateRoomDto.getEventType().equals(EventType.MEMBER_PROFILE_UPDATE)) {
+                        // 멤버 프로필 업데이트 이벤트 처리
+                        messagingTemplate.convertAndSend("/topic/chat/room/" + roomId, cachedMembers);
+                    } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_JOIN)) {
+                        // 새로운 멤버가입 이벤트 처리
+                        // eventMessage와 cachedMembers를 함께 전송
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("updateRoomDto", updateRoomDto);
+                        response.put("cachedMembers", cachedMembers);
+
+                        messagingTemplate.convertAndSend("/topic/chat/room/" + roomId, response);
+                    } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_LEAVE)) {
+                        // 기존 멤버 나가는 이벤트 처리
+                        // eventMessage와 cachedMembers 함께 전송
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("updateRoomDto", updateRoomDto);
+                        response.put("cachedMembers", cachedMembers);
+
+                        messagingTemplate.convertAndSend("/topic/chat/room/" + roomId, response);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Exception in updateRoom {}", e);
+        }
+    }
+
+    public void createOneononeChatroom(String publishMessage) {
+        try {
+            OneononeChatroomCreatePubDto oneononeChatroomCreatePubDto = objectMapper.readValue(publishMessage,
+                    OneononeChatroomCreatePubDto.class);
+            log.info("Received message to 'createOneononeChatroom' : {}", publishMessage);
+            messagingTemplate.convertAndSend(
+                    "/topic/oneononeChatroom/create/publish/" + oneononeChatroomCreatePubDto.getTopicReceiverId()
+                            .getValue(),
+                    oneononeChatroomCreatePubDto
+            );
+
+        } catch (Exception e) {
+            log.error("Exception in OneononeChatroom publish : {}", e);
+        }
+
+
+    }
+
+    public void readMessage(String publishMessage) {
+        try {
+            ChatMessageDto chatMessageDto = objectMapper.readValue(publishMessage, ChatMessageDto.class);
+            log.info("Received message to 'readMessage': {}", publishMessage);
+            messagingTemplate.convertAndSend(
+                    "/topic/chat/readMessage/", publishMessage
+            );
+            // 메시지를 필요에 따라 처리
+        } catch (Exception e) {
+            log.error("Exception in updateRoom {}");
+        }
+    }
+
+}

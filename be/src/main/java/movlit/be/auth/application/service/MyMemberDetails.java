@@ -1,10 +1,8 @@
 package movlit.be.auth.application.service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.member.domain.Member;

@@ -1,7 +1,7 @@
-import React, {useEffect, useState, useContext} from 'react'; // useContext import 추가
+import React, {useContext, useEffect, useState} from 'react'; // useContext import 추가
 import ChatTabs from './ChatTabs';
 import ChatList from './ChatList';
-import {useNavigate, useOutletContext, useLocation, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import ChatPage from '../../pages/ChatPage.jsx';
 import CreateGroupChatModal from "./CreateGroupChatModal.jsx";
 import ChatPageGroup from "../../pages/ChatPageGroup.jsx";
@@ -14,7 +14,7 @@ const Chat = () => {
     // 알림(새로운 채팅 메시지)을 통해 채팅 메뉴 접속 -> 바로 "해당 채팅방" 띄우기
     const location = useLocation();
     const params = new URLSearchParams(location.search); // 쿼리 파라미터를 다루기 위해 URLSearchParams 사용
-    const { type, chatId } = useParams(); // URL 파라미터에서 type과 chatId 가져오기
+    const {type, chatId} = useParams(); // URL 파라미터에서 type과 chatId 가져오기
     const [chatrooms, setChatrooms] = useState([]);
 
     const [activeTab, setActiveTab] = useState(type || 'personal'); // 기본값 'personal'로 설정하기
@@ -32,22 +32,6 @@ const Chat = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
 
 
-
-    // 알림(새로운 채팅 메시지)을 통해 채팅 메뉴 접속 -> 바로 "해당 채팅방" 띄우기
-    useEffect(() => {
-        const fromNoti = params.get('fromNoti'); // 'fromNoti' 쿼리 파라미터 가져오기
-
-        if (fromNoti === 'true' && chatId) {
-            // *** 알림 클릭 시 해당 채팅방으로 이동하기
-
-            if (type === 'personal') {
-                setSelectedChat({ roomId: chatId }); // *** 개인 채팅방 선택
-            } else if (type === 'group') {
-                setSelectedChat({ groupChatroomId: chatId }); // *** 그룹 채팅방 선택
-            }
-        }
-    }, [location.search, chatId, type]); // *** URL이나 파라미터 변경 시마다 실행
-
     // 로그인 상태 확인 및 리다이렉트 로직 추가
     useEffect(() => {
         if (!isLoggedIn) {
@@ -61,6 +45,7 @@ const Chat = () => {
         return new URLSearchParams(location.search);
     };
 
+    // 알림(새로운 채팅 메시지)을 통해 채팅 메뉴 접속 -> 바로 "해당 채팅방" 띄우기
     const fetchRoomInfoFromNoti = async () => {
         try {
             let response;
@@ -80,7 +65,7 @@ const Chat = () => {
                 type === 'group' ? room.groupChatroomId === chatId : room.roomId === chatId
             );
 
-            console.log('@@ 선택된 방 : '+ JSON.stringify(chatRoom, null, 2));
+            console.log('@@ 선택된 방 : ' + JSON.stringify(chatRoom, null, 2));
             if (chatRoom) {
                 setSelectedChat(chatRoom); // 찾은 채팅방 정보를 선택
             }
@@ -89,6 +74,7 @@ const Chat = () => {
         }
     };
 
+    // 알림(새로운 채팅 메시지)을 통해 채팅 메뉴 접속 -> 바로 "해당 채팅방" 띄우기
     // 컴포넌트가 마운트될 때 chatId와 fromNoti가 true일 때만 채팅방 리스트 업데이트
     useEffect(() => {
         const query = useQuery();
@@ -217,6 +203,7 @@ const Chat = () => {
                     activeTab={activeTab}
                     searchTerm={searchTerm}
                     onSelectChat={(chat) => setSelectedChat(chat)} // 선택된 채팅방 설정
+                    selectedChat={selectedChat} // 선택된 채팅방을 ChatList에 전달
                 />
 
                 {/* 채팅방 생성 버튼 (기존과 동일) */}
@@ -224,25 +211,7 @@ const Chat = () => {
 
                     <button
                         onClick={handleCreateGroupChatModal}
-                        style={{
-                            backgroundColor: 'green',
-                            color: 'white',
-                            borderRadius: '15px',
-                            width: '50px',
-                            height: '50px',
-                            aspectRatio: '1 / 1', // 가로 세로 비율 유지 (원형 유지)
-                            fontSize: '30px',
-                            cursor: 'pointer',
-                            boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                            position: 'absolute', // 사이드바 내부에서 절대 위치 설정
-                            bottom: '40px', // 하단 여백
-                            right: '15px', // 오른쪽 정렬
-                            display: 'flex',   // 중앙 정렬을 위한 flex 적용
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,  // 부모 flex 영향을 받지 않도록 고정
-                            overflow: 'hidden' // 내부 요소 넘침 방지
-                        }}
+                        className="add-groupchat-btn"
                     >
                         +
                     </button>

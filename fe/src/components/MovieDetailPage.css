@@ -1,3 +1,432 @@
+.container {
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    padding: 210px 20px;
+    border-bottom: 1px solid #e7e7e7;
+    marginBottom: 20px;
+}
+
+.breadcrumbs {
+    marginBottom: 10px;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    marginBottom: 5px;
+    color: #ffffff;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #ffffff;
+}
+
+.mainContent {
+    display: flex;
+    padding: 20px;
+}
+
+.poster {
+    width: 200px;
+    margin-right: 30px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.ratingAndWish {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.myRating {
+    /* marginBottom: 20px; */
+}
+
+.ratingLabel {
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 10px;
+    color: #000000;
+}
+
+.stars {
+    display: inline-block;
+    align-items: center;
+    /* marginLeft: 10px; */
+}
+
+.starFilled {
+    color: #f8d90f;
+    cursor: pointer;
+    font-size: 40px;
+}
+
+.starEmpty {
+    color: #ccc;
+    cursor: pointer;
+    font-size: 40px;
+}
+
+.starIcon {
+    font-size: 40px;
+}
+.buttonGroup {
+    display: flex;
+    align-items: center;
+}
+
+/* 기본 버튼 스타일 */
+.button-common {
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px; /* 버튼 사이 간격 */
+    transition: background-color 0.3s ease; /* 부드러운 배경색 변화 */
+}
+
+/* 찜 버튼 스타일 (아이콘 only) */
+.heart-button {
+    padding: 8px 10px; /* padding 값 약간 줄임 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-hearted {
+    background-color: #FF3366;
+}
+
+.button-not-hearted {
+    background-color: #4080ff;
+}
+.button-hearted:hover {
+    background-color: #cc0033; /* 호버 시 더 어두운 빨강 */
+}
+
+.button-not-hearted:hover {
+    background-color: #0056b3; /* 호버 시 더 어두운 파랑 */
+}
+
+.details {
+    margin-top: auto;
+}
+
+.section {
+    margin-bottom: 20px;
+}
+
+.sectionTitle {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #000000;
+}
+
+.sectionContent {
+    color: #000000;
+}
+
+.book {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.crewGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+.crewMember {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.crewImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 5px;
+}
+
+.crewInfo {
+
+}
+
+.crewName {
+    font-weight: bold;
+    color: #000000;
+}
+
+.crewCharName {
+    color: #000000;
+}
+
+.crewRole {
+    font-size: 0.9em;
+    color: #000000;
+}
+
+.commentSection {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.commentInput {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    resize: vertical;
+    height: 100px;
+}
+
+.commentCount {
+    font-size: 16px;
+    color: #656565;
+}
+
+.commentItem {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+
+.commentHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    justify-content: space-between;
+}
+.commentStarFilled {
+    color: #f8d90f;
+    margin-left: 5px;
+}
+
+.commentStarEmpty {
+    color: #ccc;
+    margin-left: 5px;
+}
+
+.commentText {
+    color: #000000;
+}
+.moreButtonContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+.userCommentDisplay {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+}
+
+.commentActions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.delete-button {
+    padding: 8px 10px; /* padding 값 약간 줄임 */
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.delete-button:hover{
+    background-color: #a71d2a;
+}
+
+/* 수정 버튼 스타일 (아이콘 only) */
+.edit-button {
+    padding: 8px 10px; /* padding 값 약간 줄임 */
+    background-color: #ffc107;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.edit-button:hover{
+    background-color: #d39e00;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.profileImage {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.userNickname {
+    font-weight: bold;
+}
+.heartCountContainer {
+    margin-left: 8px;
+    padding: 4px 8px;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.likeButton {
+    margin-left: 10px;
+    padding: 0px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    background: none;
+}
+.likeIcon {
+    color: #4080ff;
+    font-size: 1.2em;
+}
+
+.likedIcon {
+    color: #FF3366;
+    font-size: 1.2em;
+}
+.likeContainer {
+    display: flex;
+    align-items: center;
+}
+.likeCountContainer {
+    margin-left: 5px;
+    padding: 3px 6px;
+    background-color: #f2f2f2;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+}
+.defaultProfileIcon {
+    font-size: 30px;
+    color: #999;
+    margin-right: 10px;
+}
+.userCommentContent {
+    display: flex;
+}
+.commentIcon {
+    font-size: 18px;
+    color: #666;
+    margin-right: 5px;
+    margin-top: 3px;
+}
+
+.userCommentText {
+    font-size: 14px;
+    line-height: 1.4;
+}
+.commentUserInfo {
+    display: flex;
+    align-items: center;
+}
+.commentUser {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.commentProfileImage {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+.commentRating {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+.commentScore {
+    margin-left: 5px;
+    color: #000000;
+}
+
+.commentContent {
+    display: flex;
+    align-items: flex-start;
+    margin-left: 5px;
+}
+
+.averageRating {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.voteAverage {
+    margin-left: 10px;
+    font-size: 16px;
+    color: #000000;
+}
+
+.starsAndProgress {
+    display: flex;
+    align-items: center;
+}
+
+.progressBarContainer {
+    width: 60px;
+    margin-left: 15px;
+}
+
 .comment-user-link {
     text-decoration: none; /* 밑줄 제거 */
     color: #282c34; /* 닉네임 색상 */
@@ -13,4 +442,72 @@
 .comment-user-link .commentUser {
     font-weight: bold;
     margin-right: 5px;
+}
+
+#groupChatButton{
+    background-color: #00AE68;
+    color: white;
+}
+#groupChatButton:hover{
+    background-color: #236540;
+    color: #fff;
+}
+.submit-button{ /* submit-btn 클래스명을 submit-button으로 변경 */
+    padding: 8px 10px; /* edit-button, delete-button과 padding 통일 */
+    background-color: #00AE68; /* groupChatButton 색상과 통일 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-end;
+    display: flex; /* 아이콘과 텍스트 중앙 정렬 위해 flex, align-items 추가 */
+    align-items: center;
+    justify-content: center;
+}
+.submit-button:hover { /* submit-btn:hover를 submit-button:hover로 변경 */
+    background-color: #236540; /* groupChatButton hover 색상과 통일 */
+    color: #fff;
+}
+
+.more-btn {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+}
+
+.more-btn:hover {
+    background-color: #0056b3;
+}
+
+.moreButton {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+}
+
+.moreButton:hover {
+    background-color: #0056b3;
+}
+
+/* wish button icon style */
+.wishIcon {
+    /* margin-right: 5px; 아이콘과 텍스트 간 간격 (더 이상 필요 없음) */
+    font-size: 1.2em; /* 아이콘 크기 조절 */
+    vertical-align: middle; /* 아이콘 수직 정렬 */
+}
+/* edit/delete button icon style */
+.editDeleteIcon {
+    /* margin-right: 5px; 아이콘과 텍스트 간 간격 (더 이상 필요 없음) */
+    font-size: 0.9em; /* 아이콘 크기 조절 */
+    vertical-align: middle; /* 아이콘 수직 정렬 */
 }

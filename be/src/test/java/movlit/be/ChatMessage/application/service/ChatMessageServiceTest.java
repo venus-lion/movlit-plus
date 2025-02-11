@@ -10,22 +10,21 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.Map;
 import movlit.be.acceptance.AcceptanceTest;
+import movlit.be.common.config.RedisNotificationPublisher;
+import movlit.be.pub_sub.chat_message.application.service.ChatMessageService;
+import movlit.be.pub_sub.chat_message.infra.persistence.ChatMessageRepository;
+import movlit.be.pub_sub.chat_message.presentation.dto.response.ChatMessageDto;
+import movlit.be.pub_sub.chat_message.presentation.dto.response.MessageType;
+import movlit.be.chat_room.application.service.GroupChatroomUseCase;
+import movlit.be.chat_room.application.service.OneononeChatroomService;
+import movlit.be.chat_room.presentation.dto.OneononeChatroomResponse;
+import movlit.be.common.config.RedisMessagePublisher;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.common.util.ids.OneononeChatroomId;
 import movlit.be.member.application.service.MemberReadService;
 import movlit.be.member.domain.Member;
-import movlit.be.pub_sub.RedisMessagePublisher;
-import movlit.be.pub_sub.RedisNotificationPublisher;
-import movlit.be.pub_sub.chatMessage.application.service.ChatMessageService;
-import movlit.be.pub_sub.chatMessage.infra.persistence.ChatMessageRepository;
-import movlit.be.pub_sub.chatMessage.presentation.dto.response.ChatMessageDto;
-import movlit.be.pub_sub.chatMessage.presentation.dto.response.MessageType;
-import movlit.be.pub_sub.chatRoom.application.service.GroupChatroomService;
-import movlit.be.pub_sub.chatRoom.application.service.OneononeChatroomService;
-import movlit.be.pub_sub.chatRoom.presentation.dto.OneononeChatroomResponse;
-import movlit.be.pub_sub.notification.NotificationDto;
-import movlit.be.pub_sub.notification.NotificationService;
-import movlit.be.pub_sub.notification.NotificationUseCase;
+import movlit.be.pub_sub.notification.application.service.NotificationService;
+import movlit.be.pub_sub.notification.application.service.NotificationUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,7 +67,7 @@ public class ChatMessageServiceTest extends AcceptanceTest {
     private MemberReadService memberReadService;
 
     @Mock
-    private GroupChatroomService groupChatroomService;
+    private GroupChatroomUseCase groupChatroomUseCase;
 
     private ChatMessageDto testMessageDto;
     private ChatMessageDto testMessageDto2;
@@ -106,7 +105,7 @@ public class ChatMessageServiceTest extends AcceptanceTest {
         when(oneononeChatroomService.fetchChatroomInfo(mockRoomInfo.getRoomId(),
                 testMessageDto2.getSenderId())).thenReturn(mockRoomInfo);
         Member mockMember = mock(Member.class);
-        when(memberReadService.findByMemberId(testMessageDto2.getSenderId())).thenReturn(mockMember);
+        when(memberReadService.fetchByMemberId(testMessageDto2.getSenderId())).thenReturn(mockMember);
         when(mockMember.getNickname()).thenReturn("테스터2");
     }
 
@@ -127,7 +126,7 @@ public class ChatMessageServiceTest extends AcceptanceTest {
         verify(messagePublisher, times(1)).sendMessage(testMessageDto);
 
         // 알림 서비스가 정상적으로 호출된다.
-        verify(notificationUsecase, times(1)).groupChatroomMessageNotification(testMessageDto);
+        verify(notificationUsecase, times(1)).publishGroupChatMessageNotification(testMessageDto);
     }
 
     @Test
@@ -142,7 +141,6 @@ public class ChatMessageServiceTest extends AcceptanceTest {
         // Then
         verify(streamOperations, times(1)).add(any(), any(Map.class)); // Redis Stream 추가 확인
         verify(messagePublisher, times(1)).sendMessage(testMessageDto2); // 메시지 발행 확인
-        verify(notificationService, times(1)).saveNotification(any(NotificationDto.class)); // 알림 저장 확인
     }
 
     @Test

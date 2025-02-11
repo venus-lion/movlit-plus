@@ -45,7 +45,7 @@ public class BookDetailController {
         MemberId memberId = null;
         if (details != null) {
             memberId = details.getMemberId();
-            member = memberReadService.findByMemberId(memberId);
+            member = memberReadService.fetchByMemberId(memberId);
         }
 
         BookDetailResponseDto detailResponse = bookDetailReadService.fetchBookDetail(bookId, memberId);
@@ -59,7 +59,7 @@ public class BookDetailController {
     public ResponseEntity addHearts(@PathVariable BookId bookId, @AuthenticationPrincipal MyMemberDetails details) {
         if (details != null) {
             MemberId memberId = details.getMemberId();
-            Member member = memberReadService.findByMemberId(memberId);
+            Member member = memberReadService.fetchByMemberId(memberId);
             BookVo bookVo = bookDetailReadService.fetchByBookId(bookId);
 
             BookHeartVo savedHeart = bookHeartWriteService.addHeart(member, bookVo);
@@ -79,7 +79,7 @@ public class BookDetailController {
     ) throws Exception {
         if (details != null) {
             MemberId memberId = details.getMemberId();
-            Member member = memberReadService.findByMemberId(memberId);
+            Member member = memberReadService.fetchByMemberId(memberId);
             BookVo bookVo = bookDetailReadService.fetchByBookId(bookId);
 
             bookHeartWriteService.removeHeart(member, bookVo);

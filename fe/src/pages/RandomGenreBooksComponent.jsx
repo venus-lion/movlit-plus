@@ -1,14 +1,16 @@
-import React, {useState} from "react";
-import useBookList from "../hooks/useBookList.jsx";
-import BookGenreCarousel from "./BookGenreCarousel.jsx";
+// RandomGenreBooksComponent.jsx
+import React, {useEffect, useState} from 'react';
+import useBookList from '../hooks/useBookList.jsx';
+import BookGenreCarousel from './BookGenreCarousel.jsx';
+import '../assets/css/loading.css';
 
-function RandomGenreBooksComponent() {
+function RandomGenreBooksComponent({onBooksLoaded, hidden}) {
     const {books, loading, error} = useBookList({
         endpoint: '/books/genres/random',
         params: {limit: 30},
     });
 
-    const [startIndex, setStartIndex] = useState(0); // 화면에 보이는 도서 시작 인덱스
+    const [startIndex, setStartIndex] = useState(0);
 
     const handleNext = () => {
         const newIndex = startIndex + 5;
@@ -24,17 +26,23 @@ function RandomGenreBooksComponent() {
         }
     };
 
-    if (loading) return <p>랜덤 장르의 도서들을 가져오는 중입니다!</p>;
-    if (error) return (
-        <div>
-            <p>Error loading popular books.</p>
+    useEffect(() => {
+        if (onBooksLoaded && books) {
+            onBooksLoaded(books);
+        }
+    }, [books, onBooksLoaded]);
+
+
+    if (loading) return (
+        <div className="loading-container">
+            <div className="spinner"></div>
+            <p>랜덤 장르의 도서들을 가져오는 중입니다!</p>
         </div>
     );
+    if (error) return <div><p>Error loading popular books.</p></div>;
+    if (hidden) return null;
 
-    // 유니크한 장르 세트 생성
     const uniqueGenres = new Set();
-
-    console.log('받아온 books :: ' + books);
 
     if (books) {
         books.forEach(book => {
@@ -46,7 +54,6 @@ function RandomGenreBooksComponent() {
 
     const uniqueGenreList = Array.from(uniqueGenres);
 
-    console.log('유니크한 장르 세트 :: ' + uniqueGenreList);
     return (
         <BookGenreCarousel
             title={`마니아를 위해: ${uniqueGenreList.join(', ')}`}

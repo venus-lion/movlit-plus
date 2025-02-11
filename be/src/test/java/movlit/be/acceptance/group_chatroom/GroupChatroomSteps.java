@@ -1,7 +1,6 @@
 package movlit.be.acceptance.group_chatroom;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import io.restassured.RestAssured;

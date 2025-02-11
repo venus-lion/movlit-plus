@@ -1,14 +1,11 @@
 package movlit.be.auth.application.service;// OAuth2AuthenticationSuccessHandler.java
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.auth.domain.repository.AuthCodeStorage;
-import movlit.be.common.util.IdFactory;
 import movlit.be.common.util.IdGenerator;
 import movlit.be.common.util.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from "react"; // useContext 임포트 추가
+import React, {useContext, useEffect, useState} from "react"; // useContext 임포트 추가
 import Modal from "react-modal";
 import {FaRegStar, FaStar, FaStarHalfAlt} from 'react-icons/fa';
 import "../../assets/css/CreateGroupChatModal.css";
@@ -115,7 +115,7 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
         setHasSearched(false); // 검색 상태 초기화
         onClose();
     };
-    
+
     return (
         <Modal
             isOpen={isOpen}
@@ -162,6 +162,11 @@ const CreateGroupChatModal = ({isOpen, onClose, onConfirm}) => {
                             className="search-input"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            onKeyDown={(e) => { // *** 키 이벤트 리스너 추가
+                                if (e.key === 'Enter') { // *** 엔터 키가 눌렸을 때
+                                    handleSearch(); // *** handleSearch 함수 호출
+                                }
+                            }}
                         />
                         <button className="search-button" onClick={handleSearch}>
                             검색

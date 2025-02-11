@@ -1,4 +1,4 @@
-import React, {useEffect, useState, Suspense, lazy, useCallback} from 'react';
+import React, {lazy, Suspense, useCallback, useEffect, useState} from 'react';
 import './Home.css';
 import {useOutletContext} from 'react-router-dom';
 import '../assets/css/loading.css';
@@ -38,7 +38,7 @@ function MovieHome() {
 
     // Helper function to check if a component's movies are loaded
     const areMoviesLoaded = (movies) => {
-        return movies && movies.length > 0 && movies.every(movie => movie.posterPath); // Check if posterPath exists
+        return movies && movies.length > 0 && movies.every(movie => movie.posterPath);
     };
 
 
@@ -74,6 +74,7 @@ function MovieHome() {
                     onMoviesLoaded={(movies) => updateComponentLoaded('popular', areMoviesLoaded(movies))}
                     hidden={!componentsLoaded.popular}
                 />
+
                 {/* Latest Movies */}
                 {componentsLoaded.popular && (
                     <LatestMoviesComponent
@@ -82,8 +83,18 @@ function MovieHome() {
                     />
                 )}
 
+                {/* Genre Movies (Mapped) */}
+                {componentsLoaded.latest && randomGenreIds.map((genreId, index) => (
+                    <GenreMoviesComponent
+                        key={genreId}
+                        genreId={genreId}
+                        onMoviesLoaded={(movies) => updateComponentLoaded('genre', areMoviesLoaded(movies), index)}
+                        hidden={!componentsLoaded.genre[index]}
+                    />
+                ))}
+
                 {/* Recent Heart (Conditional) */}
-                {componentsLoaded.latest && isLoggedIn && (
+                {componentsLoaded.popular && isLoggedIn && (
                     <RecentHeartSimilarCrewMoviesComponent
                         onMoviesLoaded={(movies) => updateComponentLoaded('recentHeart', areMoviesLoaded(movies))}
                         hidden={!componentsLoaded.recentHeart}
@@ -97,16 +108,6 @@ function MovieHome() {
                         hidden={!componentsLoaded.interestGenre}
                     />
                 )}
-
-                {/* Genre Movies (Mapped) */}
-                {componentsLoaded.interestGenre && randomGenreIds.map((genreId, index) => (
-                    <GenreMoviesComponent
-                        key={genreId}
-                        genreId={genreId}
-                        onMoviesLoaded={(movies) => updateComponentLoaded('genre', areMoviesLoaded(movies), index)}
-                        hidden={!componentsLoaded.genre[index]}
-                    />
-                ))}
             </Suspense>
         </div>
     );

@@ -12,7 +12,6 @@ import movlit.be.common.filter.dto.AuthenticationRequest;
 import movlit.be.common.filter.dto.AuthenticationResponse;
 import movlit.be.common.util.JwtTokenUtil;
 import movlit.be.member.application.service.MemberReadService;
-import movlit.be.member.domain.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

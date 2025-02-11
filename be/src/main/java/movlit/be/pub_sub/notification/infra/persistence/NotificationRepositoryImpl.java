@@ -2,7 +2,6 @@ package movlit.be.pub_sub.notification.infra.persistence;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import movlit.be.common.exception.NotificationNotFoundException;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.pub_sub.notification.domain.Notification;
 import movlit.be.pub_sub.notification.infra.persistence.mongo.NotificationMongoRepository;
@@ -40,7 +39,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     }
 
     @Override
-    public List<Notification> findByMemberIdAndIsRead(MemberId memberId, Boolean isRead) {
+    public List<Notification> fetchByMemberIdAndIsRead(MemberId memberId, Boolean isRead) {
         return notificationMongoRepository.findByMemberIdAndIsReadOrderByTimestampDesc(memberId, isRead);
     }
 

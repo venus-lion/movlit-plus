@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import './Home.css';
 import '../App.css';
 import axiosInstance from "../axiosInstance.js";
-import { useNavigate } from 'react-router-dom'; // useNavigate 훅 추가
-
+import {useNavigate} from 'react-router-dom'; // useNavigate 훅 추가
+import { FaTrashAlt } from 'react-icons/fa'; // FaTrashAlt 아이콘 import
 
 
 function Notification() {
@@ -19,7 +19,7 @@ function Notification() {
                 const response = await axiosInstance.get('/notification');
                 setMyNotifications(response.data);
 
-                console.log(JSON.stringify(response.data, null, 2));
+                //console.log(JSON.stringify(response.data, null, 2));
 
                 // 모든 알림 읽음 상태로 update
                 await axiosInstance.put('/notification/markAllAsRead');
@@ -65,7 +65,7 @@ function Notification() {
     // 알림 리스트 클릭 시 해당 알림 url로 이동
     const handleNotificationClick = (url) => {
         // URL이 'http'로 시작하면 절대 경로, 아니면 상대 경로로 처리
-        if(url){
+        if (url) {
             url += '?fromNoti=true';
             if (url.startsWith('http')) {
                 window.location.href = url; // 절대 URL로 이동
@@ -81,44 +81,50 @@ function Notification() {
             <h1>
                 <img src="/images/notification-bell-icon.png" alt="아이콘" className="noti-icon"/>
                 나의 알림
-                <button className="delete-all-btn" onClick={deleteAllmyNotifications}>모두 삭제</button>
+                <button className="delete-all-btn" onClick={deleteAllmyNotifications}>
+                    <FaTrashAlt className="delete-all-icon" /> {/* 삭제 아이콘 적용 */}
+                </button>
             </h1>
             <div className="notification-list">
-                {myNotifications.map((notification) => {
-                    // 각 notification.type에 따라 이미지 경로를 선택
-                    let imgSrc;
-                    switch (notification.type) {
-                        case 'CONTENT_HEART_CHATROOM':
-                            imgSrc = '/images/notification-heartmark-icon.png'; // 하트 아이콘
-                            break;
-                        case 'FOLLOW':
-                            imgSrc = '/images/notification-follow-icon.png'; // 팔로우 아이콘
-                            break;
-                        case 'ONE_ON_ONE_CHAT':
-                            imgSrc = '/images/notification-onechat-icon.png'; // 1대1 채팅 아이콘
-                            break;
-                        case 'GROUP_CHAT':
-                            imgSrc = '/images/notification-groupchat-icon.png'; // 그룹 채팅 아이콘
-                            break;
-                        default:
-                            imgSrc = '/images/notification-bell-icon.png'; // 기본 아이콘
-                    }
+                {myNotifications.length === 0 ? (  // 알림이 없는 경우 체크
+                    <p>알림이 없습니다</p>
+                ) : (
+                    myNotifications.map((notification) => {
+                        // 각 notification.type에 따라 이미지 경로를 선택
+                        let imgSrc;
+                        switch (notification.type) {
+                            case 'CONTENT_HEART_CHATROOM':
+                                imgSrc = '/images/notification-heartmark-icon.png'; // 하트 아이콘
+                                break;
+                            case 'FOLLOW':
+                                imgSrc = '/images/notification-follow-icon.png'; // 팔로우 아이콘
+                                break;
+                            case 'ONE_ON_ONE_CHAT':
+                                imgSrc = '/images/notification-onechat-icon.png'; // 1대1 채팅 아이콘
+                                break;
+                            case 'GROUP_CHAT':
+                                imgSrc = '/images/notification-groupchat-icon.png'; // 그룹 채팅 아이콘
+                                break;
+                            default:
+                                imgSrc = '/images/notification-bell-icon.png'; // 기본 아이콘
+                        }
 
-                    return (
-                        <div
-                            key={notification.id}
-                            className="notification-item"
-                        >
-                        <img src={imgSrc} alt="아이콘" className="noti-icon"/>
-                            <p className="noti-message"
-                               onClick={() => handleNotificationClick(notification.url)} // 클릭 시 URL로 이동
-                               style={{ cursor : 'pointer'}}
-                            >{notification.message}</p>
-                            <button className="delete-btn" onClick={() => deleteNotification(notification.id)}>X
-                            </button>
-                        </div>
-                    );
-                })}
+                        return (
+                            <div
+                                key={notification.id}
+                                className="notification-item"
+                            >
+                                <img src={imgSrc} alt="아이콘" className="noti-icon"/>
+                                <p className="noti-message"
+                                   onClick={() => handleNotificationClick(notification.url)} // 클릭 시 URL로 이동
+                                   style={{cursor: 'pointer'}}
+                                >{notification.message}</p>
+                                <button className="delete-btn" onClick={() => deleteNotification(notification.id)}>X
+                                </button>
+                            </div>
+                        );
+                    })
+                )}
             </div>
         </div>
     );

@@ -4,7 +4,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import movlit.be.book.domain.repository.BookHeartRepository;
 import movlit.be.book.infra.persistence.recommend_jpa.BookHeartRecommendRepository;
-import movlit.be.common.exception.BookHeartNotFoundException;
 import movlit.be.common.util.ids.BookId;
 import movlit.be.common.util.ids.MemberId;
 import org.springframework.stereotype.Service;

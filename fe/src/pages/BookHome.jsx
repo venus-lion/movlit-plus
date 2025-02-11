@@ -1,13 +1,16 @@
-import React, {useState} from 'react';
+// BookHome.jsx
+import React, {lazy, Suspense, useCallback, useState} from 'react';
 import './Home.css';
 import {useOutletContext} from 'react-router-dom';
-
-import BestsellerBooksComponent from "./BestsellerBooksComponent.jsx";
-import PopularBooksComponent from "./PopularBooksComponent.jsx";
-import NewBooksComponent from "./NewBooksComponent.jsx";
-import BookCarouselRecommend from "./BookCarouselRecommend.jsx";
+import '../assets/css/loading.css';
 import useApiData from "../hooks/userRecommendBookApi.jsx";
-import RandomGenreBooksComponent from "./RandomGenreBooksComponent.jsx";
+
+// Lazy-load the components
+const BestsellerBooksComponent = lazy(() => import('./BestsellerBooksComponent.jsx'));
+const PopularBooksComponent = lazy(() => import('./PopularBooksComponent.jsx'));
+const NewBooksComponent = lazy(() => import('./NewBooksComponent.jsx'));
+const BookCarouselRecommend = lazy(() => import('./BookCarouselRecommend.jsx'));
+const RandomGenreBooksComponent = lazy(() => import('./RandomGenreBooksComponent.jsx'));
 
 function BookHome() {
     const {isLoggedIn} = useOutletContext();
@@ -26,62 +29,88 @@ function BookHome() {
         error: errorInterestGenre
     } = useApiData('/books/search/interestGenre', isLoggedIn);
 
-    console.log('interestgenreBooks :: ' + interestGenreBooks);
 
-    const [startIndexRecommended, setStartIndexRecommended] = useState(0);
-    const [startIndexInterestGenre, setStartIndexInterestGenre] = useState(0);
+    const [componentsLoaded, setComponentsLoaded] = useState({
+        bestseller: false,
+        popular: false,
+        new: false,
+        randomGenre: false,
+        recommended: false,
+        interestGenre: false,
+    });
 
-    const handleNext = (startIndex, setStartIndex, length) => {
-        const newIndex = startIndex + 5;
-        if (newIndex < length) {
-            setStartIndex(newIndex);
-        }
+    // 컴포넌트 내의 모든 책 이미지가 로드되었는지 확인하는 helper-function
+    const areBooksLoaded = (books) => {
+        return books && books.length > 0 && books.every(book => book.bookImgUrl); // Check if bookImgUrl exists
     };
 
-    const handlePrev = (startIndex, setStartIndex) => {
-        const newIndex = startIndex - 5;
-        if (newIndex >= 0) {
-            setStartIndex(newIndex);
-        }
-    };
-
-    const handleNextRecommended = () => handleNext(startIndexRecommended, setStartIndexRecommended, recommendedBooks.length);
-    const handlePrevRecommended = () => handlePrev(startIndexRecommended, setStartIndexRecommended);
-    const handleNextInterestGenre = () => handleNext(startIndexInterestGenre, setStartIndexInterestGenre, interestGenreBooks.length);
-    const handlePrevInterestGenre = () => handlePrev(startIndexInterestGenre, setStartIndexInterestGenre);
-
+    // useCallback을 사용하여 컴포넌트 로딩 상태 업데이트 함수를 최적화. 불필요한 리렌더링을 방지.
+    const updateComponentLoaded = useCallback((componentName, isLoaded) => {
+        setComponentsLoaded(prev => {
+            if (prev[componentName] === isLoaded) {
+                return prev;
+            }
+            return {...prev, [componentName]: isLoaded};
+        });
+    }, []);
 
     return (
         <div className="book-home">
-            <BestsellerBooksComponent/>
-            <PopularBooksComponent/>
-            <NewBooksComponent/>
-            <RandomGenreBooksComponent/>
+            <Suspense fallback={<div className="loading-container">
+                <div className="spinner"></div>
+                <p>로딩 중입니다.</p></div>}>
 
-            {isLoggedIn && interestGenreBooks.length > 0 && (
-                <BookCarouselRecommend
-                    title="회원님의 취향저격 도서 장르"
-                    books={interestGenreBooks}
-                    startIndex={startIndexInterestGenre}
-                    handlePrev={handlePrevInterestGenre}
-                    handleNext={handleNextInterestGenre}
+                {/* Bestseller Books */}
+                <BestsellerBooksComponent
+                    onBooksLoaded={(books) => updateComponentLoaded('bestseller', areBooksLoaded(books))}
+                    hidden={!componentsLoaded.bestseller}
                 />
-            )}
 
-            {isLoggedIn && recommendedBooks.length > 0 && (
-                <BookCarouselRecommend
-                    title="회원님이 찜한 책과 닮은 도서들"
-                    books={recommendedBooks}
-                    startIndex={startIndexRecommended}
-                    handlePrev={handlePrevRecommended}
-                    handleNext={handleNextRecommended}
-                />
-            )}
+                {/* Popular Books */}
+                {componentsLoaded.bestseller && (
+                    <PopularBooksComponent
+                        onBooksLoaded={(books) => updateComponentLoaded('popular', areBooksLoaded(books))}
+                        hidden={!componentsLoaded.popular}
+                    />
+                )}
 
-            {loadingRecommended && <p>Loading recommended books...</p>}
-            {errorRecommended && <div>Error loading recommended books.</div>}
-            {loadingInterestGenre && <p>Loading interest genre books...</p>}
-            {errorInterestGenre && <div>Error loading interest genre books.</div>}
+                {/* New Books */}
+                {componentsLoaded.popular && (
+                    <NewBooksComponent
+                        onBooksLoaded={(books) => updateComponentLoaded('new', areBooksLoaded(books))}
+                        hidden={!componentsLoaded.new}
+                    />
+                )}
+
+                {/* Random Genre Books */}
+                {componentsLoaded.new && (
+                    <RandomGenreBooksComponent
+                        onBooksLoaded={(books) => updateComponentLoaded('randomGenre', areBooksLoaded(books))}
+                        hidden={!componentsLoaded.randomGenre}
+                    />
+                )}
+
+                {/* Interest Genre Books (Conditional) */}
+                {componentsLoaded.randomGenre && isLoggedIn && interestGenreBooks.length > 0 && (
+                    <BookCarouselRecommend
+                        title="회원님의 취향저격 도서 장르"
+                        books={interestGenreBooks}
+                        onBooksLoaded={(books) => updateComponentLoaded('interestGenre', areBooksLoaded(books))}
+                        hidden={!componentsLoaded.interestGenre}
+                    />
+                )}
+
+
+                {/* Recommended Books (Conditional) */}
+                {componentsLoaded.interestGenre && isLoggedIn && recommendedBooks.length > 0 && (
+                    <BookCarouselRecommend
+                        title="회원님이 찜한 책과 닮은 도서들"
+                        books={recommendedBooks}
+                        onBooksLoaded={(books) => updateComponentLoaded('recommended', areBooksLoaded(books))}
+                        hidden={!componentsLoaded.recommended}
+                    />
+                )}
+            </Suspense>
         </div>
     );
 }

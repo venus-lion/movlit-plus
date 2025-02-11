@@ -3,8 +3,9 @@ import axiosInstance from '../../axiosInstance.js';
 import {Client} from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import DateTimeUtil, {getNowDate} from "../../util/DateTimeUtil.jsx";
+import './ChatList.css';
 
-const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
+const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat}) => {
     const [groupChats, setGroupChats] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -190,14 +191,26 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
         }
     }, [activeTab, searchTerm, personalChats, groupChats]);
 
+    // 각 채팅 아이템 클릭 시 호출되는 함수
     const handleChatSelect = (chat) => {
         // 선택된 채팅방의 ID를 설정
         if (activeTab === 'group') {
             setSelectedChatId(chat.groupChatroomId);
-        }else{
+        } else {
             setSelectedChatId(chat.roomId);
         }
         onSelectChat(chat); // 선택된 채팅방을 상위 컴포넌트에 전달
+    };
+    // 선택된 채팅방에 따라 배경색 변하게 하기
+    const getChatItemStyle = (chat) => {
+        const isSelected = (activeTab === 'group' && selectedChat && selectedChat.groupChatroomId === chat.groupChatroomId) ||
+            (activeTab === 'personal' && selectedChat && selectedChat.roomId === chat.roomId);
+        return {
+            backgroundColor: isSelected ? '#e0f7fa' : '#f9f9f9', // 선택된 배경색
+            padding: '10px',
+            cursor: 'pointer',
+            borderBottom: '1px solid #ddd',
+        };
     };
 
     // 스타일 객체
@@ -221,20 +234,14 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
         },
-        chatListContainer: {
-            maxHeight: '550px',
-            overflowY: 'auto',
-            border: '1px solid #ddd',
-            padding: '10px',
-            borderRadius: '4px',
-        },
+
     };
 
     if (loading) return <div>로딩 중...</div>;
     if (error) return <div>오류: {error}</div>;
 
     return (
-        <div style={style.chatListContainer}>
+        <div className="chat-list-container" style={style.chatListContainer}>
             {/* 그룹 채팅 목록 */}
             {activeTab === 'group' && (
 
@@ -242,15 +249,8 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
                     {filteredChats.map((chat) => (
                         <div
                             key={chat.groupChatroomId}
-                            style={{
-                                padding: '10px',
-                                borderBottom: '1px solid #ddd',
-                                cursor: 'pointer',
-                                // 선택된 채팅방에 대해 배경색 변경
-                                backgroundColor: selectedChatId === chat.groupChatroomId ? '#e0f7fa' : '#f9f9f9',
-
-                            }}
-                            onClick={() => handleChatSelect(chat)}
+                            style={getChatItemStyle(chat)}
+                            onClick={() => handleChatSelect(chat)} // 클릭 시 채팅방 선택
                         >
                             <div style={{fontWeight: 'bold', color: 'black'}}>
                                 {chat.roomName}
@@ -285,16 +285,8 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat}) => {
                     {filteredChats.map((chat) => (
                         <div
                             key={chat.roomId}
-                            style={{
-                                padding: '15px',
-                                marginBottom: '10px',
-                                border: '1px solid #ccc',
-                                borderRadius: '5px',
-                                cursor: 'pointer',
-                                // 선택된 채팅방에 대해 배경색 변경
-                                backgroundColor: selectedChatId === chat.roomId ? '#e0f7fa' : '#f9f9f9',
-                            }}
-                            onClick={() => handleChatSelect(chat)}
+                            style={getChatItemStyle(chat)}
+                            onClick={() => handleChatSelect(chat)} // 클릭 시 채팅방 선택
                         >
                             <div style={{fontWeight: 'bold', color: 'black', fontSize: '1.2em'}}>
                                 {chat.receiverNickname}

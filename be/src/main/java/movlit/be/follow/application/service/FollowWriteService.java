@@ -1,6 +1,7 @@
 package movlit.be.follow.application.service;
 
 import lombok.RequiredArgsConstructor;
+import movlit.be.common.config.RedisNotificationPublisher;
 import movlit.be.common.exception.FollowSelfNotAllowedException;
 import movlit.be.common.util.IdFactory;
 import movlit.be.common.util.ids.MemberId;
@@ -8,11 +9,10 @@ import movlit.be.follow.domain.Follow;
 import movlit.be.follow.infra.persistence.FollowRepository;
 import movlit.be.member.application.service.MemberReadService;
 import movlit.be.member.domain.entity.MemberEntity;
-import movlit.be.pub_sub.RedisNotificationPublisher;
-import movlit.be.pub_sub.notification.NotificationDto;
-import movlit.be.pub_sub.notification.NotificationMessage;
-import movlit.be.pub_sub.notification.NotificationService;
-import movlit.be.pub_sub.notification.NotificationType;
+import movlit.be.pub_sub.notification.application.dto.NotificationDto;
+import movlit.be.pub_sub.notification.domain.NotificationMessage;
+import movlit.be.pub_sub.notification.application.service.NotificationService;
+import movlit.be.pub_sub.notification.domain.NotificationType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

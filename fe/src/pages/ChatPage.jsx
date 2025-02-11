@@ -5,6 +5,7 @@ import axiosInstance from '../axiosInstance'; // axios 인스턴스 import
 import './ChatPageGroup.css'; // CSS 파일 import
 import {FaUserCircle} from "react-icons/fa";
 import DateTimeUtil, {getNowDate} from "../util/DateTimeUtil.jsx";
+import {Link} from "react-router-dom";
 
 function ChatPage({roomId, roomInfo}) {
     const [messages, setMessages] = useState([]);
@@ -17,7 +18,12 @@ function ChatPage({roomId, roomInfo}) {
     // const {isLoggedIn} = useOutletContext();  // 로그인 상태
     const [currentUserId, setCurrentUserId] = useState(null);
     const [isComposing, setIsComposing] = useState(false);
+    const [roomInfoData, setRoomInfoData] = useState(roomInfo);
     console.log('roomInfo: ', roomInfo);
+
+    useEffect(() => {
+        setRoomInfoData(roomInfo);
+    }, [roomInfo]);
 
     useEffect(() => {
         axiosInstance
@@ -41,7 +47,7 @@ function ChatPage({roomId, roomInfo}) {
                 Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
             },
             debug: (str) => {
-                console.log("메시지  : " + JSON.stringify(messages, null, 2));
+                // console.log("메시지  : " + JSON.stringify(messages, null, 2));
             },
         });
 
@@ -51,6 +57,14 @@ function ChatPage({roomId, roomInfo}) {
             client.subscribe(`/topic/chat/message/one-on-one/${roomId}`, (message) => {
                 const receivedMessage = JSON.parse(message.body);
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+            });
+
+            // 2. /topic/chat/room/{roomId} 구독 (업데이트된 멤버 목록 수신)
+            client.subscribe(`/topic/chat/room/${roomId}`, (message) => {
+                const receivedData = JSON.parse(message.body);
+                console.log(receivedData);
+                // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
+                setRoomInfoData(receivedData);
             });
 
             // 과거 메시지 로드
@@ -101,7 +115,7 @@ function ChatPage({roomId, roomInfo}) {
         console.log('initiateChat message: ' + chatMessage);
         const requestBody = {
             roomId: roomId,
-            topicReceiverId: roomInfo.receiverId,
+            topicReceiverId: roomInfoData.receiverId,
             topicSenderId: currentUserId,
             chatMessage: chatMessage,
         }
@@ -133,14 +147,14 @@ function ChatPage({roomId, roomInfo}) {
     return (
         <div className="chat-container-group" style={{display: 'flex', flexDirection: 'column', height: '90%'}}>
             <div className="chat-header-group">
-                <h2>채팅방: {roomInfo.receiverNickname}</h2>
+                <h2>채팅방: {roomInfoData.receiverNickname}</h2>
             </div>
             <div className="chat-messages-group" ref={messagesContainerRef}>
                 {messages.map((message, index) => {
                     const receiver = {
-                        memberId: roomInfo.receiverId,
-                        nickname: roomInfo.receiverNickname,
-                        profileImgUrl: roomInfo.receiverProfileImgUrl
+                        memberId: roomInfoData.receiverId,
+                        nickname: roomInfoData.receiverNickname,
+                        profileImgUrl: roomInfoData.receiverProfileImgUrl
                     };
                     const isCurrentUser = message.senderId === currentUserId;
                     return (
@@ -149,19 +163,20 @@ function ChatPage({roomId, roomInfo}) {
                             className={`message-group ${isCurrentUser ? 'own-message-group' : ''}`}
                         >
                             {!isCurrentUser && receiver && (
-                                <div className="message-profile-group">
-                                    {/* profileImgUrl이 있으면 이미지를 표시하고, 없으면 FaUserCircle 아이콘을 표시합니다. */}
-                                    {receiver.profileImgUrl ? (
-                                        <img
-                                            src={receiver.profileImgUrl}
-                                            alt="Profile"
-                                            className="profile-img-group"
-                                        />
-                                    ) : (
-                                        <FaUserCircle size={36} className="profile-img"/>
-                                    )}
-                                    <strong>{receiver.nickname}</strong>
-                                </div>
+                                <Link to={`/members/${receiver.memberId}`} className="user-profile-link" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <div className="message-profile-group">
+                                        {receiver.profileImgUrl ? (
+                                            <img
+                                                src={receiver.profileImgUrl}
+                                                alt="Profile"
+                                                className="profile-img-group"
+                                            />
+                                        ) : (
+                                            <FaUserCircle size={36} className="profile-img" />
+                                        )}
+                                        <strong>{receiver.nickname}</strong>
+                                    </div>
+                                </Link>
                             )}
                             <div className="message-content-group">
                                 <div className={`message-bubble-group ${isCurrentUser ? 'own-bubble' : ''}`}>

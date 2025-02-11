@@ -1,6 +1,7 @@
 package movlit.be.image.application.service;
 
 import lombok.RequiredArgsConstructor;
+import movlit.be.chat_room.application.service.dto.ProfileImageUpdatedEvent;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.image.application.convertor.ImageConvertor;
 import movlit.be.image.domain.entity.ImageEntity;
@@ -8,7 +9,6 @@ import movlit.be.image.domain.repository.ImageRepository;
 import movlit.be.image.presentation.dto.response.ImageResponse;
 import movlit.be.member.domain.entity.MemberEntity;
 import movlit.be.member.domain.repository.MemberRepository;
-import movlit.be.pub_sub.chatRoom.application.service.dto.ProfileImageUpdatedEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class ImageService {
         validateMemberExistsInImage(memberId);
         ImageEntity savedImageEntity = imageRepository.upload(imageEntity);
         // 멤버 정보 update
-        MemberEntity member = memberRepository.findEntityById(memberId);
+        MemberEntity member = memberRepository.fetchEntityById(memberId);
         member.updateProfileImgUrl(savedImageEntity.getUrl());
         memberRepository.saveEntity(member);
 

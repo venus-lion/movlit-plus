@@ -13,7 +13,6 @@ import static movlit.be.acceptance.group_chatroom.GroupChatroomSteps.상태코�
 import java.util.HashMap;
 import java.util.Map;
 import movlit.be.acceptance.AcceptanceTest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

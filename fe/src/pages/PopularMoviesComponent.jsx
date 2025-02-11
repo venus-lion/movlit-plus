@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import useMovieList from '../hooks/useMovieList';
 import MovieCarousel from './MovieCarousel';
 import '../assets/css/loading.css';

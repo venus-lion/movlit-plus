@@ -1,6 +1,5 @@
 package movlit.be.common.config;
 
-import io.lettuce.core.RedisConnectionException;
 import io.lettuce.core.RedisException;
 import jakarta.annotation.PreDestroy;
 import java.time.Duration;
