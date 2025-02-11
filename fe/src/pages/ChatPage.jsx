@@ -7,7 +7,7 @@ import {FaUserCircle} from "react-icons/fa";
 import DateTimeUtil, {getNowDate} from "../util/DateTimeUtil.jsx";
 import {Link} from "react-router-dom";
 
-function ChatPage({roomId, roomInfo}) {
+function ChatPage({roomId, roomInfo, onReceiveMessage}) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [stompClient, setStompClient] = useState(null);
@@ -57,6 +57,10 @@ function ChatPage({roomId, roomInfo}) {
             client.subscribe(`/topic/chat/message/one-on-one/${roomId}`, (message) => {
                 const receivedMessage = JSON.parse(message.body);
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+
+                if (onReceiveMessage) {
+                    onReceiveMessage(receivedMessage);
+                }
             });
 
             // 2. /topic/chat/room/{roomId} 구독 (업데이트된 멤버 목록 수신)

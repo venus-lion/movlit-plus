@@ -11,6 +11,75 @@
     width: 8px; /* 스크롤바 너비 */
 }
 
+.chat-item { /* 새로운 클래스 추가 */
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.chat-item:hover {
+    background-color: #f5f5f5; /* 마우스 오버 시 배경색 */
+}
+
+.poster-image { /* 포스터 이미지 스타일 */
+    width: 50px;
+    height: 70px;
+    border-radius: 10px; /* 둥근 모서리 */
+    margin-right: 10px;
+    object-fit: cover; /* 이미지 비율 유지하며 채우기 */
+}
+
+.chat-info { /* 채팅 정보 컨테이너 */
+    flex-grow: 1; /* 남은 공간 채우기 */
+    overflow: hidden; /* 내용이 넘치면 숨김 */
+}
+
+.chat-info { /* 채팅 정보 컨테이너 */
+    flex-grow: 1; /* 남은 공간 채우기 */
+    overflow: hidden; /* 내용이 넘치면 숨김 */
+}
+
+.room-name {
+    font-weight: bold;
+    color: black;
+    margin-bottom: 2px; /* 아래쪽 여백 */
+    white-space: nowrap;       /* 텍스트 줄바꿈 방지 */
+    overflow: hidden;          /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis;   /* 말줄임표(...) 추가 */
+}
+
+.recent-message {
+    font-size: 0.9em;
+    color: #666;
+    white-space: nowrap;       /* 텍스트 줄바꿈 방지 */
+    overflow: hidden;          /* 넘치는 텍스트 숨김 */
+    text-overflow: ellipsis;   /* 말줄임표(...) 추가 */
+
+}
+
+.message-time {
+    font-size: 0.8em;
+    color: #999;
+    white-space: nowrap; /* 줄바꿈 방지 */
+}
+
+.con-title {
+    font-size: 0.8em; /* 글꼴 크기 작게 */
+    color: #333;       /* 텍스트 색상을 조금 더 진하게 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer; /* 마우스 커서를 포인터로 변경 */
+    margin-bottom: 2px; /* 아래쪽 여백 */
+
+}
+
+.con-title:hover {
+    text-decoration: underline; /* 밑줄 추가 */
+}
+
 /* 채팅 리스트 스크롤바 배경 */
 .chat-list-container::-webkit-scrollbar-track {
     background: #f0f0f0; /* 트랙 배경 색상 */
@@ -31,4 +100,22 @@
 /* 채팅 리스트 스크롤바 핸들 클릭 시 색상 변화 */
 .chat-list-container::-webkit-scrollbar-thumb:active {
     background: #666; /* 핸들 클릭 색상 */
+}
+
+/* 일대일 채팅리스트 */
+.profile-image { /* 프로필 이미지 스타일 */
+    width: 50px;
+    height: 50px; /* 정사각형으로 */
+    border-radius: 50%; /* 원형으로 */
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.receiver-nickname { /* 수신자 닉네임 스타일 */
+    font-weight: bold;
+    color: black;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

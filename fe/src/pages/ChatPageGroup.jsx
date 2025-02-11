@@ -7,7 +7,7 @@ import {FaUserCircle} from 'react-icons/fa';
 import {Link, useNavigate} from "react-router-dom"; // react-icons에서 기본 프로필 이미지 아이콘을 가져옵니다.
 import DateTimeUtil, {getNowDate} from "../util/DateTimeUtil.jsx";
 
-function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}) {
+function ChatPageGroup({roomId, roomInfo, onReceiveMessage, refreshChatList, refreshChatComponent}) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [stompClient, setStompClient] = useState(null);
@@ -15,6 +15,7 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
     const messagesContainerRef = useRef(null); // 스크롤 컨테이너에 대한 ref
     const [isComposing, setIsComposing] = useState(false);
     const [currentUserId, setCurrentUserId] = useState(null);
+    const [posterUrl, setPosterUrl] = useState(''); // 포스터 URL 상태 추가
 
     const navigate = useNavigate();
 
@@ -30,6 +31,8 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
     }, []);
 
     useEffect(() => {
+        console.log('roomInfo ::: ', roomInfo);
+
         if (roomId) {
             axiosInstance
                 .get(`/chat/${roomId}/members`)
@@ -44,6 +47,30 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
                 });
         }
     }, [roomId]);
+
+    // 포스터 URL 가져오는 로직
+    useEffect(() => {
+        if (roomInfo && roomInfo.contentId) {
+            const fetchPosterImage = async () => {
+                const [contentType, id] = roomInfo.contentId.split('_');
+                try {
+                    let url = '';
+                    if (contentType === 'MV') {
+                        const response = await axiosInstance.get(`/movies/${id}/detail`);
+                        url = response.data.posterPath;
+                    } else if (contentType === 'BK') {
+                        const response = await axiosInstance.get(`/books/${id}/detail`);
+                        url = response.data.book_img_url;
+                    }
+                    setPosterUrl(url);
+                } catch (error) {
+                    console.error("Error fetching poster image:", error);
+                }
+            };
+            fetchPosterImage();
+        }
+    }, [roomInfo]);
+
 
     useEffect(() => {
         if (!roomId) return;
@@ -60,6 +87,10 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
             client.subscribe(`/topic/chat/message/group/${roomId}`, (message) => {
                 const receivedMessage = JSON.parse(message.body);
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+
+                if (onReceiveMessage) {
+                    onReceiveMessage(receivedMessage);
+                }
             });
 
             // 2. /topic/chat/room/{roomId} 구독 (업데이트된 멤버 목록 수신)
@@ -204,7 +235,18 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
     }, [messages]);
 
     return (
-        <div className="chat-container-group" style={{display: 'flex', flexDirection: 'column', height: '90%'}}>
+        <div
+            className="chat-container-group"
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '90%',
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${posterUrl})`, // 배경 이미지 설정
+                backgroundSize: 'cover',          // 이미지가 컨테이너를 꽉 채우도록
+                backgroundPosition: 'center',     // 이미지 중앙 정렬
+                backgroundRepeat: 'no-repeat',     // 이미지 반복 방지
+            }}
+        >
             <div className="chat-header-group">
                 <h2>채팅방: {roomInfo.roomName}</h2>
                 <button onClick={handleLeaveChatroom} className="leave-button">나가기</button>
@@ -223,7 +265,8 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
                             }`}
                         >
                             {!isCurrentUser && sender && !isJoinMessage && (
-                                <Link to={`/members/${sender.memberId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <Link to={`/members/${sender.memberId}`}
+                                      style={{textDecoration: 'none', color: 'inherit'}}>
                                     <div className="message-profile-group">
                                         {sender && sender.profileImgUrl ? (
                                             <img
@@ -232,7 +275,7 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
                                                 className="profile-img-group"
                                             />
                                         ) : (
-                                            <FaUserCircle size={40} className="profile-img" />
+                                            <FaUserCircle size={40} className="profile-img"/>
                                         )}
                                         <strong>{sender.nickname}</strong>
                                     </div>
@@ -248,7 +291,7 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
                                     {message.message}
                                 </div>
                                 <div className="message-time-group">
-                                    {DateTimeUtil(getNowDate())}
+                                    {DateTimeUtil(message.regDt)}
                                 </div>
                             </div>
                         </div>
