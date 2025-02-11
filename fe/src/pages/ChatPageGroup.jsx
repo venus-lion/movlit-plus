@@ -7,7 +7,7 @@ import {FaUserCircle} from 'react-icons/fa';
 import {Link, useNavigate} from "react-router-dom"; // react-icons에서 기본 프로필 이미지 아이콘을 가져옵니다.
 import DateTimeUtil, {getNowDate} from "../util/DateTimeUtil.jsx";
 
-function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}) {
+function ChatPageGroup({roomId, roomInfo, onReceiveMessage, refreshChatList, refreshChatComponent}) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [stompClient, setStompClient] = useState(null);
@@ -60,6 +60,10 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
             client.subscribe(`/topic/chat/message/group/${roomId}`, (message) => {
                 const receivedMessage = JSON.parse(message.body);
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
+
+                if (onReceiveMessage) {
+                    onReceiveMessage(receivedMessage);
+                }
             });
 
             // 2. /topic/chat/room/{roomId} 구독 (업데이트된 멤버 목록 수신)

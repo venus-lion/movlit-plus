@@ -31,6 +31,10 @@ const Chat = () => {
     const [selectedCard, setSelectedCard] = useState(null); // 선택된 데이터
     const [selectedCategory, setSelectedCategory] = useState(null);
 
+    const [personalChats, setPersonalChats] = useState([]);
+    const [groupChats, setGroupChats] = useState([]);
+    const [currentUserId, setCurrentUserId] = useState(null);
+
 
     // 로그인 상태 확인 및 리다이렉트 로직 추가
     useEffect(() => {
@@ -38,6 +42,37 @@ const Chat = () => {
             navigate('/member/login', {replace: true}); // 리다이렉트 할 때, 브라우저 히스토리에 현재 경로를 남기지 않음
         }
     }, [isLoggedIn, navigate]);
+
+    useEffect(() => {
+        const fetchChats = async () => {
+            try {
+                // 병렬 요청
+                const [groupRes, personalRes] = await Promise.all([
+                    axiosInstance.get('/chat/group/rooms/my'),
+                    axiosInstance.get('/chat/oneOnOne'),
+                ]);
+                setGroupChats(groupRes.data);
+                setPersonalChats(personalRes.data);
+            } catch (err) {
+                console.error('채팅방 목록 가져오기 실패:', err);
+            }
+        };
+
+        fetchChats();
+    }, [refreshKey]);
+
+    useEffect(() => {
+        const fetchUserId = async () => {
+            try {
+                const response = await axiosInstance.get('/members/id');
+                setCurrentUserId(response.data.memberId); // 여기서 state에 저장
+                console.log(response.data.memberId);
+            } catch (error) {
+                console.error('Error fetching current user ID:', error);
+            }
+        };
+        fetchUserId();
+    }, []);
 
 
     // URL 쿼리 파라미터에서 fromNoti 값 추출하는 함수
@@ -154,6 +189,28 @@ const Chat = () => {
         }
     };
 
+    // onReceiveMessage : 자식 컴포넌트가 DM 메시지를 받으면 실행
+    const handleOneOnOneChatMessage = (receivedMessage) => {
+        setPersonalChats((prev) =>
+            prev.map((chat) =>
+                chat.roomId === receivedMessage.roomId
+                    ? {...chat, recentMessage: receivedMessage}
+                    : chat
+            )
+        );
+    };
+
+    // onReceiveMessage : 자식 컴포넌트가 DM 메시지를 받으면 실행
+    const handleGroupChatMessage = (receivedMessage) => {
+        setGroupChats((prev) =>
+            prev.map((chat) =>
+                chat.roomId === receivedMessage.roomId
+                    ? {...chat, recentMessage: receivedMessage}
+                    : chat
+            )
+        );
+    };
+
     // 선택된 채팅방에 따라 URL 변경 (기존과 동일)
     useEffect(() => {
         if (selectedChat) {
@@ -199,6 +256,9 @@ const Chat = () => {
                     }}
                 />
                 <ChatList
+                    currentUserId={currentUserId}
+                    personalChats={personalChats}
+                    groupChats={groupChats}
                     refreshKey={refreshKey} // 새로고침 키 전달
                     activeTab={activeTab}
                     searchTerm={searchTerm}
@@ -222,11 +282,16 @@ const Chat = () => {
             <div style={{flex: 1, padding: '10px'}}>
                 {selectedChat ? (
                     activeTab === 'personal' ? (
-                        <ChatPage roomId={selectedChat.roomId} roomInfo={selectedChat}/> /* 개인 채팅방 */
+                        <ChatPage
+                            roomId={selectedChat.roomId}
+                            roomInfo={selectedChat}
+                            onReceiveMessage={handleOneOnOneChatMessage}
+                        /> /* 개인 채팅방 */
                     ) : (
                         <ChatPageGroup
                             roomId={selectedChat.groupChatroomId}
                             roomInfo={selectedChat}
+                            onReceiveMessage={handleGroupChatMessage}
                             refreshChatList={refreshChatList}
                             refreshChatComponent={refreshChatComponent} // refreshChatComponent 함수 전달
                         /> /* 그룹 채팅방 */

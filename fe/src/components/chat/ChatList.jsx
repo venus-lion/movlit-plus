@@ -5,52 +5,62 @@ import SockJS from 'sockjs-client';
 import DateTimeUtil, {getNowDate} from "../../util/DateTimeUtil.jsx";
 import './ChatList.css';
 
-const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat}) => {
-    const [groupChats, setGroupChats] = useState([]);
+const ChatList = ({
+                      currentUserId,
+                      personalChats,
+                      groupChats,
+                      refreshKey,
+                      activeTab,
+                      searchTerm,
+                      onSelectChat,
+                      selectedChat
+                  }) => {
+    // const [groupChats, setGroupChats] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [personalChats, setPersonalChats] = useState([]);
+    // const [personalChats, setPersonalChats] = useState([]);
     const [stompClient, setStompClient] = useState(null);
-    const [currentUserId, setCurrentUserId] = useState(null);
+    // const [currentUserId, setCurrentUserId] = useState(null);
     // 선택된 채팅방의 ID를 상태로 관리
     const [selectedChatId, setSelectedChatId] = useState(null);
 
-    useEffect(() => {
-        const fetchUserId = async () => {
-            try {
-                const response = await axiosInstance.get('/members/id');
-                setCurrentUserId(response.data.memberId); // 여기서 state에 저장
-                console.log(response.data.memberId);
-            } catch (error) {
-                console.error('Error fetching current user ID:', error);
-            }
-        };
-        fetchUserId();
-    }, []);
+    // useEffect(() => {
+    //     const fetchUserId = async () => {
+    //         try {
+    //             const response = await axiosInstance.get('/members/id');
+    //             setCurrentUserId(response.data.memberId); // 여기서 state에 저장
+    //             console.log(response.data.memberId);
+    //         } catch (error) {
+    //             console.error('Error fetching current user ID:', error);
+    //         }
+    //     };
+    //     fetchUserId();
+    // }, []);
 
     // fetch 관련 로직만 별도 useEffect로 분리 (refreshKey 변화에 따라 재호출)
     useEffect(() => {
-        const fetchChats = async () => {
-            setLoading(true);
-            try {
-                await Promise.all([
-                    (async () => {
-                        const response = await axiosInstance.get('/chat/group/rooms/my');
-                        setGroupChats(response.data);
-                    })(),
-                    (async () => {
-                        const response = await axiosInstance.get('/chat/oneOnOne');
-                        setPersonalChats(response.data);
-                    })(),
-                ]);
-            } catch (err) {
-                setError(err.message || '네트워크 오류가 발생했습니다.');
-            } finally {
-                setLoading(false);
-            }
-        };
+        // const fetchChats = async () => {
+        //     setLoading(true);
+        //     try {
+        //         await Promise.all([
+        //             (async () => {
+        //                 const response = await axiosInstance.get('/chat/group/rooms/my');
+        //                 setGroupChats(response.data);
+        //             })(),
+        //             (async () => {
+        //                 const response = await axiosInstance.get('/chat/oneOnOne');
+        //                 setPersonalChats(response.data);
+        //             })(),
+        //         ]);
+        //     } catch (err) {
+        //         setError(err.message || '네트워크 오류가 발생했습니다.');
+        //     } finally {
+        //         setLoading(false);
+        //     }
+        // };
+        //
+        // fetchChats();
 
-        fetchChats();
     }, [refreshKey]);
 
     // 웹소켓 연결 관련 로직은 최초 한 번만 실행하도록 [] 의존성 사용
@@ -201,6 +211,7 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat
         }
         onSelectChat(chat); // 선택된 채팅방을 상위 컴포넌트에 전달
     };
+
     // 선택된 채팅방에 따라 배경색 변하게 하기
     const getChatItemStyle = (chat) => {
         const isSelected = (activeTab === 'group' && selectedChat && selectedChat.groupChatroomId === chat.groupChatroomId) ||
@@ -237,7 +248,7 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat
 
     };
 
-    if (loading) return <div>로딩 중...</div>;
+    // if (loading) return <div>로딩 중...</div>;
     if (error) return <div>오류: {error}</div>;
 
     return (
@@ -262,7 +273,6 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat
                                 {chat.recentMessage ? (
                                     <div>
                                         <div style={style.recentMsg}>
-                                            <strong>[New] </strong>
                                             {chat.recentMessage.message}
                                             <br/>
                                             {DateTimeUtil(chat.recentMessage.regDt)}
@@ -294,7 +304,6 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat
                             {chat.recentMessage ? (
                                 <div>
                                     <div style={style.recentMsg}>
-                                        <strong>[New] </strong>
                                         {chat.recentMessage.message}
                                         <br/>
                                         {DateTimeUtil(chat.recentMessage.regDt)}
