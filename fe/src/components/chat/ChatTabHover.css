@@ -10,7 +10,8 @@
     padding: 10px;
     border: 1px solid #ddd;
     cursor: pointer;
-    background-color: #00AE68;
+    background-color: #95b7a9;
+    color: #d6e1dd;
 }
 
 .chat-button:hover {
@@ -21,12 +22,17 @@
 .group-chat-button {
     flex: 1;
     padding: 10px;
-    background-color: #00AE68;
-    color: white;
+    background-color: #95b7a9;
+    color: #d6e1dd;
     cursor: pointer;
 }
 
 .group-chat-button:hover {
     background-color: #236540;
     color: #fff;
+}
+
+.chat-button.active, .group-chat-button.active {
+    background-color: #00AE68; /* 선택된 탭의 배경색 (원하는 색상으로 변경) */
+    color: white; /* 선택된 탭의 글자색 (원하는 색상으로 변경) */
 }

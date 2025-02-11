@@ -16,7 +16,7 @@ const ChatTabs = ({activeTab, setActiveTab}) => {
             {/*    onClick={() => setActiveTab('personal')}*/}
             {/*>*/}
             <button
-                className='chat-button'
+                className={`chat-button ${activeTab === 'personal' ? 'active' : ''}`}
                 onClick={() => setActiveTab('personal')}
             >
                 개인 채팅
@@ -33,7 +33,7 @@ const ChatTabs = ({activeTab, setActiveTab}) => {
             {/*    onClick={() => setActiveTab('group')}*/}
             {/*>*/}
             <button
-                className='group-chat-button'
+                className={`group-chat-button ${activeTab === 'group' ? 'active' : ''}`}
                 onClick={() => setActiveTab('group')}
             >
                 그룹 채팅
