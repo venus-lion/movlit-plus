@@ -176,6 +176,10 @@ const ChatList = ({
     const filteredChats = useMemo(() => {
         const chats = activeTab === 'personal' ? personalChats : groupChats;
         if (activeTab === 'personal') {
+            chats.forEach((chat) =>
+                console.log('개인채팅, chat :: ', chat)
+            );
+
             return chats.filter((chat) =>
                 chat.receiverNickname
                     ?.toLowerCase()
@@ -314,6 +318,7 @@ const ChatList = ({
                     {filteredChats.map((chat) => (
                         <div
                             key={chat.groupChatroomId}
+                            style={getChatItemStyle(chat)}
                             className='chat-item' // chat-item 클래스 적용
                             onClick={() => handleChatSelect(chat)}
                         >
@@ -356,25 +361,62 @@ const ChatList = ({
                     {filteredChats.map((chat) => (
                         <div
                             key={chat.roomId}
+                            className='chat-item'
                             style={getChatItemStyle(chat)}
                             onClick={() => handleChatSelect(chat)} // 클릭 시 채팅방 선택
                         >
-                            <div style={{fontWeight: 'bold', color: 'black', fontSize: '1.2em'}}>
-                                {chat.receiverNickname}
-                            </div>
-                            {chat.recentMessage ? (
-                                <div>
-                                    <div style={style.recentMsg}>
-                                        {chat.recentMessage.message}
-                                        <br/>
-                                        {DateTimeUtil(chat.recentMessage.regDt)}
-                                    </div>
-                                </div>
+                            {/* 프로필 이미지 */}
+                            {chat.receiverProfileImgUrl ? (
+                                <img
+                                    src={chat.receiverProfileImgUrl}
+                                    alt="Profile"
+                                    className="profile-image"
+                                />
                             ) : (
-                                <div>
-                                    <div style={style.recentMsg}>메시지 없음</div>
+                                // 기본 이미지 (FaUserCircle 같은 것)를 여기에 넣을 수 있음
+                                <div className="profile-image"
+                                     style={{
+                                         backgroundColor: '#ccc',
+                                         display: 'flex',
+                                         justifyContent: 'center',
+                                         alignItems: 'center',
+                                         color: '#fff'
+                                     }}>
                                 </div>
                             )}
+
+                            <div className="chat-info">
+                                <div className="receiver-nickname">
+                                    {chat.receiverNickname}
+                                </div>
+                                {chat.recentMessage ? (
+                                    <div className="recent-message">
+                                        {chat.recentMessage.message}
+                                    </div>
+                                ) : (
+                                    <div className="recent-message">메시지 없음</div>
+                                )}
+                            </div>
+
+                            <div className="message-time">
+                                {chat.recentMessage ? DateTimeUtil(chat.recentMessage.regDt) : ""}
+                            </div>
+                            {/*<div style={{fontWeight: 'bold', color: 'black', fontSize: '1.2em'}}>*/}
+                            {/*    {chat.receiverNickname}*/}
+                            {/*</div>*/}
+                            {/*{chat.recentMessage ? (*/}
+                            {/*    <div>*/}
+                            {/*        <div style={style.recentMsg}>*/}
+                            {/*            {chat.recentMessage.message}*/}
+                            {/*            <br/>*/}
+                            {/*            {DateTimeUtil(chat.recentMessage.regDt)}*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+                            {/*) : (*/}
+                            {/*    <div>*/}
+                            {/*        <div style={style.recentMsg}>메시지 없음</div>*/}
+                            {/*    </div>*/}
+                            {/*)}*/}
                         </div>
                     ))}
                 </div>
