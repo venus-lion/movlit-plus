@@ -33,7 +33,7 @@ jobs:
         run: |
           chmod +x gradlew
           echo "::group::Gradle Build Logs"
-          ./gradlew clean build openapi3 asciidoctor 
+          ./gradlew clean build 
           echo "::endgroup::"
 
         working-directory: ${{ env.ROOT_PATH }}
