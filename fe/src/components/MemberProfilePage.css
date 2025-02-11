@@ -1,6 +1,5 @@
 /* MemberProfilePage.css */
 
-/* MyPage.css 에서 가져와야 할 부분 */
 .mypage-container {
     padding: 20px;
     max-width: 800px;
@@ -111,24 +110,23 @@
     color: #888;
 }
 
-/* 팔로워/팔로잉 관련 스타일 */
 .mypage-follow-stats {
     display: flex;
     align-items: center;
-    gap: 15px; /* stat-item 간 간격 */
+    gap: 15px;
     margin-top: 5px;
 }
 
 .stat-item {
     display: flex;
-    align-items: center; /* 세로 중앙 정렬 */
-    flex-direction: row; /* 가로 방향으로 아이템 배치 */
+    align-items: center;
+    flex-direction: row;
 }
 
 .stat-label {
     font-size: 13px;
     color: #888;
-    margin-right: 4px; /* 레이블과 숫자 사이 간격 */
+    margin-right: 4px;
 }
 
 .count-button {
@@ -177,7 +175,6 @@
     border-radius: 50%;
 }
 
-/*  팔로잉 팔로워 링크 버튼 */
 .link-button {
     background: none;
     border: none;
@@ -194,43 +191,53 @@
     text-decoration: underline;
 }
 
-/* 추가/수정된 부분 */
 .button-group {
     margin-top: 10px;
     display: flex;
     gap: 10px;
+    align-items: center;
 }
 
 .follow-button, .dm-button {
-    padding: 8px 16px;
+    padding: 0;  /* 내부 패딩 제거 */
     border: none;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
+    border-radius: 50%; /* 원형 버튼 */
+    font-size: 24px; /* 아이콘 크기 증가 */
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* 그림자 효과 */
+}
+
+
+.follow-button svg, .dm-button svg {
+    margin: 0; /* 아이콘 마진 제거 */
 }
 
 .follow-button {
     background-color: #4CAF50;
     color: white;
 }
-
 .follow-button:hover {
     background-color: #388E3C;
-}
-.dm-button {
-    background-color: #2196F3;
-    color: white;
-}
-.dm-button:hover {
-    background-color: #1976D2;
 }
 .follow-button.following {
     background-color: #f44336;
     color: white;
 }
-
 .follow-button.following:hover {
     background-color: #d32f2f;
+}
+
+.dm-button {
+    background-color: #2196F3;
+    color: white;
+}
+
+.dm-button:hover {
+    background-color: #1976D2;
 }

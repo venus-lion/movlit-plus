@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import axiosInstance from '../axiosInstance';
 import './MemberProfilePage.css';
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle, FaUserPlus, FaUserCheck, FaEnvelope } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from "../App.jsx";
 
@@ -127,7 +127,6 @@ function MemberProfilePage() {
     return (
         <div className="mypage-container">
             <div className="mypage-content-wrapper">
-                {/* Section 1: Profile Info (Modified) */}
                 <div className="mypage-section">
                     <div className="profile-image">
                         {userData.profileImgUrl ? (
@@ -154,14 +153,13 @@ function MemberProfilePage() {
                                     </span>
                                 </div>
                             </div>
-                            {/* 팔로우/DM 버튼 위치 조정 */}
                             {loginMemberId !== memberId && (
                                 <div className="button-group">
                                     <button onClick={handleFollowToggle} className={`follow-button ${isFollowing ? 'following' : ''}`}>
-                                        {isFollowing ? '언팔로우' : '팔로우'}
+                                        {isFollowing ? <FaUserCheck /> : <FaUserPlus />}
                                     </button>
                                     <button onClick={handleCreateOneononeChatroom} className="dm-button">
-                                        DM
+                                        <FaEnvelope />
                                     </button>
                                 </div>
                             )}
@@ -180,7 +178,6 @@ function MemberProfilePage() {
                     </div>
                 </div>
 
-                {/* Section 2: 선호 장르 (Preferred Genres) */}
                 <div className="mypage-section">
                     <div className="mypage-genre-list">
                         <h3>선호 장르</h3>
