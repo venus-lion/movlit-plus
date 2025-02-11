@@ -27,7 +27,6 @@ public class GroupChatroomLeaveEventListener {
     private final RedisMessagePublisher redisMessagePublisher;
     private final MemberReadService memberReadService;
 
-
     @TransactionalEventListener
     public void handleGroupChatroomLeftEvent(GroupChatroomLeftEvent event) throws JsonProcessingException {
         log.info("GroupChatroomLeftEventListener 실행...");
@@ -39,7 +38,8 @@ public class GroupChatroomLeaveEventListener {
         String leftMessage = leftMember.getNickname() + " 님이 나갔습니다.";
 
         // 2. 캐시된 멤버 목록 가져오기 (캐시 없으면 자동 생성됨)
-        List<GroupChatroomMemberResponse> cachedMembers = groupChatroomUseCase.fetchMembersInGroupChatroom(groupChatroomId, true);
+        List<GroupChatroomMemberResponse> cachedMembers = groupChatroomUseCase.fetchMembersInGroupChatroom(
+                groupChatroomId, true);
 
         // 3. 나간 멤버 정보 제거
         cachedMembers.removeIf(member -> member.getMemberId().equals(leftMemberId));
@@ -50,7 +50,7 @@ public class GroupChatroomLeaveEventListener {
 
         // 5. UpdateRoomDto 생성 및 발행
         UpdateRoomDto updateRoomDto = new UpdateRoomDto(
-                groupChatroomId,
+                groupChatroomId.getValue(),
                 MessageType.GROUP,
                 UpdateRoomDto.EventType.MEMBER_LEAVE,
                 leftMemberId,

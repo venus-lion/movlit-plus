@@ -2,6 +2,7 @@ package movlit.be.chat_room.application.service;
 
 import java.util.List;
 import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import movlit.be.pub_sub.chat_message.application.service.ChatMessageService;
 import movlit.be.pub_sub.chat_message.presentation.dto.response.ChatMessageDto;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class FetchMyOneononeChatroomUseCase {
+public class FetchOneononeChatroomUseCase {
 
     private final OneononeChatroomService oneononeChatroomService;
     private final ChatMessageService chatMessageService;
