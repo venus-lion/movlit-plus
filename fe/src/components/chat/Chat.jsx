@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react'; // useContext import 추가
+import React, {useContext, useEffect, useState, useRef} from 'react'; // useContext import 추가
 import ChatTabs from './ChatTabs';
 import ChatList from './ChatList';
 import {useLocation, useNavigate, useParams} from "react-router-dom";
@@ -8,7 +8,9 @@ import ChatPageGroup from "../../pages/ChatPageGroup.jsx";
 import CreateGroupChatNameModal from "./CreateGroupChatNameModal.jsx";
 import axiosInstance from "../../axiosInstance.js";
 import GetGroupChatInfoModal from "./GetGroupChatInfoModal.jsx"; // axios 임포트
-import {AppContext} from "../../App.jsx"; // AppContext import
+import {AppContext} from "../../App.jsx";
+import {Client} from "@stomp/stompjs";
+import SockJS from "sockjs-client"; // AppContext import
 
 const Chat = () => {
     // 알림(새로운 채팅 메시지)을 통해 채팅 메뉴 접속 -> 바로 "해당 채팅방" 띄우기
@@ -20,6 +22,7 @@ const Chat = () => {
     const [activeTab, setActiveTab] = useState(type || 'personal'); // 기본값 'personal'로 설정하기
     const [searchTerm, setSearchTerm] = useState(''); // 검색어
     const [selectedChat, setSelectedChat] = useState(null); // 현재 선택된 채팅방
+    const selectedChatRef = useRef(selectedChat);
     const {isLoggedIn, updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
     const navigate = useNavigate();
     const [refreshKey, setRefreshKey] = useState(0); // 채팅 리스트 새로고침 키 추가
@@ -34,7 +37,14 @@ const Chat = () => {
     const [personalChats, setPersonalChats] = useState([]);
     const [groupChats, setGroupChats] = useState([]);
     const [currentUserId, setCurrentUserId] = useState(null);
+    const [stompClient, setStompClient] = useState(null);
+    const [isStompConnected, setIsStompConnected] = useState(false);
+    const [currentChatMessages, setCurrentChatMessages] = useState([]);
+    const [currentGroupChatMembers, setCurrentGroupChatMembers] = useState(null);
 
+    useEffect(() => {
+        selectedChatRef.current = selectedChat;
+    }, [selectedChat]);
 
     // 로그인 상태 확인 및 리다이렉트 로직 추가
     useEffect(() => {
@@ -73,6 +83,96 @@ const Chat = () => {
         };
         fetchUserId();
     }, []);
+
+    useEffect(() => {
+        if (!currentUserId) return; // 아직 ID가 없다면 연결 안 함
+
+        const client = new Client({
+            webSocketFactory: () =>
+                new SockJS(`${process.env.VITE_BASE_URL_FOR_CONF}/ws-stomp`),
+            connectHeaders: {
+                Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+            },
+            debug: (str) => {
+                console.log('STOMP Debug:', str);
+            },
+        });
+
+        client.onConnect = () => {
+            console.log('WebSocket Connected : ' + currentUserId);
+            setIsStompConnected(true);
+            // 일대일 채팅방 생성 토픽 구독
+            client.subscribe(`/topic/oneononeChatroom/create/publish/${currentUserId}`, (message) => {
+                try {
+                    const createdChat = JSON.parse(message.body);
+                    setPersonalChats((prevChats) => [...prevChats, createdChat]);
+                } catch (e) {
+                    console.error("Error parsing message:", e);
+                }
+
+            });
+
+            personalChats.forEach((chat) => {
+                // 일대일 sendMessage 토픽 구독
+                const subId = `/topic/chat/message/one-on-one/${chat.roomId}`;
+                client.subscribe(subId, (message) => {
+                    const receivedMessage = JSON.parse(message.body);
+                    setPersonalChats((prevChats) =>
+                        prevChats.map((c) =>
+                            c.roomId === receivedMessage.roomId
+                                ? {...c, recentMessage: receivedMessage}
+                                : c
+                        )
+                    );
+                    if (selectedChatRef.current && selectedChatRef.current.roomId === receivedMessage.roomId) {
+                        setCurrentChatMessages((prev) => [...prev, receivedMessage]);
+                    }
+                });
+
+                // 일대일 프로필변경 토픽 구독
+                client.subscribe(`/topic/chat/room/${chat.roomId}`, (message) => {
+                    const receivedData = JSON.parse(message.body);
+                    console.log('updateRoom');
+                    console.log(receivedData);
+                    // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
+                    // setRoomInfoData(receivedData);
+                    setPersonalChats((prevChats) =>
+                        prevChats.map((c) =>
+                            c.roomId === receivedData.roomId
+                                ? {...c, receiverProfileImgUrl: receivedData.receiverProfileImgUrl}
+                                : c
+                        )
+                    );
+                });
+            });
+
+            groupChats.forEach((chat) => {
+                // 그룹 sendMessage 토픽 구독
+                const subId = `/topic/chat/message/group/${chat.groupChatroomId}`;
+                client.subscribe(subId, (message) => {
+                    const receivedMessage = JSON.parse(message.body);
+                    setGroupChats((prevChats) =>
+                        prevChats.map((c) =>
+                            c.groupChatroomId === receivedMessage.roomId
+                                ? {...c, recentMessage: receivedMessage}
+                                : c
+                        )
+                    );
+                    if (selectedChatRef.current && selectedChatRef.current.groupChatroomId === receivedMessage.roomId) {
+                        setCurrentChatMessages((prev) => [...prev, receivedMessage]);
+                    }
+                });
+            });
+        };
+
+        client.activate();
+        setStompClient(client);
+
+        return () => {
+            if (client.connected) client.deactivate();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentUserId, personalChats, groupChats]);
 
 
     // URL 쿼리 파라미터에서 fromNoti 값 추출하는 함수
@@ -211,13 +311,34 @@ const Chat = () => {
         );
     };
 
+    const handleCreateOneononeChat = (createdChat) => {
+        setPersonalChats((prev) => [...prev, createdChat]);
+    }
+
+    const handleCreateGroupChat = (createdChat) => {
+        setGroupChats((prev) => [...prev, createdChat]);
+    }
+
     // 선택된 채팅방에 따라 URL 변경 (기존과 동일)
     useEffect(() => {
         if (selectedChat) {
             const chatId = activeTab === 'personal' ? selectedChat.roomId : selectedChat.groupChatroomId;
             navigate(`/chatMain/${chatId}/${activeTab}`);
+
+            setCurrentChatMessages([]);
+            fetchChatMessages(chatId);
         }
     }, [selectedChat, activeTab, navigate]);
+
+    // 일대일 채팅방 정보 변경될 때
+    useEffect(() => {
+        if (selectedChat) {
+            const updatedSelected = personalChats.find(chat => String(chat.roomId) === String(selectedChat.roomId));
+            if (updatedSelected) {
+                setSelectedChat(updatedSelected);
+            }
+        }
+    }, [personalChats]);
 
     // ChatList 갱신 함수 (기존과 동일)
     const refreshChatList = () => {
@@ -229,6 +350,32 @@ const Chat = () => {
         setChatComponentKey(prevKey => prevKey + 1);
         setSelectedChat(null); // selectedChat을 null로 설정
     };
+
+    const fetchChatMessages = async (chatId) => {
+        // 과거 메시지 로드
+        await axiosInstance
+            .get(`/chat/history?roomId=${chatId}`)
+            .then((response) => {
+                setCurrentChatMessages(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching chat history:', error);
+            });
+    }
+
+    const fetchGroupChatMembers = () => {
+        axiosInstance
+            .get(`/chat/${roomId}/members`)
+            .then((response) => {
+                setCurrentGroupChatMembers(response.data);
+                console.log('fetched members :: (response.data) : ', response.data);
+                response.data.forEach(member => {
+                });
+            })
+            .catch((error) => {
+                console.error('Error fetching chatroom members:', error);
+            });
+    }
 
     return (
         <div style={{display: 'flex', height: 'calc(100vh - 60px)'}}>
@@ -285,15 +432,21 @@ const Chat = () => {
                         <ChatPage
                             roomId={selectedChat.roomId}
                             roomInfo={selectedChat}
-                            onReceiveMessage={handleOneOnOneChatMessage}
+                            stompClient={stompClient}
+                            isStompConnected={isStompConnected}
+                            messages={currentChatMessages}
                         /> /* 개인 채팅방 */
                     ) : (
                         <ChatPageGroup
                             roomId={selectedChat.groupChatroomId}
                             roomInfo={selectedChat}
-                            onReceiveMessage={handleGroupChatMessage}
+                            stompClient={stompClient}
+                            isStompConnected={isStompConnected}
                             refreshChatList={refreshChatList}
                             refreshChatComponent={refreshChatComponent} // refreshChatComponent 함수 전달
+                            messages={currentChatMessages}
+                            currentUserId={currentUserId}
+                            currentGroupChatMembers={currentGroupChatMembers}
                         /> /* 그룹 채팅방 */
                     )
                 ) : (
