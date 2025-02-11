@@ -49,7 +49,9 @@ public class ProfileImageUpdatedEventListener {
                     chatroom.getRoomId().getValue(), // 1:1 채팅방 ID
                     MessageType.ONE_ON_ONE, // 1:1 채팅 타입
                     EventType.MEMBER_PROFILE_UPDATE, // 프로필 업데이트 이벤트
-                    memberId // 업데이트된 멤버 ID
+                    memberId, // 업데이트된 멤버 ID
+                    updatedMember.getProfileImgUrl(),
+                    true
             );
 
             // Redis 메시지 발행
@@ -91,7 +93,9 @@ public class ProfileImageUpdatedEventListener {
                     groupChatroomId.getValue(),
                     MessageType.GROUP,
                     EventType.MEMBER_PROFILE_UPDATE,
-                    memberId
+                    memberId,
+                    updatedMember.getProfileImgUrl(),
+                    true
             );
 
             redisMessagePublisher.updateRoom(updateRoomDto); // RedisMessageSubscriber에서 처리

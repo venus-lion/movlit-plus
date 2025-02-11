@@ -37,6 +37,8 @@ function ChatPage({roomId, roomInfo}) {
     useEffect(() => {
         // 초기 roomInfo 설정
         setCurrentRoomInfo(roomInfo);
+        console.log('currentRoomINFO 출력');
+        console.log(currentRoomInfo);
     }, [roomInfo]);
 
     // WebSocket 연결 설정
@@ -163,14 +165,14 @@ function ChatPage({roomId, roomInfo}) {
     return (
         <div className="chat-container-group" style={{display: 'flex', flexDirection: 'column', height: '90%'}}>
             <div className="chat-header-group">
-                <h2>채팅방: {roomInfo.receiverNickname}</h2>
+                <h2>채팅방: {currentRoomInfo.receiverNickname}</h2>
             </div>
             <div className="chat-messages-group" ref={messagesContainerRef}>
                 {messages.map((message, index) => {
                     const receiver = {
-                        memberId: roomInfo.receiverId,
-                        nickname: roomInfo.receiverNickname,
-                        profileImgUrl: roomInfo.receiverProfileImgUrl
+                        memberId: currentRoomInfo.receiverId,
+                        nickname: currentRoomInfo.receiverNickname,
+                        profileImgUrl: currentRoomInfo.receiverProfileImgUrl
                     };
                     const isCurrentUser = message.senderId === currentUserId;
                     return (

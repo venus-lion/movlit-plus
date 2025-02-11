@@ -21,6 +21,8 @@ public class UpdateRoomDto {
     private EventType eventType; // ex) MEMBER_PROFILE_UPDATE
     private MemberId memberId; // "업데이트된" memberId
     private String eventMessage; // 새로운 멤버 가입 메시지
+    private String profileImgUrl; // 추가: 프로필 이미지 URL
+    private boolean isProfileUpdate;
 
     public enum EventType {
         MEMBER_PROFILE_UPDATE, // 멤버 프로필 정보 업데이트
@@ -29,17 +31,20 @@ public class UpdateRoomDto {
 
     }
 
+    // 프로필 업데이트용 생성자
     public UpdateRoomDto(String roomId, MessageType messageType, EventType eventType,
-                         MemberId memberId) {
+                         MemberId memberId, String profileImgUrl, boolean isProfileUpdate) {
         this.roomId = roomId;
         this.messageType = messageType;
         this.eventType = eventType;
         this.memberId = memberId;
+        this.profileImgUrl = profileImgUrl;
+        this.isProfileUpdate = isProfileUpdate;
     }
 
+    // 기존 생성자 (MEMBER_JOIN, MEMBER_LEAVE용)
     public UpdateRoomDto(String roomId, MessageType messageType, EventType eventType,
-                         MemberId memberId
-            , String eventMessage) {
+                         MemberId memberId, String eventMessage) {
         this.roomId = roomId;
         this.messageType = messageType;
         this.eventType = eventType;
@@ -53,7 +58,9 @@ public class UpdateRoomDto {
                 "groupChatroomId='" + roomId + '\'' +
                 ", messageType=" + messageType +
                 ", eventType=" + eventType +
-                ", memberId=" + memberId.getValue();
+                ", memberId=" + memberId.getValue() + ", profileImgUrl='" + profileImgUrl + '\'' + // 추가
+                '}';
+
     }
 
     public String toStringWithEventMsg() {
