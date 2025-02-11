@@ -1,10 +1,10 @@
 // MemberProfilePage.jsx
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axiosInstance from '../axiosInstance';
 import './MemberProfilePage.css';
-import {FaUserCircle} from 'react-icons/fa';
-import {useNavigate, useParams} from 'react-router-dom';
-import {AppContext} from "../App.jsx";
+import { FaUserCircle } from 'react-icons/fa';
+import { useNavigate, useParams } from 'react-router-dom';
+import { AppContext } from "../App.jsx";
 
 function MemberProfilePage() {
     const [userData, setUserData] = useState({
@@ -17,13 +17,13 @@ function MemberProfilePage() {
         bookCommentCount: 0
     });
     const [genreList, setGenreList] = useState([]);
-    const {memberId} = useParams();
+    const { memberId } = useParams();
 
     const [isFollowing, setIsFollowing] = useState(false);
     const [followerCount, setFollowerCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [loginMemberId, setLoginMemberId] = useState(null);
-    const {updateSnackbar} = useContext(AppContext);
+    const { updateSnackbar } = useContext(AppContext);
     const navigate = useNavigate();
 
     const handleFollowerClick = () => {
@@ -83,7 +83,6 @@ function MemberProfilePage() {
 
         fetchMemberPageData();
         fetchGenreList();
-
         checkFollowStatus();
         fetchFollowCounts();
         fetchLoginMemberId();
@@ -128,15 +127,16 @@ function MemberProfilePage() {
     return (
         <div className="mypage-container">
             <div className="mypage-content-wrapper">
+                {/* Section 1: Profile Info (Modified) */}
                 <div className="mypage-section">
+                    <div className="profile-image">
+                        {userData.profileImgUrl ? (
+                            <img src={userData.profileImgUrl} alt="Profile" className="profile-img" />
+                        ) : (
+                            <FaUserCircle className="default-profile-icon" />
+                        )}
+                    </div>
                     <div className="mypage-header">
-                        <div className="profile-image">
-                            {userData.profileImgUrl ? (
-                                <img src={userData.profileImgUrl} alt="Profile" className="profile-img"/>
-                            ) : (
-                                <FaUserCircle className="default-profile-icon"/>
-                            )}
-                        </div>
                         <div className="user-info">
                             <h2>{userData.nickname}</h2>
                             <p>{userData.email}</p>
@@ -154,9 +154,10 @@ function MemberProfilePage() {
                                     </span>
                                 </div>
                             </div>
+                            {/* 팔로우/DM 버튼 위치 조정 */}
                             {loginMemberId !== memberId && (
-                                <div style={{marginTop: '10px'}}>
-                                    <button onClick={handleFollowToggle} className="follow-button">
+                                <div className="button-group">
+                                    <button onClick={handleFollowToggle} className={`follow-button ${isFollowing ? 'following' : ''}`}>
                                         {isFollowing ? '언팔로우' : '팔로우'}
                                     </button>
                                     <button onClick={handleCreateOneononeChatroom} className="dm-button">
@@ -165,6 +166,7 @@ function MemberProfilePage() {
                                 </div>
                             )}
                         </div>
+
                     </div>
                     <div className="mypage-stats-header">
                         <div className="stat-item-header">
@@ -178,6 +180,7 @@ function MemberProfilePage() {
                     </div>
                 </div>
 
+                {/* Section 2: 선호 장르 (Preferred Genres) */}
                 <div className="mypage-section">
                     <div className="mypage-genre-list">
                         <h3>선호 장르</h3>
@@ -190,6 +193,7 @@ function MemberProfilePage() {
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     );
