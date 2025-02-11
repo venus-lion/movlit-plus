@@ -1,10 +1,10 @@
 // MemberProfilePage.jsx
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import axiosInstance from '../axiosInstance';
 import './MemberProfilePage.css';
-import { FaUserCircle } from 'react-icons/fa';
-import { useNavigate, useParams } from 'react-router-dom';
-import { AppContext } from "../App.jsx";
+import {FaUserCircle} from 'react-icons/fa';
+import {useNavigate, useParams} from 'react-router-dom';
+import {AppContext} from "../App.jsx";
 
 function MemberProfilePage() {
     const [userData, setUserData] = useState({
@@ -17,13 +17,13 @@ function MemberProfilePage() {
         bookCommentCount: 0
     });
     const [genreList, setGenreList] = useState([]);
-    const { memberId } = useParams();
+    const {memberId} = useParams();
 
     const [isFollowing, setIsFollowing] = useState(false);
     const [followerCount, setFollowerCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [loginMemberId, setLoginMemberId] = useState(null);
-    const { updateSnackbar } = useContext(AppContext);
+    const {updateSnackbar} = useContext(AppContext);
     const navigate = useNavigate();
 
     const handleFollowerClick = () => {
@@ -132,9 +132,9 @@ function MemberProfilePage() {
                     <div className="mypage-header">
                         <div className="profile-image">
                             {userData.profileImgUrl ? (
-                                <img src={userData.profileImgUrl} alt="Profile" className="profile-img" />
+                                <img src={userData.profileImgUrl} alt="Profile" className="profile-img"/>
                             ) : (
-                                <FaUserCircle className="default-profile-icon" />
+                                <FaUserCircle className="default-profile-icon"/>
                             )}
                         </div>
                         <div className="user-info">
@@ -155,7 +155,7 @@ function MemberProfilePage() {
                                 </div>
                             </div>
                             {loginMemberId !== memberId && (
-                                <div style={{ marginTop: '10px' }}>
+                                <div style={{marginTop: '10px'}}>
                                     <button onClick={handleFollowToggle} className="follow-button">
                                         {isFollowing ? '언팔로우' : '팔로우'}
                                     </button>
@@ -168,16 +168,12 @@ function MemberProfilePage() {
                     </div>
                     <div className="mypage-stats-header">
                         <div className="stat-item-header">
-                            <span>{userData.movieHeartCount}</span>
+                            <span>{userData.movieHeartCount + userData.bookHeartCount}</span>
                             <span>평가</span>
                         </div>
                         <div className="stat-item-header">
                             <span>{userData.movieCommentCount + userData.bookCommentCount}</span>
                             <span>코멘트</span>
-                        </div>
-                        <div className="stat-item-header">
-                            <span>{userData.bookHeartCount}</span>
-                            <span>컬렉션</span>
                         </div>
                     </div>
                 </div>

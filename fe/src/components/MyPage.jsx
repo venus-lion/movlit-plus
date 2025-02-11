@@ -346,16 +346,12 @@ function MyPage() {
                     </div>
                     <div className="mypage-stats-header">
                         <div className="stat-item-header">
-                            <span>{userData.movieHeartCount}</span>
+                            <span>{userData.movieHeartCount + userData.bookHeartCount}</span>
                             <span>평가</span>
                         </div>
                         <div className="stat-item-header">
                             <span>{userData.movieCommentCount + userData.bookCommentCount}</span>
                             <span>코멘트</span>
-                        </div>
-                        <div className="stat-item-header">
-                            <span>{userData.bookHeartCount}</span>
-                            <span>컬렉션</span>
                         </div>
                     </div>
                     <Menu
