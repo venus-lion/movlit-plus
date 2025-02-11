@@ -1,3 +1,35 @@
+.add-groupchat-btn{
+    background-color: #00AE68;
+    color: white;
+    border-radius: 15px;
+    width: 50px;
+    height: 50px;
+    aspect-ratio: 1 / 1;
+    /*가로 세로 비율 유지 (원형 유지)*/
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    /*사이드바 내부에서 절대 위치 설정*/
+    bottom: 40px;
+/*// 하단 여백*/
+    right: 15px;
+/*// 오른쪽 정렬*/
+    display: flex;
+/*// 중앙 정렬을 위한 flex 적용*/
+    alignItems: center;
+    justify-content: center;
+    flex-shrink: 0;  // 부모 flex 영향을 받지 않도록 고정
+    overflow: hidden // 내부 요소 넘침 방지
+
+}
+
+.add-groupchat-btn:hover {
+    background-color: #cfe1d7;
+    color: #3a3737;
+}
+
+
 /* 모달 스타일 */
 .custom-modal {
     position: relative; /* Overlay 내부 중앙 배치 */
@@ -64,13 +96,18 @@
 
 .modal-search-button {
     padding: 10px 30px;
-    background: green;
+    background-color: #00AE68;
     color: white;
     border: none;
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
 }
+.modal-search-button:hover{
+    background-color: #236540;
+    color: #fff;
+}
+
 
 /* 검색 결과 */
 .result-container {
@@ -105,7 +142,7 @@
 }
 
 .result-card.selected {
-    background-color: #d3d3d3; /* 선택된 카드 배경색 */
+    background-color: #a9a8a8; /* 선택된 카드 배경색 */
 }
 
 .result-image {
@@ -170,7 +207,7 @@
 }
 
 .modal-confirm {
-    background: #c1edbb;
+    background-color: #00AE68;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -179,15 +216,13 @@
 }
 
 .modal-confirm:hover {
-    background: #2E8B57;
-    color: white;
+    background-color: #236540;
+    color: #fff;
 
 }
 
 
-.modal-search-button:hover {
-    background-color: #0056b3;
-}
+
 
 .radio-group {
     display: flex;

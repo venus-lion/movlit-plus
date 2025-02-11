@@ -81,11 +81,13 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    background-color: #c1edbb;
+    background-color: #00AE68;
+    color: white;
 }
 
 .search-button:hover {
-    background-color: #2E8B57;
+    background-color: #236540;
+    color: #fff;
 }
 
 .nav-right-logged-in {
@@ -196,13 +198,13 @@
     color: white;
     border: none;
     borderRadius: 5px;
-    background-color: #abe0a8;
+    background-color: #00AE68;
     cursor: pointer;
     fontSize: 16px;
 }
 
 .delete-all-btn:hover {
-    background-color: #2E8B57;
+    background-color: #236540;
     color: #fff;
 }
 
@@ -247,7 +249,7 @@
 }
 
 .close-dropdown-btn {
-    background-color: #4CAF50;
+    background-color: #00AE68;
     color: white;
     border: none;
     padding: 10px;
@@ -255,8 +257,12 @@
     width: 100%;
     margin-top: 10px;
 }
+.close-dropdown-btn:hover{
+    background-color: #236540;
+    color: #fff;
+}
 
-/* 스크롤바 전체 */
+    /* 스크롤바 전체 */
 .notification-list::-webkit-scrollbar {
     width: 8px; /* 스크롤바 너비 */
 }

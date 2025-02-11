@@ -14,3 +14,25 @@
     font-weight: bold;
     margin-right: 5px;
 }
+
+#groupChatButton{
+    background-color: #00AE68;
+    color: white;
+}
+#groupChatButton:hover{
+    background-color: #236540;
+    color: #fff;
+}
+.submit-btn{
+    padding: 10px 20px;
+    background-color: #00AE68;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-end;
+}
+.submit-btn:hover {
+    background-color: #236540;
+    color: #fff;
+}

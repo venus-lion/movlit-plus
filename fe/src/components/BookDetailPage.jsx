@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import {FaComment, FaHeart, FaRegHeart, FaRegStar, FaStar, FaStarHalfAlt, FaUserCircle,} from 'react-icons/fa';
@@ -8,7 +8,9 @@ import 'react-circular-progressbar/dist/styles.css';
 import MovieCarousel from "../pages/MovieCarousel.jsx";
 import CreateGroupChatNameModal from "./chat/CreateGroupChatNameModal.jsx";
 import GetGroupChatInfoModal from "./chat/GetGroupChatInfoModal.jsx";
-import './BookDetailPage.css'; // CSS 파일 import
+import './BookDetailPage.css';
+import {AppContext} from "../App.jsx"; // AppContext import
+
 
 function BookDetailPage() {
     const {bookId} = useParams();
@@ -33,6 +35,7 @@ function BookDetailPage() {
     const [userComment, setUserComment] = useState(null);
     const [bookCommentId, setBookCommentId] = useState(null);
     const loader = useRef(null);
+    const {updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
 
     // 추천 책 리스트
     const [recommendedBooks, setRecommendedBooks] = useState([]); // 전체 도서 목록
@@ -341,7 +344,8 @@ function BookDetailPage() {
             // }
         } catch (error) {
             console.error('Error updating wish status:', error);
-            alert('찜하기/찜해제 처리에 실패했습니다.');
+            //alert('찜하기/찜해제 처리에 실패했습니다.');
+            updateSnackbar('찜하기/찜해제 처리에 실패했습니다.', 'error');
         }
     };
 
@@ -356,7 +360,7 @@ function BookDetailPage() {
     // 코멘트 제출
     const handleSubmitComment = async () => {
         if (myRating === 0) {
-            alert('별점을 입력해주세요.');
+            alert('별점을 입력해주세요.');s
             return;
         }
         const currentComment = userComment ? myComment : comment;
@@ -377,11 +381,13 @@ function BookDetailPage() {
                     `/books/${bookId}/comments/${bookCommentId}`,
                     requestBody
                 );
-                alert('코멘트가 수정되었습니다.');
+                updateSnackbar('코멘트가 수정되었습니다.', 'success');
+
             } else {
                 // 새 코멘트 저장 (POST 요청)
                 await axiosInstance.post(`/books/${bookId}/comments`, requestBody);
-                alert('코멘트가 저장되었습니다.');
+                //alert('코멘트가 저장되었습니다.');
+                updateSnackbar('코멘트가 저장되었습니다.', 'success');
             }
 
             // 코멘트 상태 업데이트
@@ -389,7 +395,8 @@ function BookDetailPage() {
             fetchComments(0);
         } catch (error) {
             console.error('코멘트 저장/수정 실패:', error);
-            alert('코멘트 저장/수정에 실패했습니다.');
+            //alert('코멘트 저장/수정에 실패했습니다.');
+            updateSnackbar('코멘트 저장/수정에 실패했습니다.', 'error');
         } finally {
             setComment('');
             setMyRating(0); // 코멘트 제출 후 별점을 다시 0으로 설정
@@ -404,12 +411,14 @@ function BookDetailPage() {
         try {
             // 코멘트 삭제 (DELETE 요청)
             await axiosInstance.delete(`/books/${bookId}/comments/${bookCommentId}/delete`);
-            alert('코멘트가 삭제되었습니다.');
+            //alert('코멘트가 삭제되었습니다.');
+            updateSnackbar('코멘트가 삭제되었습니다.', 'success');
             fetchUserComment();
             fetchComments(0);
         } catch (error) {
             console.error('Error deleting comment:', error);
-            alert('코멘트 삭제에 실패했습니다.');
+            //alert('코멘트 삭제에 실패했습니다.');
+            updateSnackbar('코멘트 삭제에 실패했습니다.', 'error');
         }
     };
 
@@ -448,7 +457,8 @@ function BookDetailPage() {
             fetchComments(0);
         } catch (error) {
             console.error('Error updating like status:', error);
-            alert('좋아요/좋아요 취소 처리에 실패했습니다.');
+            //alert('좋아요/좋아요 취소 처리에 실패했습니다.');
+            updateSnackbar('좋아요/좋아요 취소 처리에 실패했습니다.', 'error');
         }
     };
 
@@ -606,7 +616,7 @@ function BookDetailPage() {
                         <p style={{lineHeight: '1.8', margin: '0'}}><strong>{bookData.stockStatus}</strong></p>
                         <br/>
                         <a href={bookData.mallUrl} target="_blank" rel="noopener noreferrer">
-                            <button className="button-common buy-button">구매하기</button>
+                            <button className="button-common buy-btn">구매하기</button>
                         </a>
 
                     </div>
@@ -748,7 +758,7 @@ function BookDetailPage() {
                   value={userComment ? myComment : comment}
                   onChange={handleCommentChange}
               />
-                            <button style={styles.submitButton} onClick={handleSubmitComment}>
+                            <button className="submit-btn" onClick={handleSubmitComment}>
                                 {userComment ? '수정하기' : '코멘트 남기기'}
                             </button>
                         </div>

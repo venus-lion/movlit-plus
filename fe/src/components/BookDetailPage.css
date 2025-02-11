@@ -5,6 +5,15 @@
     transition: color 0.2s ease-in-out; /* 부드러운 색상 변화 효과 */
 }
 
+#groupChatButton{
+    background-color: #00AE68;
+    color: white;
+}
+#groupChatButton:hover{
+    background-color: #236540;
+    color: #fff;
+}
+
 .comment-user-link:hover {
     color: #61dafb; /* 호버 시 색상 변경 */
     text-decoration: underline; /* 호버 시 밑줄 추가 */
@@ -26,13 +35,13 @@
     font-size: 20px; /* 텍스트 크기 설정 (선택 사항) */
 }
 
-.buy-button {
-    background-color: #c1edbb;
+.buy-btn {
+    background-color: #00AE68;
     color: #fff;
 }
 
-.buy-button:hover {
-    background-color: #2E8B57;
+.buy-btn:hover {
+    background-color: #236540;
     color: #fff;
 }
 
@@ -95,4 +104,29 @@
 
 delete-button:hover {
     background-color: #b81414;
+}
+.submit-btn{
+    padding: 10px 20px;
+    background-color: #00AE68;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-end;
+}
+.submit-btn:hover {
+    background-color: #236540;
+    color: #fff;
+}
+.more-btn{
+    padding: 5px 10px;
+    background-color: #00AE68;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.more-btn:hover {
+    background-color: #236540;
+    color: #fff;
 }
