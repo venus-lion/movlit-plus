@@ -62,9 +62,9 @@ public class OneOnOneChatroomSteps {
                 () -> 상태코드를_검증한다(response, HttpStatus.OK));
     }
 
-    public static void 상태코드_404와_오류코드_o001을_반환하는지_검증한다(ExtractableResponse<Response> response) {
+    public static void 상태코드_409와_오류코드_o001을_반환하는지_검증한다(ExtractableResponse<Response> response) {
         Assertions.assertAll(
-                () -> 상태코드를_검증한다(response, HttpStatus.NOT_FOUND),
+                () -> 상태코드를_검증한다(response, HttpStatus.CONFLICT),
                 () -> 오류코드를_검증한다(response, "o001")
         );
     }
