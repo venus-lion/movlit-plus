@@ -218,16 +218,30 @@ const MemberRegister = () => {
                                         <span>소셜 계정으로 가입</span>
                                     </div>
                                     <div className="social-login-buttons">
-                                        <a
-                                            href="/oauth2/authorization/naver"
-                                            className="social-login-button"
-                                        >
+                                        <a href="/oauth2/authorization/naver" className="social-login-button">
                                             <img
                                                 src="/images/naver-logo.jpg"
                                                 alt="Naver"
                                                 className="social-login-icon"
                                             />
                                         </a>
+                                        <a href="/oauth2/authorization/kakao"
+                                           className="social-login-button">
+                                            <img
+                                                src="/images/kakao-logo.png"
+                                                alt="Kakao"
+                                                className="social-login-icon"
+                                            />
+                                        </a>
+                                        {/*<a href="/oauth2/authorization/google"*/}
+                                        {/*   className="social-login-button">*/}
+                                        {/*    <img*/}
+                                        {/*        src="/images/google-logo.png"*/}
+                                        {/*        alt="Google"*/}
+                                        {/*        className="social-login-icon"*/}
+                                        {/*    />*/}
+                                        {/*</a>*/}
+                                        {/*Google은 생년월일 문제가 해결되면 도입하기. (모달창 띄우거나)*/}
                                     </div>
                                 </div>
                             </div>
