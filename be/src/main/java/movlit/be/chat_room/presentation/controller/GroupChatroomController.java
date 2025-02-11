@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import movlit.be.auth.application.service.MyMemberDetails;
 import movlit.be.chat_room.application.service.FetchGroupChatroomUseCase;
 import movlit.be.chat_room.application.service.GroupChatroomService;
+import movlit.be.chat_room.application.service.GroupChatroomUseCase;
 import movlit.be.chat_room.presentation.dto.CheckJoinGroupChatroomRequest;
 import movlit.be.chat_room.presentation.dto.GroupChatroomMemberResponse;
 import movlit.be.chat_room.presentation.dto.GroupChatroomRequest;
@@ -29,8 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class GroupChatroomController {
 
-    private final GroupChatroomService groupChatroomService;
+    private final GroupChatroomUseCase groupChatroomUseCase;
     private final FetchGroupChatroomUseCase fetchGroupChatroomUseCase;
+    private final GroupChatroomService groupChatroomService;
 
     /**
      * 최초의 채팅방 (생성 후 가입)
@@ -38,7 +40,7 @@ public class GroupChatroomController {
     @PostMapping("/api/chat/create/group")
     public ResponseEntity<GroupChatroomResponse> createGroupChatroom(@RequestBody @Valid GroupChatroomRequest request,
                                                                      @AuthenticationPrincipal MyMemberDetails myMemberDetails) {
-        var response = groupChatroomService.requestCreateGroupChatroom(request, myMemberDetails.getMemberId());
+        var response = groupChatroomUseCase.requestCreateGroupChatroom(request, myMemberDetails.getMemberId());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -57,7 +59,7 @@ public class GroupChatroomController {
             throws ChatroomAccessDenied {
         if (details != null) {
             MemberId memberId = details.getMemberId();
-            GroupChatroomResponse groupChatroomRes = groupChatroomService.joinGroupChatroom(groupChatroomId, memberId);
+            GroupChatroomResponse groupChatroomRes = groupChatroomUseCase.joinGroupChatroom(groupChatroomId, memberId);
 
             return ResponseEntity.ok(groupChatroomRes);
         } else {
@@ -76,7 +78,7 @@ public class GroupChatroomController {
     public ResponseEntity<List<GroupChatroomMemberResponse>> fetchMembersInGroupChatroom(
             @PathVariable GroupChatroomId chatroomId,
             @RequestParam(required = false, defaultValue = "true") boolean useCache) {
-        var response = groupChatroomService.fetchMembersInGroupChatroom(
+        var response = groupChatroomUseCase.fetchMembersInGroupChatroom(
                 chatroomId, useCache);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -102,7 +104,7 @@ public class GroupChatroomController {
             @AuthenticationPrincipal MyMemberDetails details) {
 
         MemberId memberId = details.getMemberId();
-        groupChatroomService.leaveGroupChatroom(groupChatroomId, memberId);
+        groupChatroomUseCase.leaveGroupChatroom(groupChatroomId, memberId);
 
         return ResponseEntity.ok().body(memberId.getValue() + " 님이 그룹채팅방에서 성공적으로 나갔습니다.");
 

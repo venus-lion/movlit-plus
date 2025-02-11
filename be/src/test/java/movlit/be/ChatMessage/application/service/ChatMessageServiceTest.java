@@ -14,7 +14,7 @@ import movlit.be.pub_sub.chat_message.application.service.ChatMessageService;
 import movlit.be.pub_sub.chat_message.infra.persistence.ChatMessageRepository;
 import movlit.be.pub_sub.chat_message.presentation.dto.response.ChatMessageDto;
 import movlit.be.pub_sub.chat_message.presentation.dto.response.MessageType;
-import movlit.be.chat_room.application.service.GroupChatroomService;
+import movlit.be.chat_room.application.service.GroupChatroomUseCase;
 import movlit.be.chat_room.application.service.OneononeChatroomService;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomResponse;
 import movlit.be.common.config.RedisMessagePublisher;
@@ -68,7 +68,7 @@ public class ChatMessageServiceTest extends AcceptanceTest {
     private MemberReadService memberReadService;
 
     @Mock
-    private GroupChatroomService groupChatroomService;
+    private GroupChatroomUseCase groupChatroomUseCase;
 
     private ChatMessageDto testMessageDto;
     private ChatMessageDto testMessageDto2;
