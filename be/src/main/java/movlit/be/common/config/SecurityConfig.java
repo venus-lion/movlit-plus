@@ -107,7 +107,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/follows/*/*/count").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/members/*/profile").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/members/*/genres").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/docs").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
