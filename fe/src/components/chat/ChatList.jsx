@@ -205,12 +205,6 @@ const ChatList = ({
             (activeTab === 'personal' && selectedChat && selectedChat.roomId === chat.roomId);
         return {
             backgroundColor: isSelected ? '#e0f7fa' : '#f9f9f9', // 선택된 배경색
-            padding: '10px',
-            cursor: 'pointer',
-            borderBottom: '1px solid #ddd',
-            display: 'flex',         // Flexbox 사용
-            justifyContent: 'space-between', // 텍스트와 이미지 사이 간격 최대화
-            alignItems: 'center',    // 수직 중앙 정렬
         };
     };
 
@@ -320,36 +314,37 @@ const ChatList = ({
                     {filteredChats.map((chat) => (
                         <div
                             key={chat.groupChatroomId}
-                            style={getChatItemStyle(chat)}
+                            className='chat-item' // chat-item 클래스 적용
                             onClick={() => handleChatSelect(chat)}
                         >
-                            <div style={style.textContainer}>
-                                <div style={style.roomName}>
-                                    {chat.roomName}
-                                </div>
-                                <div style={style.conTitle}>
-                                    [콘텐츠] <strong>{chat.contentName}</strong>
-                                </div>
-                                <div>
-                                    {chat.recentMessage ? (
-                                        <div style={style.recentMsg}>
-                                            {chat.recentMessage.message}
-                                            <br />
-                                            {DateTimeUtil(chat.recentMessage.regDt)}
-                                        </div>
-                                    ) : (
-                                        <div style={style.noMessage}>메시지 없음</div>
-                                    )}
-                                </div>
+                        {/* 포스터 이미지 */}
+                        {posterImages[chat.contentId] && (
+                            <img
+                                src={posterImages[chat.contentId]}
+                                alt="Poster"
+                                className="poster-image" // 클래스 적용
+                            />
+                        )}
+
+                        <div className="chat-info"> {/* 채팅 정보 컨테이너 */}
+                            <div className="room-name">
+                                {chat.roomName}
                             </div>
-                            {/* 포스터 이미지 */}
-                            {posterImages[chat.contentId] && (
-                                <img
-                                    src={posterImages[chat.contentId]}
-                                    alt="Poster"
-                                    style={style.posterImage}
-                                />
+                            <div className="con-title">
+                                <strong>{chat.contentName}</strong>
+                            </div>
+                            {chat.recentMessage ? (
+                                <div className="recent-message">
+                                    {chat.recentMessage.message}
+                                </div>
+                            ) : (
+                                <div className="recent-message">메시지 없음</div>
                             )}
+                        </div>
+                        {/* 시간 */}
+                        <div className="message-time">
+                            {chat.recentMessage ? DateTimeUtil(chat.recentMessage.regDt) : ""}
+                        </div>
                         </div>
                     ))}
                 </div>
