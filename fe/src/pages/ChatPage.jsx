@@ -21,6 +21,10 @@ function ChatPage({roomId, roomInfo}) {
     console.log('roomInfo: ', roomInfo);
 
     useEffect(() => {
+        setRoomInfoData(roomInfo);
+    }, [roomInfo]);
+
+    useEffect(() => {
         axiosInstance
             .get(`/members/id`)
             .then((response) => {
@@ -42,7 +46,7 @@ function ChatPage({roomId, roomInfo}) {
                 Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
             },
             debug: (str) => {
-                console.log("메시지  : " + JSON.stringify(messages, null, 2));
+                // console.log("메시지  : " + JSON.stringify(messages, null, 2));
             },
         });
 
