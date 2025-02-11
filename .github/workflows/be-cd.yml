@@ -33,7 +33,7 @@ jobs:
         run: |
           chmod +x gradlew
           echo "::group::Gradle Build Logs"
-          ./gradlew clean build 
+          ./gradlew clean build --parallel  
           echo "::endgroup::"
 
         working-directory: ${{ env.ROOT_PATH }}
