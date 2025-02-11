@@ -32,4 +32,7 @@ public class OneononeChatroomResponse {
         this.recentMessage = recentMessage;
     }
 
+    public void updateProfileImgUrl(String profileImgUrl){
+        this.receiverProfileImgUrl = profileImgUrl;
+    }
 }

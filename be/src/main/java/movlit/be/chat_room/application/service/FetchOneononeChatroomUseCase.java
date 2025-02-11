@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class FetchMyOneononeChatroomUseCase {
+public class FetchOneononeChatroomUseCase {
 
     private final OneononeChatroomService oneononeChatroomService;
     private final ChatMessageService chatMessageService;

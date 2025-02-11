@@ -53,7 +53,7 @@ public class GroupChatroomJoinedEventListener {
 
         // 5. UpdateRoomDto 생성
         UpdateRoomDto updateRoomDto = new UpdateRoomDto(
-                groupChatroomId,
+                groupChatroomId.getValue(),
                 MessageType.GROUP,
                 EventType.MEMBER_JOIN,
                 newMemberId,

@@ -14,8 +14,8 @@ import movlit.be.common.util.ids.MemberId;
 @NoArgsConstructor
 public class UpdateRoomDto {
 
-    //private String roomId;      // OneononeChatroomId, GroupChatroomId : getValue()로 넣어주기
-    private GroupChatroomId groupChatroomId;
+    private String roomId;      // OneononeChatroomId, GroupChatroomId : getValue()로 넣어주기
+   // private GroupChatroomId groupChatroomId;
     private MessageType messageType;
 
     private EventType eventType; // ex) MEMBER_PROFILE_UPDATE
@@ -29,18 +29,18 @@ public class UpdateRoomDto {
 
     }
 
-    public UpdateRoomDto(GroupChatroomId groupChatroomId, MessageType messageType, EventType eventType,
+    public UpdateRoomDto(String roomId, MessageType messageType, EventType eventType,
                          MemberId memberId) {
-        this.groupChatroomId = groupChatroomId;
+        this.roomId = roomId;
         this.messageType = messageType;
         this.eventType = eventType;
         this.memberId = memberId;
     }
 
-    public UpdateRoomDto(GroupChatroomId groupChatroomId, MessageType messageType, EventType eventType,
+    public UpdateRoomDto(String roomId, MessageType messageType, EventType eventType,
                          MemberId memberId
             , String eventMessage) {
-        this.groupChatroomId = groupChatroomId;
+        this.roomId = roomId;
         this.messageType = messageType;
         this.eventType = eventType;
         this.memberId = memberId;
@@ -50,7 +50,7 @@ public class UpdateRoomDto {
     @Override
     public String toString() {
         return "UpdateRoomDto{" +
-                "groupChatroomId='" + groupChatroomId + '\'' +
+                "groupChatroomId='" + roomId + '\'' +
                 ", messageType=" + messageType +
                 ", eventType=" + eventType +
                 ", memberId=" + memberId.getValue();
@@ -58,7 +58,7 @@ public class UpdateRoomDto {
 
     public String toStringWithEventMsg() {
         return "UpdateRoomDto{" +
-                "groupChatroomId='" + groupChatroomId + '\'' +
+                "groupChatroomId='" + roomId + '\'' +
                 ", messageType=" + messageType +
                 ", eventType=" + eventType +
                 ", memberId=" + memberId.getValue() +

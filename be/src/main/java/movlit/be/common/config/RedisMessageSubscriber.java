@@ -83,32 +83,8 @@ public class RedisMessageSubscriber {
                         + updateRoomDto.toStringWithEventMsg());
             }
 
-            GroupChatroomId groupChatroomId = updateRoomDto.getGroupChatroomId();
-
-//            // 캐시된 멤버 목록 가져오기 (캐시 없으면 자동 생성)
-//            List<GroupChatroomMemberResponse> cachedMembers = groupChatroomUseCase.fetchMembersInGroupChatroom(
-//                    groupChatroomId, true);
-//
-//            if (updateRoomDto.getEventType().equals(EventType.MEMBER_PROFILE_UPDATE)) {
-//                // 멤버 프로필 업데이트 이벤트 처리
-//                messagingTemplate.convertAndSend("/topic/chat/room/" + groupChatroomId.getValue(), cachedMembers);
-//            } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_JOIN)) {
-//                // 새로운 멤버가입 이벤트 처리
-//                // eventMessage와 cachedMembers를 함께 전송
-//                Map<String, Object> response = new HashMap<>();
-//                response.put("updateRoomDto", updateRoomDto);
-//                response.put("cachedMembers", cachedMembers);
-//
-//                messagingTemplate.convertAndSend("/topic/chat/room/" + groupChatroomId.getValue(), response);
-//            } else if (updateRoomDto.getEventType().equals(EventType.MEMBER_LEAVE)) {
-//                // 기존 멤버 나가는 이벤트 처리
-//                // eventMessage와 cachedMembers 함께 전송
-//                Map<String, Object> response = new HashMap<>();
-//                response.put("updateRoomDto", updateRoomDto);
-//                response.put("cachedMembers", cachedMembers);
-//
-//                messagingTemplate.convertAndSend("/topic/chat/room/" + groupChatroomId.getValue(), response);
-//            }
+            //GroupChatroomId groupChatroomId = updateRoomDto.getGroupChatroomId();
+            GroupChatroomId groupChatroomId = new GroupChatroomId(updateRoomDto.getRoomId());
 
             // 2. 캐시 키 생성 (roomId 사용)
             String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;

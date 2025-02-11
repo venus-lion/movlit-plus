@@ -50,7 +50,7 @@ public class GroupChatroomLeaveEventListener {
 
         // 5. UpdateRoomDto 생성 및 발행
         UpdateRoomDto updateRoomDto = new UpdateRoomDto(
-                groupChatroomId,
+                groupChatroomId.getValue(),
                 MessageType.GROUP,
                 UpdateRoomDto.EventType.MEMBER_LEAVE,
                 leftMemberId,

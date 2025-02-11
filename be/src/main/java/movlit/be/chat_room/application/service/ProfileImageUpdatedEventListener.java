@@ -67,7 +67,7 @@ public class ProfileImageUpdatedEventListener {
 
             // UpdateRoomDto 생성 및 발행
             UpdateRoomDto updateRoomDto = new UpdateRoomDto(
-                    groupChatroomId,
+                    groupChatroomId.getValue(),
                     MessageType.GROUP,
                     EventType.MEMBER_PROFILE_UPDATE,
                     memberId
