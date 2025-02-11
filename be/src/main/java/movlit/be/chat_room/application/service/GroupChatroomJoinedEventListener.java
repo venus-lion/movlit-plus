@@ -58,7 +58,7 @@ public class GroupChatroomJoinedEventListener {
 
         // 5. UpdateRoomDto 생성
         UpdateRoomDto updateRoomDto = new UpdateRoomDto(
-                groupChatroomId,
+                groupChatroomId.getValue(),
                 MessageType.GROUP,
                 EventType.MEMBER_JOIN,
                 newMemberId,
@@ -67,8 +67,6 @@ public class GroupChatroomJoinedEventListener {
 
         // 6. /topic/chat/room/{roomId} 토픽으로 업데이트된 멤버 목록 발행 -> RedisMessageSubscriber에서 처리
         redisMessagePublisher.updateRoom(updateRoomDto);
-        }
-
     }
 
 }

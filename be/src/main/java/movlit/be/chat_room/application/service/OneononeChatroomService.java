@@ -42,6 +42,8 @@ public class OneononeChatroomService {
     private final ObjectMapper objectMapper;
     private final RedisMessagePublisher messagePublisher;
 
+    private static final String ONE_ON_ONE_CHATROOM_KEY_PREFIX = "oneononeChatList:";
+
     @Transactional
     public OneononeChatroomResponse createOneOnOneChatroom(MemberId memberId,
                                                            OneononeChatroomRequest request) {
@@ -59,8 +61,8 @@ public class OneononeChatroomService {
         OneononeChatroomResponse receiverResponse = makeOneOnOneChatroomResponse(savedOneononeChatroom, sender);
 
         // Redis에 채팅방 추가
-        this.addOneOnOneChatroomToRedis(sender, senderResponse);
-        this.addOneOnOneChatroomToRedis(receiver, receiverResponse);
+        this.addOneononeChatroomToRedis(sender, senderResponse);
+        this.addOneononeChatroomToRedis(receiver, receiverResponse);
 
         return senderResponse;
     }
@@ -84,7 +86,7 @@ public class OneononeChatroomService {
     }
 
     private OneononeChatroomResponse makeOneOnOneChatroomResponse(OneononeChatroom savedOneononeChatroom,
-                                                                         MemberEntity receiver) {
+                                                                  MemberEntity receiver) {
         return new OneononeChatroomResponse(
                 savedOneononeChatroom.getOneononeChatroomId(),
                 receiver.getMemberId(),
@@ -127,7 +129,6 @@ public class OneononeChatroomService {
         String redisKey = ONE_ON_ONE_CHATROOM_KEY_PREFIX + memberId.getValue();
 
         // Redis에서 채팅방 목록 조회
-//        List<String> cachedData = redisTemplate.opsForList().range(redisKey, 0, -1);
         Map<Object, Object> resultMap = redisTemplate.opsForHash().entries(redisKey);
 
         if (resultMap != null && !resultMap.isEmpty()) {
@@ -149,7 +150,6 @@ public class OneononeChatroomService {
         response.forEach(chatroom -> {
             String field = chatroom.getRoomId().getValue();
             String serializedChatroom = this.serializeChatroomResponse(chatroom);
-//            redisTemplate.opsForList().rightPush(redisKey, serializedChatroom);
             redisTemplate.opsForHash().put(redisKey, field, serializedChatroom);
         });
 
@@ -171,7 +171,6 @@ public class OneononeChatroomService {
         String serializedChatroom = this.serializeChatroomResponse(response);
 
         // Redis 리스트에 채팅방 추가
-//        redisTemplate.opsForList().rightPush(redisKey, serializedChatroom);
         redisTemplate.opsForHash().put(redisKey, field, serializedChatroom);
         // TTL 설정 (1시간)
         redisTemplate.expire(redisKey, Duration.ofHours(1));

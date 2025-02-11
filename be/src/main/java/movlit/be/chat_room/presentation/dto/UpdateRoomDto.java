@@ -51,7 +51,7 @@ public class UpdateRoomDto {
     @Override
     public String toString() {
         return "UpdateRoomDto{" +
-                "groupChatroomId='" + roomId + '\'' +
+                "roomId='" + roomId + '\'' +
                 ", messageType=" + messageType +
                 ", eventType=" + eventType +
                 ", memberId=" + memberId.getValue();
@@ -59,7 +59,7 @@ public class UpdateRoomDto {
 
     public String toStringWithEventMsg() {
         return "UpdateRoomDto{" +
-                "groupChatroomId='" + roomId + '\'' +
+                "roomId='" + roomId + '\'' +
                 ", messageType=" + messageType +
                 ", eventType=" + eventType +
                 ", memberId=" + memberId.getValue() +

@@ -57,6 +57,7 @@ public class ProfileImageUpdatedEventListener {
         MemberEntity updatedMember = memberReadService.findEntityById(memberId);
         log.info("RedisMessageSubscriber >>> 프로필업데이트된 멤버정보 : " + updatedMember.toStringExceptLazyLoading());
 
+        // 일대일 채팅방에 프로필정보 발행
         publishToOneononeChat(updatedMember);
 
         // 각 그룹채팅방 ID에 대해 updatedRoomDto 생성 및 메세지 발행
@@ -87,7 +88,7 @@ public class ProfileImageUpdatedEventListener {
 
             // UpdateRoomDto 생성 및 발행
             UpdateRoomDto updateRoomDto = new UpdateRoomDto(
-                    groupChatroomId,
+                    groupChatroomId.getValue(),
                     MessageType.GROUP,
                     EventType.MEMBER_PROFILE_UPDATE,
                     memberId
