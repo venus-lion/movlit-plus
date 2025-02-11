@@ -1,7 +1,18 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
-import {FaComment, FaHeart, FaRegHeart, FaRegStar, FaStar, FaStarHalfAlt, FaUserCircle,} from 'react-icons/fa';
+import {
+    FaComment,
+    FaHeart,
+    FaRegHeart,
+    FaRegStar,
+    FaStar,
+    FaStarHalfAlt,
+    FaUserCircle,
+    FaEdit,
+    FaTrashAlt,
+    FaCheck, // FaCheck 아이콘 추가
+} from 'react-icons/fa';
 import MovieCarousel from '../pages/MovieCarousel';
 import useAuthMovieList from '../hooks/useAuthMovieList';
 import useBookList from '../hooks/useBookList';
@@ -657,18 +668,12 @@ function MovieDetailPage() {
                             </div>
                         </div>
                         <div className="buttonGroup">
-                            {/*<button*/}
-                            {/*    id="wishButton"*/}
-                            {/*    className="button"*/}
-
-                            {/*    onClick={handleWishClick}*/}
-                            {/*>*/}
                             <button
                                 id="wishButton"
                                 className={`heart-button ${movieData.isHearted ? 'button-hearted' : 'button-not-hearted'}`}
                                 onClick={handleWishClick}
                             >
-                                {movieData.isHearted ? '찜 완료' : '찜'}
+                                {movieData.isHearted ? <FaHeart className="wishIcon"/> : <FaRegHeart className="wishIcon"/>}
                             </button>
                             <span id="heartCount" className="heartCountContainer">
                 {movieData.heartCount.toLocaleString()}
@@ -705,8 +710,8 @@ function MovieDetailPage() {
                                 value={userComment ? myComment : comment}
                                 onChange={handleCommentChange}
                             />
-                            <button className="submit-btn" onClick={handleSubmitComment}>
-                                {userComment ? '수정하기' : '코멘트 남기기'}
+                            <button className="submit-button" onClick={handleSubmitComment}>
+                                <FaCheck className="editDeleteIcon"/> {/* FaCheck 아이콘으로 변경 */}
                             </button>
                         </div>
                     )}
@@ -714,7 +719,6 @@ function MovieDetailPage() {
                     {!showCommentInput && userComment && (
                         <div className="commentActions">
                             <button
-                                // className="editButton"
                                 className="edit-button"
                                 onClick={() => {
                                     setMyRating(userComment.score);
@@ -722,10 +726,10 @@ function MovieDetailPage() {
                                     setShowCommentInput(true);
                                 }}
                             >
-                                수정하기
+                                <FaEdit className="editDeleteIcon"/>
                             </button>
                             <button className="delete-button" onClick={handleDeleteComment}>
-                                삭제하기
+                                <FaTrashAlt className="editDeleteIcon"/>
                             </button>
                         </div>
                     )}

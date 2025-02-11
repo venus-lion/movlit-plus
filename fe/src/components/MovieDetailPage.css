@@ -102,14 +102,17 @@
     transition: background-color 0.3s ease; /* 부드러운 배경색 변화 */
 }
 
-/* 찜 버튼 스타일 */
+/* 찜 버튼 스타일 (아이콘 only) */
 .heart-button {
-    padding: 10px 20px;
+    padding: 8px 10px; /* padding 값 약간 줄임 */
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .button-hearted {
@@ -263,24 +266,31 @@
 }
 
 .delete-button {
-    padding: 10px 20px;
+    padding: 8px 10px; /* padding 값 약간 줄임 */
     background-color: #dc3545;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .delete-button:hover{
     background-color: #a71d2a;
 }
 
+/* 수정 버튼 스타일 (아이콘 only) */
 .edit-button {
-    padding: 10px 20px;
+    padding: 8px 10px; /* padding 값 약간 줄임 */
     background-color: #ffc107;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .edit-button:hover{
     background-color: #d39e00;
@@ -442,17 +452,20 @@
     background-color: #236540;
     color: #fff;
 }
-.submit-btn{
-    padding: 10px 20px;
-    background-color: #00AE68;
+.submit-button{ /* submit-btn 클래스명을 submit-button으로 변경 */
+    padding: 8px 10px; /* edit-button, delete-button과 padding 통일 */
+    background-color: #00AE68; /* groupChatButton 색상과 통일 */
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     align-self: flex-end;
+    display: flex; /* 아이콘과 텍스트 중앙 정렬 위해 flex, align-items 추가 */
+    align-items: center;
+    justify-content: center;
 }
-.submit-btn:hover {
-    background-color: #236540;
+.submit-button:hover { /* submit-btn:hover를 submit-button:hover로 변경 */
+    background-color: #236540; /* groupChatButton hover 색상과 통일 */
     color: #fff;
 }
 
@@ -484,4 +497,17 @@
 
 .moreButton:hover {
     background-color: #0056b3;
+}
+
+/* wish button icon style */
+.wishIcon {
+    /* margin-right: 5px; 아이콘과 텍스트 간 간격 (더 이상 필요 없음) */
+    font-size: 1.2em; /* 아이콘 크기 조절 */
+    vertical-align: middle; /* 아이콘 수직 정렬 */
+}
+/* edit/delete button icon style */
+.editDeleteIcon {
+    /* margin-right: 5px; 아이콘과 텍스트 간 간격 (더 이상 필요 없음) */
+    font-size: 0.9em; /* 아이콘 크기 조절 */
+    vertical-align: middle; /* 아이콘 수직 정렬 */
 }
