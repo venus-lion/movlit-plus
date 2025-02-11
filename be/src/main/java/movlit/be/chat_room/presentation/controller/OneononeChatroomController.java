@@ -1,10 +1,11 @@
 package movlit.be.chat_room.presentation.controller;
 
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.auth.application.service.MyMemberDetails;
-import movlit.be.chat_room.application.service.FetchMyOneononeChatroomUseCase;
+import movlit.be.chat_room.application.service.FetchOneononeChatroomUseCase;
 import movlit.be.chat_room.application.service.OneononeChatroomService;
 import movlit.be.chat_room.presentation.dto.OneOnOneChatroomIdResponse;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomCreatePubRequest;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OneononeChatroomController {
 
     private final OneononeChatroomService oneononeChatroomService;
-    private final FetchMyOneononeChatroomUseCase fetchMyOneononeChatroomUseCase;
+    private final FetchOneononeChatroomUseCase fetchOneononeChatroomUseCase;
 
     @GetMapping("/api/chat/oneOnOne")
     public ResponseEntity<List<OneononeChatroomResponse>> fetchMyOneOnOneChatList(
@@ -36,7 +37,7 @@ public class OneononeChatroomController {
         }
 
         MemberId memberId = details.getMemberId();
-        List<OneononeChatroomResponse> response = fetchMyOneononeChatroomUseCase.execute(memberId);
+        List<OneononeChatroomResponse> response = fetchOneononeChatroomUseCase.execute(memberId);
         return ResponseEntity.ok(response);
     }
 
