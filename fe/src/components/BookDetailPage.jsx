@@ -1,7 +1,18 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
-import {FaComment, FaHeart, FaRegHeart, FaRegStar, FaStar, FaStarHalfAlt, FaUserCircle,} from 'react-icons/fa';
+import {
+    FaComment,
+    FaEdit,
+    FaHeart,
+    FaRegHeart,
+    FaRegStar,
+    FaStar,
+    FaStarHalfAlt,
+    FaTrashAlt,
+    FaUserCircle,
+    FaCheck, // FaCheck 아이콘 추가
+} from 'react-icons/fa';
 import BookCarouselRecommend from "../pages/BookCarouselRecommend.jsx";
 import {buildStyles, CircularProgressbar} from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -340,7 +351,7 @@ function BookDetailPage() {
             }
 
             // if (heartCountSpan) {
-            heartCountSpan.textContent = updatedHeartCount;
+            heartCountSpan.textContent = updatedHeartCount.toLocaleString();
             // }
         } catch (error) {
             console.error('Error updating wish status:', error);
@@ -360,12 +371,12 @@ function BookDetailPage() {
     // 코멘트 제출
     const handleSubmitComment = async () => {
         if (myRating === 0) {
-            alert('별점을 입력해주세요.');s
+            updateSnackbar('별점을 입력해주세요.', 'warning');
             return;
         }
         const currentComment = userComment ? myComment : comment;
         if (currentComment.trim() === '') {
-            alert('코멘트를 입력해주세요.');
+            updateSnackbar('코멘트를 입력해주세요.', 'warning');
             return;
         }
 
@@ -410,7 +421,7 @@ function BookDetailPage() {
 
         try {
             // 코멘트 삭제 (DELETE 요청)
-            await axiosInstance.delete(`/books/${bookId}/comments/${bookCommentId}/delete`);
+            await axiosInstance.delete(`/books/comments/${bookCommentId}/delete`);
             //alert('코멘트가 삭제되었습니다.');
             updateSnackbar('코멘트가 삭제되었습니다.', 'success');
             fetchUserComment();
@@ -448,9 +459,11 @@ function BookDetailPage() {
             if (comment.liked) {
                 // 좋아요 취소 (DELETE 요청)
                 await axiosInstance.delete(`/books/comments/${commentId}/likes`);
+                updateSnackbar('좋아요를 취소했습니다.', 'success');
             } else {
                 // 좋아요 (POST 요청)
                 await axiosInstance.post(`/books/comments/${commentId}/likes`);
+                updateSnackbar('좋아요를 눌렀습니다.', 'success');
             }
 
             // 코멘트 목록 다시 불러오기
@@ -471,11 +484,11 @@ function BookDetailPage() {
         return (
             <>
                 {[...Array(fullStars)].map((_, index) => (
-                    <FaStar key={`full-${index}`} style={styles.starFilled}/>
+                    <FaStar key={`full-${index}`} className="starFilled"/>
                 ))}
-                {halfStar && <FaStarHalfAlt style={styles.starFilled}/>}
+                {halfStar && <FaStarHalfAlt className="starFilled"/>}
                 {[...Array(emptyStars)].map((_, index) => (
-                    <FaRegStar key={`empty-${index}`} style={styles.starEmpty}/>
+                    <FaRegStar key={`empty-${index}`} className="starEmpty"/>
                 ))}
             </>
         );
@@ -484,8 +497,8 @@ function BookDetailPage() {
     // HTML 엔티티를 꺽쇠로 변환하는 함수
     function replaceHtmlEntities(str) {
         return str
-            .replace(/&lt;/g, '<') // &lt;를 <
-            .replace(/&gt;/g, '>'); // &gt;를 >
+            .replace(/</g, '<') // <를 <
+            .replace(/>/g, '>'); // >를 >
     }
 
 
@@ -597,7 +610,7 @@ function BookDetailPage() {
 
 
     return (
-        <div style={styles.container}>
+        <div style={styles.container} className="container">
             <div
                 style={{
                     ...styles.header,
@@ -606,10 +619,11 @@ function BookDetailPage() {
                     backgroundPosition: 'center',
                     color: 'white',
                 }}
+                className="header"
             >
-                <div style={styles.breadcrumbs}>홈 / 도서 / {bookData.title}</div>
-                <div style={styles.title}>{bookData.title}</div>
-                <div style={styles.subtitle}>
+                <div style={styles.breadcrumbs} className="breadcrumbs">홈 / 도서 / {bookData.title}</div>
+                <div style={styles.title} className="title">{bookData.title}</div>
+                <div style={styles.subtitle} className="subtitle">
                     {bookData.pubDate ? bookData.pubDate.substring(0, 10).replaceAll('-', ' ・ ') : ''}
                     <br/><br/>
                     {bookData.categoryName}
@@ -627,8 +641,8 @@ function BookDetailPage() {
                 {/*</div>*/}
             </div>
 
-            <div style={styles.mainContent}>
-                <div style={styles.poster}>
+            <div style={styles.mainContent} className="mainContent">
+                <div style={styles.poster} className="poster">
                     <img src={bookData.bookImgUrl} alt={bookData.title} style={styles.image}/>
                     <br/>
                     <div>
@@ -656,11 +670,11 @@ function BookDetailPage() {
                 </div>
 
 
-                <div style={styles.info}>
-                    <div style={styles.ratingAndWish}>
-                        <div style={styles.myRating}>
-                            <span style={styles.ratingLabel}>내 별점</span>
-                            <div style={styles.stars}>
+                <div style={styles.info} className="info">
+                    <div style={styles.ratingAndWish} className="ratingAndWish">
+                        <div style={styles.myRating} className="myRating">
+                            <span style={styles.ratingLabel} className="ratingLabel">내 별점</span>
+                            <div style={styles.stars} className="stars">
                                 {/* 별 5개로 10점 만점 표현 */}
                                 {[...Array(5)].map((_, index) => {
                                     const starIndex = (index + 1);
@@ -688,25 +702,25 @@ function BookDetailPage() {
                                         >
                                             {/* 클릭된 별점이 없으면 마우스 호버 상태에 따라 별을 표시하고, 클릭된 별점이 있으면 클릭된 별점을 기준으로 별을 표시 */}
                                             {starIndex * 2 <= rating ? (
-                                                <FaStar style={styles.starFilled}/>
+                                                <FaStar className="starFilled"/>
                                             ) : starIndex * 2 === rating + 1 ? (
-                                                <FaStarHalfAlt style={styles.starFilled}/>
+                                                <FaStarHalfAlt className="starFilled"/>
                                             ) : (
-                                                <FaRegStar style={styles.starEmpty}/>
+                                                <FaRegStar className="starEmpty"/>
                                             )}
                     </span>
                                     );
                                 })}
                             </div>
                         </div>
-                        <div style={styles.averageRating}>
-                            <span style={styles.ratingLabel}>평균 별점</span>
-                            <div style={styles.starsAndProgress}>
-                                <div style={styles.stars}>
+                        <div style={styles.averageRating} className="averageRating">
+                            <span style={styles.ratingLabel} className="ratingLabel">평균 별점</span>
+                            <div style={styles.starsAndProgress} className="starsAndProgress">
+                                <div style={styles.stars} className="stars">
                                     {renderStars(bookData.averageScore)}
                                 </div>
                                 {/* Circular Progress Bar 추가 */}
-                                <div style={styles.progressBarContainer}>
+                                <div style={styles.progressBarContainer} className="progressBarContainer">
                                     <CircularProgressbar
                                         value={bookData.averageScore * 10} s
                                         maxValue={100}
@@ -721,7 +735,7 @@ function BookDetailPage() {
                                 </div>
                             </div>
                         </div>
-                        <div style={styles.buttonGroup}>
+                        <div style={styles.buttonGroup} className="buttonGroup">
                             {/*<button*/}
                             {/*    id="wishButton"*/}
                             {/*    style={{*/}
@@ -737,57 +751,59 @@ function BookDetailPage() {
                                 className={`heart-button ${bookData.isHearted ? 'button-hearted' : 'button-not-hearted'}`}
                                 onClick={handleWishClick}
                             >
-                                {bookData.isHearted ? '찜 완료' : '찜'}
+                                {bookData.isHearted ? <FaHeart className="wishIcon"/> : <FaRegHeart className="wishIcon"/>}
                             </button>
-                            <span id="heartCount" style={styles.heartCountContainer}>
-                                {bookData.heartCount}
+                            <span id="heartCount" style={styles.heartCountContainer} className="heartCountContainer">
+                                {bookData.heartCount.toLocaleString()}
                             </span>
                         </div>
                     </div>
 
                     {/* 사용자 코멘트 표시 */}
                     {userComment && userComment.score > 0 && (
-                        <div style={styles.userCommentDisplay}>
-                            <div style={styles.userInfo}>
+                        <div style={styles.userCommentDisplay} className="userCommentDisplay">
+                            <div style={styles.userInfo} className="userInfo">
                                 {userComment.profileImgUrl ? (
                                     <img
                                         src={userComment.profileImgUrl}
                                         alt="프로필 이미지"
                                         style={styles.profileImage}
+                                        className="profileImage"
                                     />
                                 ) : (
-                                    <FaUserCircle style={styles.defaultProfileIcon}/>
+                                    <FaUserCircle style={styles.defaultProfileIcon} className="defaultProfileIcon"/>
                                 )}
-                                <span style={styles.userNickname}>{userComment.nickname}</span>
+                                <span style={styles.userNickname} className="userNickname">{userComment.nickname}</span>
                             </div>
-                            <div style={styles.userCommentContent}>
-                                <FaComment style={styles.commentIcon}/>
-                                <p style={styles.userCommentText}>{userComment.comment}</p>
+                            <div style={styles.userCommentContent} className="userCommentContent">
+                                <FaComment style={styles.commentIcon} className="commentIcon"/>
+                                <p style={styles.userCommentText} className="userCommentText">{userComment.comment}</p>
                             </div>
                             <div>
-                                <p style={styles.userNickname}>등록일 : {userComment.updDt.substring(0, 10)}</p>
+                                <p style={styles.userNickname} className="userNickname">등록일 : {userComment.updDt.substring(0, 10)}</p>
                             </div>
                         </div>
                     )}
 
                     {/* 코멘트 입력 및 수정/삭제 버튼 */}
                     {showCommentInput && (
-                        <div style={styles.commentSection}>
+                        <div style={styles.commentSection} className="commentSection">
               <textarea
                   style={styles.commentInput}
                   placeholder="이 작품에 대한 생각을 자유롭게 표현해주세요"
                   value={userComment ? myComment : comment}
                   onChange={handleCommentChange}
+                  className="commentInput"
               />
-                            <button className="submit-btn" onClick={handleSubmitComment}>
-                                {userComment ? '수정하기' : '코멘트 남기기'}
+                            <button className="submit-button" onClick={handleSubmitComment}>
+                                <FaCheck className="editDeleteIcon"/> {/* FaCheck 아이콘으로 변경 */}
                             </button>
                         </div>
                     )}
 
                     {/* 코멘트 삭제 및 수정 버튼 */}
                     {!showCommentInput && userComment && (
-                        <div style={styles.commentActions}>
+                        <div style={styles.commentActions} className="commentActions">
                             <button
                                 // style={styles.editButton}
                                 className="edit-button"
@@ -797,30 +813,30 @@ function BookDetailPage() {
                                     setShowCommentInput(true);
                                 }}
                             >
-                                수정하기
+                                <FaEdit className="editDeleteIcon"/>
                             </button>
                             <button className="delete-button" onClick={handleDeleteComment}>
-                                삭제하기
+                                <FaTrashAlt className="editDeleteIcon"/>
                             </button>
                         </div>
                     )}
 
                     <div style={{marginTop: '20px'}}/>
 
-                    <div style={styles.details}>
-                        <div style={styles.section}>
-                            <div style={styles.sectionTitle}>줄거리</div>
-                            <div style={styles.sectionContent}>
+                    <div style={styles.details} className="details">
+                        <div style={styles.section} className="section">
+                            <div style={styles.sectionTitle} className="sectionTitle">줄거리</div>
+                            <div style={styles.sectionContent} className="sectionContent">
                                 {bookData?.overview ? replaceHtmlEntities(bookData.overview) : '읽을 내용이 없습니다.'}
                             </div>
                         </div>
 
-                        <div style={styles.section}>
-                            <div style={styles.sectionTitle}>출연/제작</div>
-                            <div style={styles.sectionContent}>
-                                <div style={styles.crewGrid}>
+                        <div style={styles.section} className="section">
+                            <div style={styles.sectionTitle} className="sectionTitle">출연/제작</div>
+                            <div style={styles.sectionContent} className="sectionContent">
+                                <div style={styles.crewGrid} className="crewGrid">
                                     {crews.map((crew) => (
-                                        <div key={crew.name} style={styles.crewMember}>
+                                        <div key={crew.name} style={styles.crewMember} className="crewMember">
                                             {/*<img*/}
                                             {/*    src={*/}
                                             {/*        crew.profileImageUrl*/}
@@ -828,10 +844,10 @@ function BookDetailPage() {
                                             {/*    alt={crew.name}*/}
                                             {/*    style={styles.crewImage}*/}
                                             {/*/>*/}
-                                            <div style={styles.crewInfo}>
-                                                <div style={styles.crewName}>{crew.name}</div>
-                                                <div style={styles.crewCharName}>{crew.charName}</div>
-                                                <div style={styles.crewRole}>
+                                            <div style={styles.crewInfo} className="crewInfo">
+                                                <div style={styles.crewName} className="crewName">{crew.name}</div>
+                                                <div style={styles.crewCharName} className="crewCharName">{crew.charName}</div>
+                                                <div style={styles.crewRole} className="crewRole">
                                                     {crew.role === 'AUTHOR'
                                                         ? '지은이'
                                                         : crew.role === 'TRANSLATOR'
@@ -846,14 +862,14 @@ function BookDetailPage() {
                         </div>
 
 
-                        <div style={styles.section}>
-                            <div style={styles.sectionTitle}>
-                                코멘트 <span style={styles.commentCount}>{totalComments}</span>
+                        <div style={styles.section} className="section">
+                            <div style={styles.sectionTitle} className="sectionTitle">
+                                코멘트 <span style={styles.commentCount} className="commentCount">{totalComments.toLocaleString()}</span>
                             </div>
-                            <div style={styles.sectionContent}>
+                            <div style={styles.sectionContent} className="sectionContent">
                                 {comments.map((comment) => (
-                                    <div key={comment.bookCommentId} style={styles.commentItem}>
-                                        <div style={styles.commentHeader}>
+                                    <div key={comment.bookCommentId} style={styles.commentItem} className="commentItem">
+                                        <div style={styles.commentHeader} className="commentHeader">
                                             <Link
                                                 to={
                                                     comment.memberId === currentMemberId
@@ -868,27 +884,28 @@ function BookDetailPage() {
                                                         src={comment.profileImgUrl}
                                                         alt="프로필 이미지"
                                                         style={styles.commentProfileImage}
+                                                        className="commentProfileImage"
                                                     />
                                                 ) : (
-                                                    <FaUserCircle style={styles.defaultProfileIcon}/>
+                                                    <FaUserCircle style={styles.defaultProfileIcon} className="defaultProfileIcon"/>
                                                 )}
-                                                <span style={styles.commentUser}>{comment.nickname}</span>
+                                                <span style={styles.commentUser} className="commentUser">{comment.nickname}</span>
                                             </Link>
                                             {/* 별점 및 좋아요 컨테이너 */}
-                                            <div style={styles.commentActions}>
+                                            <div style={styles.commentActions} className="commentActions">
                                                 {/* 코멘트 별점 표시 */}
-                                                <div style={styles.commentRating}>
+                                                <div style={styles.commentRating} className="commentRating">
                                                     {/* 별 5개로 10점 만점 표현 */}
                                                     {[...Array(5)].map((_, index) => {
                                                         const starIndex = (index + 1);
                                                         return (
                                                             <span key={index} style={{display: 'inline-block'}}>
                                                                 {starIndex * 2 <= comment.score ? (
-                                                                    <FaStar style={styles.commentStarFilled}/>
+                                                                    <FaStar style={styles.commentStarFilled} className="commentStarFilled"/>
                                                                 ) : starIndex * 2 === comment.score + 1 ? (
-                                                                    <FaStarHalfAlt style={styles.commentStarFilled}/>
+                                                                    <FaStarHalfAlt style={styles.commentStarFilled} className="commentStarFilled"/>
                                                                 ) : (
-                                                                    <FaRegStar style={styles.commentStarEmpty}/>
+                                                                    <FaRegStar style={styles.commentStarEmpty} className="commentStarEmpty"/>
                                                                 )}
                           </span>
                                                         );
@@ -896,25 +913,26 @@ function BookDetailPage() {
                                                     {/*<span style={styles.commentScore}>{comment.score}</span>*/}
                                                 </div>
                                                 {/* 좋아요 버튼 및 카운트 컨테이너 */}
-                                                <div style={styles.likeContainer}>
+                                                <div style={styles.likeContainer} className="likeContainer">
                                                     <button
                                                         style={styles.likeButton}
+                                                        className="likeButton"
                                                         onClick={() => handleLikeClick(comment, comment.bookCommentId, comment.isLiked)}
                                                     >
-                                                        {comment.isLiked ? <FaHeart style={styles.likedIcon}/> :
-                                                            <FaRegHeart style={styles.likeIcon}/>}
+                                                        {comment.isLiked ? <FaHeart style={styles.likedIcon} className="likedIcon"/> :
+                                                            <FaRegHeart style={styles.likeIcon} className="likeIcon"/>}
 
                                                     </button>
                                                     {/* 좋아요 카운트 */}
                                                     <span
-                                                        style={styles.likeCountContainer}>{comment.commentLikeCount}</span>
+                                                        style={styles.likeCountContainer} className="likeCountContainer">{comment.commentLikeCount}</span>
                                                 </div>
                                             </div>
                                         </div>
                                         {/* 코멘트 내용 */}
-                                        <div style={styles.commentContent}>
-                                            <FaComment style={styles.commentIcon}/>
-                                            <p style={styles.commentText}>{comment.comment}</p>
+                                        <div style={styles.commentContent} className="commentContent">
+                                            <FaComment style={styles.commentIcon} className="commentIcon"/>
+                                            <p style={styles.commentText} className="commentText">{comment.comment}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -922,16 +940,16 @@ function BookDetailPage() {
                                 <div ref={loader}/>
                                 {/* 더보기 버튼 */}
                                 {hasMore && isInitialLoad && (
-                                    <div style={styles.moreButtonContainer}>
-                                        <button style={styles.moreButton} onClick={handleLoadMore}>
+                                    <div style={styles.moreButtonContainer} className="moreButtonContainer">
+                                        <button style={styles.moreButton} className="moreButton" onClick={handleLoadMore}>
                                             더보기
                                         </button>
                                     </div>
                                 )}
                                 {/* 더보기 취소 버튼 */}
                                 {showLessComments && (
-                                    <div style={styles.moreButtonContainer}>
-                                        <button style={styles.moreButton} onClick={handleShowLessComments}>
+                                    <div style={styles.moreButtonContainer} className="moreButtonContainer">
+                                        <button style={styles.moreButton} className="moreButton" onClick={handleShowLessComments}>
                                             더보기 취소
                                         </button>
                                     </div>
@@ -939,8 +957,8 @@ function BookDetailPage() {
                             </div>
                         </div>
 
-                        <div style={styles.section}>
-                            <div style={styles.sectionTitle}>관련 도서</div>
+                        <div style={styles.section} className="section">
+                            <div style={styles.sectionTitle} className="sectionTitle">관련 도서</div>
 
                             <BookCarouselRecommend
                                 books={recommendedBooks}
@@ -949,8 +967,8 @@ function BookDetailPage() {
                                 handleNext={handleNextRecommended}
                             />
                         </div>
-                        <div style={styles.section}>
-                            <div style={styles.sectionTitle}>관련 영화</div>
+                        <div style={styles.section} className="section">
+                            <div style={styles.sectionTitle} className="sectionTitle">관련 영화</div>
                             <MovieCarousel
                                 movies={recommendedMovies}
                                 startIndex={mStartIndexRecommended}

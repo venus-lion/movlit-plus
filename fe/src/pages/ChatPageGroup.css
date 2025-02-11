@@ -232,4 +232,4 @@
 /* 채팅방 스크롤바 핸들 클릭 시 색상 변화 */
 .chat-messages-group::-webkit-scrollbar-thumb:active {
     background: #666; /* 핸들 클릭 색상 */
-}  
+}

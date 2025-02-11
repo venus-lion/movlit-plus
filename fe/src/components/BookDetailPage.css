@@ -24,13 +24,17 @@
     margin-right: 5px;
 }
 
+/* 기본 버튼 스타일 */
 .button-common {
-    display: inline-block; /* 필요한 경우 가로로 배치 */
-    width: 180px; /* 원하는 너비 설정 */
-    padding: 8px 15px; /* 필요에 따라 padding 조정 */
+    padding: 10px 20px;
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-right: 10px; /* 버튼 사이 간격 */
+    transition: background-color 0.3s ease; /* 부드러운 배경색 변화 */
+    display: inline-block; /* 필요한 경우 가로로 배치 */
+    width: 180px; /* 원하는 너비 설정 */
     text-align: center; /* 텍스트 가운데 정렬 */
     font-size: 20px; /* 텍스트 크기 설정 (선택 사항) */
 }
@@ -54,79 +58,121 @@
     background-color: #b81414;
 }
 
-/*찜하기 버튼*/
+/* 찜 버튼 스타일 (아이콘 only) */
 .heart-button {
-    padding: 8px 15px;
+    padding: 8px 10px; /* padding 값 약간 줄임 */
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
-    color: white; /* 기본 글자색 */
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px; /* 텍스트 크기 설정 (선택 사항) */
 }
 
 .button-hearted {
-    background-color: #FF3366; /* 찜 완료 상태 배경색 */
+    background-color: #FF3366;
 }
 
 .button-hearted:hover {
-    background-color: #b81414;
+    background-color: #cc0033; /* 호버 시 더 어두운 빨강 */
 }
 
 .button-not-hearted {
-    background-color: #4080ff; /* 찜 안 함 상태 배경색 */
+    background-color: #4080ff;
 }
 
 .button-not-hearted:hover {
-    background-color: #00498c;
+    background-color: #0056b3; /* 호버 시 더 어두운 파랑 */
 }
 
+/* 수정 버튼 스타일 (아이콘 only) */
 .edit-button {
-    padding: 10px 20px;
+    padding: 8px 10px; /* padding 값 약간 줄임 */
     background-color: #ffc107;
     color: white;
     border: none;
-    borderRadius: 5px;
+    border-radius: 5px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .edit-button:hover {
-    background-color: #b89c14;
+    background-color: #d39e00;
 }
 
 .delete-button {
-    padding: 10px 20px;
+    padding: 8px 10px; /* padding 값 약간 줄임 */
     background-color: #dc3545;
     color: white;
     border: none;
-    borderRadius: 5px;
+    border-radius: 5px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 delete-button:hover {
-    background-color: #b81414;
+    background-color: #a71d2a;
 }
-.submit-btn{
-    padding: 10px 20px;
-    background-color: #00AE68;
+.submit-button{ /* submit-btn 클래스명을 submit-button으로 변경 */
+    padding: 8px 10px; /* edit-button, delete-button과 padding 통일 */
+    background-color: #00AE68; /* groupChatButton 색상과 통일 */
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     align-self: flex-end;
+    display: flex; /* 아이콘과 텍스트 중앙 정렬 위해 flex, align-items 추가 */
+    align-items: center;
+    justify-content: center;
 }
-.submit-btn:hover {
-    background-color: #236540;
+.submit-button:hover { /* submit-btn:hover를 submit-button:hover로 변경 */
+    background-color: #236540; /* groupChatButton hover 색상과 통일 */
     color: #fff;
 }
 .more-btn{
-    padding: 5px 10px;
-    background-color: #00AE68;
+    padding: 10px 15px;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
 }
 .more-btn:hover {
-    background-color: #236540;
-    color: #fff;
+    background-color: #0056b3;
+}
+.moreButton {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+}
+
+.moreButton:hover {
+    background-color: #0056b3;
+}
+
+/* wish button icon style */
+.wishIcon {
+    /* margin-right: 5px; 아이콘과 텍스트 간 간격 (더 이상 필요 없음) */
+    font-size: 1.2em; /* 아이콘 크기 조절 */
+    vertical-align: middle; /* 아이콘 수직 정렬 */
+}
+/* edit/delete button icon style */
+.editDeleteIcon {
+    /* margin-right: 5px; 아이콘과 텍스트 간 간격 (더 이상 필요 없음) */
+    font-size: 0.9em; /* 아이콘 크기 조절 */
+    vertical-align: middle; /* 아이콘 수직 정렬 */
 }

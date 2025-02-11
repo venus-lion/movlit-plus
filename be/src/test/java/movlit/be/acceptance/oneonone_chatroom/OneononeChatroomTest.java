@@ -1,7 +1,7 @@
 package movlit.be.acceptance.oneonone_chatroom;
 
 import static movlit.be.acceptance.oneonone_chatroom.OneOnOneChatroomSteps.로그인_유저의_일대일_채팅_목록을_가져온다;
-import static movlit.be.acceptance.oneonone_chatroom.OneOnOneChatroomSteps.상태코드_404와_오류코드_o001을_반환하는지_검증한다;
+import static movlit.be.acceptance.oneonone_chatroom.OneOnOneChatroomSteps.상태코드_409와_오류코드_o001을_반환하는지_검증한다;
 import static movlit.be.acceptance.oneonone_chatroom.OneOnOneChatroomSteps.상태코드가_200이다;
 import static movlit.be.acceptance.oneonone_chatroom.OneOnOneChatroomSteps.응답결과를_검증한다;
 import static movlit.be.acceptance.oneonone_chatroom.OneOnOneChatroomSteps.일대일_채팅을_생성한다;
@@ -65,7 +65,7 @@ public class OneononeChatroomTest extends AcceptanceTest {
         var response = 일대일_채팅을_생성한다(senderAccessToken, request, spec);
 
         // then
-        상태코드_404와_오류코드_o001을_반환하는지_검증한다(response);
+        상태코드_409와_오류코드_o001을_반환하는지_검증한다(response);
     }
 
     @DisplayName("일대일 채팅을 생성하고, 채팅 목록을 가져오는데 성공하면, 상태코드 200과 body를 반환한다.")

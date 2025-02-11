@@ -3,6 +3,7 @@ package movlit.be.chat_room.infra.persistence.jpa;
 import java.util.List;
 import java.util.Optional;
 import movlit.be.chat_room.domain.OneononeChatroom;
+import movlit.be.chat_room.presentation.dto.OneOnOneChatroomIdResponse;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.common.util.ids.OneononeChatroomId;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,7 +1,18 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
-import {FaComment, FaHeart, FaRegHeart, FaRegStar, FaStar, FaStarHalfAlt, FaUserCircle,} from 'react-icons/fa';
+import {
+    FaComment,
+    FaHeart,
+    FaRegHeart,
+    FaRegStar,
+    FaStar,
+    FaStarHalfAlt,
+    FaUserCircle,
+    FaEdit,
+    FaTrashAlt,
+    FaCheck, // FaCheck 아이콘 추가
+} from 'react-icons/fa';
 import MovieCarousel from '../pages/MovieCarousel';
 import useAuthMovieList from '../hooks/useAuthMovieList';
 import useBookList from '../hooks/useBookList';
@@ -440,18 +451,18 @@ function MovieDetailPage() {
         return (
             <>
                 {[...Array(fullStars)].map((_, index) => (
-                    <FaStar key={`full-${index}`} style={styles.starFilled}/>
+                    <FaStar key={`full-${index}`} className="starFilled"/>
                 ))}
-                {halfStar && <FaStarHalfAlt style={styles.starFilled}/>}
+                {halfStar && <FaStarHalfAlt className="starFilled"/>}
                 {[...Array(emptyStars)].map((_, index) => (
-                    <FaRegStar key={`empty-${index}`} style={styles.starEmpty}/>
+                    <FaRegStar key={`empty-${index}`} className="starEmpty"/>
                 ))}
             </>
         );
     };
 
     if (!movieData) {
-        return <div style={styles.loading}>Loading...</div>;
+        return <div className="loading">Loading...</div>;
     }
 
     const uniqueGenres = new Set();
@@ -573,21 +584,21 @@ function MovieDetailPage() {
 
 
     return (
-        <div style={styles.container}>
+        <div className="container">
             <div
+                className="header"
                 style={{
-                    ...styles.header,
                     backgroundImage: `url(http://image.tmdb.org/t/p/original${movieData.backdropUrl})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     color: 'white',
                 }}
             >
-                <div style={styles.breadcrumbs}>
+                <div className="breadcrumbs">
                     홈 / 영화 / {movieData.title}
                 </div>
-                <div style={styles.title}>{movieData.title}</div>
-                <div style={styles.subtitle}>
+                <div className="title">{movieData.title}</div>
+                <div className="subtitle">
                     {movieData.releaseDate
                         ? movieData.releaseDate.substring(0, 4)
                         : ''}{' '}
@@ -602,16 +613,12 @@ function MovieDetailPage() {
                 </div>
             </div>
 
-            <div style={styles.mainContent}>
-                <div style={styles.poster}>
+            <div className="mainContent">
+                <div className="poster">
                     <img src={movieData.posterUrl} alt={movieData.title}/>
                     <button
                         id="groupChatButton"
-                        // style={{
-                        //     ...styles.button,
-                        //     backgroundColor: '#FF3366',
-                        //     marginTop: '20px',
-                        // }}
+                        // className="button"
                         className="button-common join-button"
                         onClick={() => handleJoinGroupChatroom(movieId)}
                     >
@@ -619,11 +626,11 @@ function MovieDetailPage() {
                     </button>
                 </div>
 
-                <div style={styles.info}>
-                    <div style={styles.ratingAndWish}>
-                        <div style={styles.myRating}>
-                            <span style={styles.ratingLabel}>내 별점</span>
-                            <div style={styles.stars}>
+                <div className="info">
+                    <div className="ratingAndWish">
+                        <div className="myRating">
+                            <span className="ratingLabel">내 별점</span>
+                            <div className="stars">
                                 {[...Array(5)].map((_, index) => {
                                     const starIndex = (index + 1);
                                     const rating = myRating === 0 ? hoverRating : myRating;
@@ -648,24 +655,24 @@ function MovieDetailPage() {
                                             }}
                                         >
                                             {starIndex * 2 <= rating ? (
-                                                <FaStar style={styles.starFilled}/>
+                                                <FaStar className="starFilled"/>
                                             ) : starIndex * 2 === rating + 1 ? (
-                                                <FaStarHalfAlt style={styles.starFilled}/>
+                                                <FaStarHalfAlt className="starFilled"/>
                                             ) : (
-                                                <FaRegStar style={styles.starEmpty}/>
+                                                <FaRegStar className="starEmpty"/>
                                             )}
                                         </span>
                                     );
                                 })}
                             </div>
                         </div>
-                        <div style={styles.averageRating}>
-                            <span style={styles.ratingLabel}>평균 별점</span>
-                            <div style={styles.starsAndProgress}>
-                                <div style={styles.stars}>
+                        <div className="averageRating">
+                            <span className="ratingLabel">평균 별점</span>
+                            <div className="starsAndProgress">
+                                <div className="stars">
                                     {renderStars(movieData.voteAverage)}
                                 </div>
-                                <div style={styles.progressBarContainer}>
+                                <div className="progressBarContainer">
                                     <CircularProgressbar
                                         value={movieData.voteAverage * 10}
                                         maxValue={100}
@@ -680,69 +687,58 @@ function MovieDetailPage() {
                                 </div>
                             </div>
                         </div>
-                        <div style={styles.buttonGroup}>
-                            {/*<button*/}
-                            {/*    id="wishButton"*/}
-                            {/*    style={{*/}
-                            {/*        ...styles.button,*/}
-                            {/*        backgroundColor: movieData.isHearted*/}
-                            {/*            ? '#FF3366'*/}
-                            {/*            : '#4080ff',*/}
-                            {/*    }}*/}
-                            {/*    onClick={handleWishClick}*/}
-                            {/*>*/}
+                        <div className="buttonGroup">
                             <button
                                 id="wishButton"
                                 className={`heart-button ${movieData.isHearted ? 'button-hearted' : 'button-not-hearted'}`}
                                 onClick={handleWishClick}
                             >
-                                {movieData.isHearted ? '찜 완료' : '찜'}
+                                {movieData.isHearted ? <FaHeart className="wishIcon"/> : <FaRegHeart className="wishIcon"/>}
                             </button>
-                            <span id="heartCount" style={styles.heartCountContainer}>
+                            <span id="heartCount" className="heartCountContainer">
                 {movieData.heartCount.toLocaleString()}
               </span>
                         </div>
                     </div>
 
                     {userComment && userComment.score > 0 && (
-                        <div style={styles.userCommentDisplay}>
-                            <div style={styles.userInfo}>
+                        <div className="userCommentDisplay">
+                            <div className="userInfo">
                                 {userComment.profileImgUrl ? (
                                     <img
                                         src={userComment.profileImgUrl}
                                         alt="프로필 이미지"
-                                        style={styles.profileImage}
+                                        className="profileImage"
                                     />
                                 ) : (
-                                    <FaUserCircle style={styles.defaultProfileIcon}/>
+                                    <FaUserCircle className="defaultProfileIcon"/>
                                 )}
-                                <span style={styles.userNickname}>{userComment.nickname}</span>
+                                <span className="userNickname">{userComment.nickname}</span>
                             </div>
-                            <div style={styles.userCommentContent}>
-                                <FaComment style={styles.commentIcon}/>
-                                <p style={styles.userCommentText}>{userComment.comment}</p>
+                            <div className="userCommentContent">
+                                <FaComment className="commentIcon"/>
+                                <p className="userCommentText">{userComment.comment}</p>
                             </div>
                         </div>
                     )}
 
                     {myRating > 0 && showCommentInput && (
-                        <div style={styles.commentSection}>
+                        <div className="commentSection">
                             <textarea
-                                style={styles.commentInput}
+                                className="commentInput"
                                 placeholder="이 작품에 대한 생각을 자유롭게 표현해주세요"
                                 value={userComment ? myComment : comment}
                                 onChange={handleCommentChange}
                             />
-                            <button className="submit-btn" onClick={handleSubmitComment}>
-                                {userComment ? '수정하기' : '코멘트 남기기'}
+                            <button className="submit-button" onClick={handleSubmitComment}>
+                                <FaCheck className="editDeleteIcon"/> {/* FaCheck 아이콘으로 변경 */}
                             </button>
                         </div>
                     )}
 
                     {!showCommentInput && userComment && (
-                        <div style={styles.commentActions}>
+                        <div className="commentActions">
                             <button
-                                // style={styles.editButton}
                                 className="edit-button"
                                 onClick={() => {
                                     setMyRating(userComment.score);
@@ -750,28 +746,28 @@ function MovieDetailPage() {
                                     setShowCommentInput(true);
                                 }}
                             >
-                                수정하기
+                                <FaEdit className="editDeleteIcon"/>
                             </button>
                             <button className="delete-button" onClick={handleDeleteComment}>
-                                삭제하기
+                                <FaTrashAlt className="editDeleteIcon"/>
                             </button>
                         </div>
                     )}
 
                     <div style={{marginTop: '20px'}}/>
 
-                    <div style={styles.details}>
-                        <div style={styles.section}>
-                            <div style={styles.sectionTitle}>줄거리</div>
-                            <div style={styles.sectionContent}>{movieData.overview}</div>
+                    <div className="details">
+                        <div className="section">
+                            <div className="sectionTitle">줄거리</div>
+                            <div className="sectionContent">{movieData.overview}</div>
                         </div>
 
-                        <div style={styles.section}>
-                            <div style={styles.sectionTitle}>출연/제작</div>
-                            <div style={styles.sectionContent}>
-                                <div style={styles.crewGrid}>
+                        <div className="section">
+                            <div className="sectionTitle">출연/제작</div>
+                            <div className="sectionContent">
+                                <div className="crewGrid">
                                     {visibleCrews.map((crew) => (
-                                        <div key={crew.name} style={styles.crewMember}>
+                                        <div key={crew.name} className="crewMember">
                                             <img
                                                 src={
                                                     crew.profileImgUrl
@@ -780,14 +776,14 @@ function MovieDetailPage() {
                                                         : '/default-profile-image.jpg'
                                                 }
                                                 alt={crew.name}
-                                                style={styles.crewImage}
+                                                className="crewImage"
                                             />
-                                            <div style={styles.crewInfo}>
-                                                <div style={styles.crewName}>{crew.name}</div>
-                                                <div style={styles.crewCharName}>
+                                            <div className="crewInfo">
+                                                <div className="crewName">{crew.name}</div>
+                                                <div className="crewCharName">
                                                     {crew.charName}
                                                 </div>
-                                                <div style={styles.crewRole}>
+                                                <div className="crewRole">
                                                     {crew.role === 'CAST'
                                                         ? '출연'
                                                         : crew.role === 'DIRECTOR'
@@ -799,7 +795,7 @@ function MovieDetailPage() {
                                     ))}
                                 </div>
                                 {!showMoreCrews && crews.length > initialVisibleCrews && (
-                                    <div style={styles.moreButtonContainer}>
+                                    <div className="moreButtonContainer">
                                         <button
                                             className="more-btn"
                                             onClick={handleShowMoreCrews}
@@ -809,7 +805,7 @@ function MovieDetailPage() {
                                     </div>
                                 )}
                                 {showMoreCrews && (
-                                    <div style={styles.moreButtonContainer}>
+                                    <div className="moreButtonContainer">
                                         <button
                                             className="more-btn"
                                             onClick={handleShowLessCrews}
@@ -821,18 +817,18 @@ function MovieDetailPage() {
                             </div>
                         </div>
 
-                        <div style={styles.section}>
-                            <div style={styles.sectionTitle}>
+                        <div className="section">
+                            <div className="sectionTitle">
                                 코멘트{' '}
-                                <span style={styles.commentCount}>
+                                <span className="commentCount">
                   {totalComments.toLocaleString()}
                 </span>
                             </div>
 
-                            <div style={styles.sectionContent}>
+                            <div className="sectionContent">
                                 {comments.map((comment) => (
-                                    <div key={comment.movieCommentId} style={styles.commentItem}>
-                                        <div style={styles.commentHeader}>
+                                    <div key={comment.movieCommentId} className="commentItem">
+                                        <div className="commentHeader">
                                             <Link
                                                 to={
                                                     comment.memberId === currentMemberId
@@ -840,66 +836,66 @@ function MovieDetailPage() {
                                                         : `/members/${comment.memberId}`
                                                 }
                                                 className="comment-user-link"
-                                                style={styles.commentUserInfo}
+                                                // className="commentUserInfo"
                                             >
                                                 {comment.profileImgUrl ? (
                                                     <img
                                                         src={comment.profileImgUrl}
                                                         alt="프로필 이미지"
-                                                        style={styles.commentProfileImage}
+                                                        className="commentProfileImage"
                                                     />
                                                 ) : (
-                                                    <FaUserCircle style={styles.defaultProfileIcon}/>
+                                                    <FaUserCircle className="defaultProfileIcon"/>
                                                 )}
-                                                <span style={styles.commentUser}>{comment.nickname}</span>
+                                                <span className="commentUser">{comment.nickname}</span>
                                             </Link>
-                                            <div style={styles.commentActions}>
-                                                <div style={styles.commentRating}>
+                                            <div className="commentActions">
+                                                <div className="commentRating">
                                                     {[...Array(5)].map((_, index) => {
                                                         const starIndex = (index + 1);
                                                         return (
                                                             <span key={index} style={{display: 'inline-block'}}>
                                                                 {starIndex * 2 <= comment.score ? (
-                                                                    <FaStar style={styles.commentStarFilled}/>
+                                                                    <FaStar className="commentStarFilled"/>
                                                                 ) : starIndex * 2 === comment.score + 1 ? (
-                                                                    <FaStarHalfAlt style={styles.commentStarFilled}/>
+                                                                    <FaStarHalfAlt className="commentStarFilled"/>
                                                                 ) : (
-                                                                    <FaRegStar style={styles.commentStarEmpty}/>
+                                                                    <FaRegStar className="commentStarEmpty"/>
                                                                 )}
                                                             </span>
                                                         );
                                                     })}
                                                 </div>
-                                                <div style={styles.likeContainer}>
+                                                <div className="likeContainer">
                                                     <button
-                                                        style={styles.likeButton}
+                                                        className="likeButton"
                                                         onClick={() => handleLikeClick(comment.movieCommentId, comment.isLiked)}
                                                     >
-                                                        {comment.isLiked ? <FaHeart style={styles.likedIcon}/> :
-                                                            <FaRegHeart style={styles.likeIcon}/>}
+                                                        {comment.isLiked ? <FaHeart className="likedIcon"/> :
+                                                            <FaRegHeart className="likeIcon"/>}
                                                     </button>
                                                     <span
-                                                        style={styles.likeCountContainer}>{comment.commentLikeCount}</span>
+                                                        className="likeCountContainer">{comment.commentLikeCount}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div style={styles.commentContent}>
-                                            <FaComment style={styles.commentIcon}/>
-                                            <p style={styles.commentText}>{comment.comment}</p>
+                                        <div className="commentContent">
+                                            <FaComment className="commentIcon"/>
+                                            <p className="commentText">{comment.comment}</p>
                                         </div>
                                     </div>
                                 ))}
                                 <div ref={loader}/>
                                 {hasMore && isInitialLoad && (
-                                    <div style={styles.moreButtonContainer}>
-                                        <button style={styles.moreButton} onClick={handleLoadMore}>
+                                    <div className="moreButtonContainer">
+                                        <button className="moreButton" onClick={handleLoadMore}>
                                             더보기
                                         </button>
                                     </div>
                                 )}
                                 {showLessComments && (
-                                    <div style={styles.moreButtonContainer}>
-                                        <button style={styles.moreButton} onClick={handleShowLessComments}>
+                                    <div className="moreButtonContainer">
+                                        <button className="moreButton" onClick={handleShowLessComments}>
                                             더보기 취소
                                         </button>
                                     </div>
@@ -907,9 +903,9 @@ function MovieDetailPage() {
                             </div>
                         </div>
 
-                        <div style={styles.section}>
-                            <div style={styles.sectionTitle}>관련 영화 추천</div>
-                            <div style={styles.sectionContent}>
+                        <div className="section">
+                            <div className="sectionTitle">관련 영화 추천</div>
+                            <div className="sectionContent">
                                 {relatedMoviesLoading && <p>Loading related movies...</p>}
                                 {relatedMoviesError && (
                                     <div>
@@ -927,9 +923,9 @@ function MovieDetailPage() {
                             </div>
                         </div>
 
-                        <div style={styles.section}>
-                            <div style={styles.sectionTitle}>관련 도서 추천</div>
-                            <div style={styles.sectionContent}>
+                        <div className="section">
+                            <div className="sectionTitle">관련 도서 추천</div>
+                            <div className="sectionContent">
                                 {relatedBooksLoading && <p>Loading related books...</p>}
                                 {relatedBooksError && (
                                     <div>
@@ -969,345 +965,5 @@ function MovieDetailPage() {
         </div>
     );
 }
-
-
-const styles = {
-    container: {
-        width: '100%',
-        fontFamily: 'Arial, sans-serif',
-    },
-    header: {
-        padding: '210px 20px',
-        borderBottom: '1px solid #e7e7e7',
-        marginBottom: '20px',
-    },
-    breadcrumbs: {
-        marginBottom: '10px',
-        fontSize: '14px',
-        color: '#ffffff',
-    },
-    title: {
-        fontSize: '28px',
-        fontWeight: 'bold',
-        marginBottom: '5px',
-        color: '#ffffff',
-    },
-    subtitle: {
-        fontSize: '16px',
-        color: '#ffffff',
-    },
-    mainContent: {
-        display: 'flex',
-        padding: '20px',
-    },
-    poster: {
-        width: '200px',
-        marginRight: '30px',
-        flexShrink: 0,
-
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    info: {
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    ratingAndWish: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '20px',
-    },
-    myRating: {
-        //marginBottom: '20px',
-    },
-    ratingLabel: {
-        fontSize: '18px',
-        fontWeight: 'bold',
-        marginRight: '10px',
-        color: '#000000',
-    },
-    stars: {
-        display: 'inline-block',
-        alignItems: 'center',
-        //marginLeft: '10px',
-    },
-    starFilled: {
-        color: '#f8d90f',
-        cursor: 'pointer',
-        fontSize: '40px',
-    },
-    starEmpty: {
-        color: '#ccc',
-        cursor: 'pointer',
-        fontSize: '40px',
-    },
-    starIcon: {
-        fontSize: '40px',
-    },
-    buttonGroup: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-    button: {
-        //marginRight: '10px',
-        padding: '10px 20px',
-        //backgroundColor: '#4080ff',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    },
-    details: {
-        marginTop: 'auto',
-    },
-    section: {
-        marginBottom: '20px',
-    },
-    sectionTitle: {
-        fontSize: '20px',
-        fontWeight: 'bold',
-        marginBottom: '10px',
-        color: '#000000',
-    },
-    sectionContent: {
-        color: '#000000',
-    },
-    book: {
-        display: 'flex',
-        alignItems: 'center',
-        marginBottom: '10px',
-    },
-    loading: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-    },
-    crewGrid: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-        gap: '10px',
-    },
-    crewMember: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-    },
-    crewImage: {
-        width: '100px',
-        height: '100px',
-        borderRadius: '50%',
-        objectFit: 'cover',
-        marginBottom: '5px',
-    },
-    crewInfo: {},
-    crewName: {
-        fontWeight: 'bold',
-        color: '#000000',
-    },
-    crewCharName: {
-        color: '#000000',
-    },
-    crewRole: {
-        fontSize: '0.9em',
-        color: '#000000',
-    },
-    commentSection: {
-        marginTop: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    commentInput: {
-        padding: '10px',
-        border: '1px solid #ccc',
-        borderRadius: '5px',
-        marginBottom: '10px',
-        resize: 'vertical',
-        height: '100px',
-    },
-    commentCount: {
-        fontSize: '16px',
-        color: '#656565',
-    },
-    commentItem: {
-        borderBottom: '1px solid #ccc',
-        padding: '10px 0',
-    },
-    commentHeader: {
-        display: 'flex',
-        alignItems: 'center',
-        marginBottom: '5px',
-        justifyContent: 'space-between'
-    },
-    commentStarFilled: {
-        color: '#f8d90f',
-        marginLeft: '5px',
-    },
-    commentStarEmpty: {
-        color: '#ccc',
-        marginLeft: '5px',
-    },
-    commentText: {
-        color: '#000000',
-    },
-    moreButtonContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        marginTop: '10px',
-    },
-    userCommentDisplay: {
-        marginTop: '20px',
-        padding: '15px',
-        border: '1px solid #ccc',
-        borderRadius: '5px',
-        backgroundColor: '#f8f8f8',
-    },
-    commentActions: {
-        marginTop: '10px',
-        display: 'flex',
-        gap: '10px',
-        justifyContent: 'flex-end',
-    },
-    deleteButton: {
-        padding: '10px 20px',
-        backgroundColor: '#dc3545',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    },
-    editButton: {
-        padding: '10px 20px',
-        backgroundColor: '#ffc107',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    },
-    userInfo: {
-        display: 'flex',
-        alignItems: 'center',
-        marginBottom: '10px',
-    },
-    profileImage: {
-        width: '30px',
-        height: '30px',
-        borderRadius: '50%',
-        marginRight: '5px',
-    },
-    userNickname: {
-        fontWeight: 'bold',
-    },
-    heartCountContainer: {
-        marginLeft: '8px',
-        padding: '4px 8px',
-        backgroundColor: '#f2f2f2',
-        borderRadius: '10px',
-        border: '1px solid #ccc',
-        fontSize: '14px',
-        fontWeight: 'bold',
-        color: '#333',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-    },
-    likeButton: {
-        marginLeft: '10px',
-        padding: '0px',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontSize: '14px',
-        background: 'none',
-    },
-    likeIcon: {
-        color: '#4080ff',
-        fontSize: '1.2em',
-    },
-    likedIcon: {
-        color: '#FF3366',
-        fontSize: '1.2em',
-    },
-    likeContainer: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-    likeCountContainer: {
-        marginLeft: '5px',
-        padding: '3px 6px',
-        backgroundColor: '#f2f2f2',
-        borderRadius: '8px',
-        border: '1px solid #ccc',
-        fontSize: '12px',
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    defaultProfileIcon: {
-        fontSize: '30px',
-        color: '#999',
-        marginRight: '10px',
-    },
-    userCommentContent: {
-        display: 'flex',
-    },
-    commentIcon: {
-        fontSize: '18px',
-        color: '#666',
-        marginRight: '5px',
-        marginTop: '3px'
-    },
-    userCommentText: {
-        fontSize: '14px',
-        lineHeight: '1.4',
-    },
-    commentUserInfo: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-    commentUser: {
-        fontWeight: 'bold',
-        marginRight: '5px',
-    },
-    commentProfileImage: {
-        width: '30px',
-        height: '30px',
-        borderRadius: '50%',
-        marginRight: '5px',
-    },
-    commentRating: {
-        display: 'flex',
-        alignItems: 'center',
-        marginLeft: 'auto',
-    },
-    commentScore: {
-        marginLeft: '5px',
-        color: '#000000',
-    },
-    commentContent: {
-        display: 'flex',
-        alignItems: 'flex-start',
-        marginLeft: '5px',
-    },
-    averageRating: {
-        marginLeft: '20px',
-        display: 'flex',
-        alignItems: 'center',
-    },
-    voteAverage: {
-        marginLeft: '10px',
-        fontSize: '16px',
-        color: '#000000',
-    },
-    starsAndProgress: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-    progressBarContainer: {
-        width: '60px',
-        marginLeft: '15px',
-    }
-};
 
 export default MovieDetailPage;

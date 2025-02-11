@@ -5,52 +5,49 @@ import SockJS from 'sockjs-client';
 import DateTimeUtil, {getNowDate} from "../../util/DateTimeUtil.jsx";
 import './ChatList.css';
 
-const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat}) => {
-    const [groupChats, setGroupChats] = useState([]);
+const ChatList = ({
+                      currentUserId,
+                      personalChats,
+                      groupChats,
+                      refreshKey,
+                      activeTab,
+                      searchTerm,
+                      onSelectChat,
+                      selectedChat
+                  }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [personalChats, setPersonalChats] = useState([]);
     const [stompClient, setStompClient] = useState(null);
-    const [currentUserId, setCurrentUserId] = useState(null);
     // 선택된 채팅방의 ID를 상태로 관리
     const [selectedChatId, setSelectedChatId] = useState(null);
 
-    useEffect(() => {
-        const fetchUserId = async () => {
-            try {
-                const response = await axiosInstance.get('/members/id');
-                setCurrentUserId(response.data.memberId); // 여기서 state에 저장
-                console.log(response.data.memberId);
-            } catch (error) {
-                console.error('Error fetching current user ID:', error);
-            }
-        };
-        fetchUserId();
-    }, []);
+    const [posterImages, setPosterImages] = useState({}); // 포스터 이미지 URL 상태
+
 
     // fetch 관련 로직만 별도 useEffect로 분리 (refreshKey 변화에 따라 재호출)
     useEffect(() => {
-        const fetchChats = async () => {
-            setLoading(true);
-            try {
-                await Promise.all([
-                    (async () => {
-                        const response = await axiosInstance.get('/chat/group/rooms/my');
-                        setGroupChats(response.data);
-                    })(),
-                    (async () => {
-                        const response = await axiosInstance.get('/chat/oneOnOne');
-                        setPersonalChats(response.data);
-                    })(),
-                ]);
-            } catch (err) {
-                setError(err.message || '네트워크 오류가 발생했습니다.');
-            } finally {
-                setLoading(false);
-            }
-        };
+        // const fetchChats = async () => {
+        //     setLoading(true);
+        //     try {
+        //         await Promise.all([
+        //             (async () => {
+        //                 const response = await axiosInstance.get('/chat/group/rooms/my');
+        //                 setGroupChats(response.data);
+        //             })(),
+        //             (async () => {
+        //                 const response = await axiosInstance.get('/chat/oneOnOne');
+        //                 setPersonalChats(response.data);
+        //             })(),
+        //         ]);
+        //     } catch (err) {
+        //         setError(err.message || '네트워크 오류가 발생했습니다.');
+        //     } finally {
+        //         setLoading(false);
+        //     }
+        // };
+        //
+        // fetchChats();
 
-        fetchChats();
     }, [refreshKey]);
 
     // 웹소켓 연결 관련 로직은 최초 한 번만 실행하도록 [] 의존성 사용
@@ -201,24 +198,31 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat
         }
         onSelectChat(chat); // 선택된 채팅방을 상위 컴포넌트에 전달
     };
+
     // 선택된 채팅방에 따라 배경색 변하게 하기
     const getChatItemStyle = (chat) => {
         const isSelected = (activeTab === 'group' && selectedChat && selectedChat.groupChatroomId === chat.groupChatroomId) ||
             (activeTab === 'personal' && selectedChat && selectedChat.roomId === chat.roomId);
         return {
             backgroundColor: isSelected ? '#e0f7fa' : '#f9f9f9', // 선택된 배경색
-            padding: '10px',
-            cursor: 'pointer',
-            borderBottom: '1px solid #ddd',
         };
     };
 
     // 스타일 객체
     const style = {
+        textContainer: { // 텍스트 영역 (roomName, contentName, recentMessage)
+            display: 'flex',
+            flexDirection: 'column', // 세로로 쌓이도록
+            flexGrow: 1,          // 남은 공간 차지
+            marginRight: '10px',   // 이미지와의 간격
+        },
+        roomName: {
+            fontWeight: 'bold',
+            color: 'black',
+        },
         conTitle: {
             fontSize: '0.9em',
             color: 'black',
-            width: '70%',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -228,52 +232,119 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat
             color: '#666',
             backgroundColor: '#faf9d7',
             padding: '5px',
-            width: '100%',
             borderRadius: '10px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
         },
-
+        posterImage: {
+            width: '50px',
+            height: '70px',
+            objectFit: 'cover',
+        },
+        noMessage: { // 메시지 없음 스타일 (필요한 경우)
+            fontSize: '0.9em',
+            color: '#666',
+            backgroundColor: '#faf9d7', // 배경색 추가
+            padding: '5px',          // 패딩 추가
+            borderRadius: '10px',     // 둥근 모서리
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+        }
     };
 
-    if (loading) return <div>로딩 중...</div>;
+
+    // 포스터 이미지 URL 가져오는 함수
+    const fetchPosterImage = async (contentId) => {
+        if (!contentId) return;
+        console.log('contentId :: ', contentId);
+
+        const [contentType, id] = contentId.split('_');
+        let url = '';
+
+        try {
+            if (contentType === 'MV') {
+                const response = await axiosInstance.get(`/movies/${id}/detail`);
+                url = response.data.posterPath;
+            } else if (contentType === 'BK') {
+                console.log('BK에서 fetchPosterIMage 실행 !!');
+
+                const response = await axiosInstance.get(`/books/${id}/detail`);
+                url = response.data.book_img_url;
+
+            }
+            if (url) {
+                setPosterImages(prevImages => ({
+                    ...prevImages,
+                    [contentId]: url
+                }));
+            }
+
+
+        } catch (error) {
+            console.error("Error fetching poster image:", error);
+
+        }
+    };
+
+    // groupChats가 변경될 때마다 포스터 이미지 가져오기
+    useEffect(() => {
+        console.log('ChatList -- groupChats 변경될 때마다..');
+
+        if (activeTab === 'group') {
+            groupChats.forEach(chat => {
+                console.log(chat);
+                if (chat.contentId && !posterImages[chat.contentId]) {
+                    fetchPosterImage(chat.contentId);
+                }
+            });
+        }
+    }, [groupChats, activeTab, posterImages]);
+
+
+    // if (loading) return <div>로딩 중...</div>;
     if (error) return <div>오류: {error}</div>;
 
     return (
         <div className="chat-list-container" style={style.chatListContainer}>
             {/* 그룹 채팅 목록 */}
             {activeTab === 'group' && (
-
                 <div>
                     {filteredChats.map((chat) => (
                         <div
                             key={chat.groupChatroomId}
-                            style={getChatItemStyle(chat)}
-                            onClick={() => handleChatSelect(chat)} // 클릭 시 채팅방 선택
+                            className='chat-item' // chat-item 클래스 적용
+                            onClick={() => handleChatSelect(chat)}
                         >
-                            <div style={{fontWeight: 'bold', color: 'black'}}>
+                        {/* 포스터 이미지 */}
+                        {posterImages[chat.contentId] && (
+                            <img
+                                src={posterImages[chat.contentId]}
+                                alt="Poster"
+                                className="poster-image" // 클래스 적용
+                            />
+                        )}
+
+                        <div className="chat-info"> {/* 채팅 정보 컨테이너 */}
+                            <div className="room-name">
                                 {chat.roomName}
                             </div>
-                            <div style={style.conTitle}>
-                                [콘텐츠] <strong>{chat.contentName}</strong>
+                            <div className="con-title">
+                                <strong>{chat.contentName}</strong>
                             </div>
-                            <div>
-                                {chat.recentMessage ? (
-                                    <div>
-                                        <div style={style.recentMsg}>
-                                            <strong>[New] </strong>
-                                            {chat.recentMessage.message}
-                                            <br/>
-                                            {DateTimeUtil(chat.recentMessage.regDt)}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <div style={style.recentMsg}>메시지 없음</div>
-                                    </div>
-                                )}
-                            </div>
+                            {chat.recentMessage ? (
+                                <div className="recent-message">
+                                    {chat.recentMessage.message}
+                                </div>
+                            ) : (
+                                <div className="recent-message">메시지 없음</div>
+                            )}
+                        </div>
+                        {/* 시간 */}
+                        <div className="message-time">
+                            {chat.recentMessage ? DateTimeUtil(chat.recentMessage.regDt) : ""}
+                        </div>
                         </div>
                     ))}
                 </div>
@@ -294,7 +365,6 @@ const ChatList = ({refreshKey, activeTab, searchTerm, onSelectChat, selectedChat
                             {chat.recentMessage ? (
                                 <div>
                                     <div style={style.recentMsg}>
-                                        <strong>[New] </strong>
                                         {chat.recentMessage.message}
                                         <br/>
                                         {DateTimeUtil(chat.recentMessage.regDt)}

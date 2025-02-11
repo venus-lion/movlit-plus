@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FetchGroupChatroomUseCase {
 
-    private final GroupChatroomService groupChatroomService;
     private final ChatMessageService chatMessageService;
+    private final GroupChatroomService groupChatroomService;
 
     // 내가 가입한 그룹채팅 리스트 가져오기
     public List<GroupChatroomResponseDto> execute(MemberId memberId) {

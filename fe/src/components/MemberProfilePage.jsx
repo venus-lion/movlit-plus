@@ -1,9 +1,10 @@
-import React, {useContext, useEffect, useState} from 'react';
+// MemberProfilePage.jsx
+import React, { useContext, useEffect, useState } from 'react';
 import axiosInstance from '../axiosInstance';
-import './MemberProfilePage.css'; // Make sure to import the CSS file
-import {FaUserCircle} from 'react-icons/fa';
-import {useNavigate, useParams} from 'react-router-dom';
-import {AppContext} from "../App.jsx";
+import './MemberProfilePage.css';
+import { FaUserCircle, FaUserPlus, FaUserCheck, FaEnvelope } from 'react-icons/fa';
+import { useNavigate, useParams } from 'react-router-dom';
+import { AppContext } from "../App.jsx";
 
 function MemberProfilePage() {
     const [userData, setUserData] = useState({
@@ -16,13 +17,13 @@ function MemberProfilePage() {
         bookCommentCount: 0
     });
     const [genreList, setGenreList] = useState([]);
-    const {memberId} = useParams();
+    const { memberId } = useParams();
 
     const [isFollowing, setIsFollowing] = useState(false);
     const [followerCount, setFollowerCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [loginMemberId, setLoginMemberId] = useState(null);
-    const {updateSnackbar} = useContext(AppContext);
+    const { updateSnackbar } = useContext(AppContext);
     const navigate = useNavigate();
 
     const handleFollowerClick = () => {
@@ -82,7 +83,6 @@ function MemberProfilePage() {
 
         fetchMemberPageData();
         fetchGenreList();
-
         checkFollowStatus();
         fetchFollowCounts();
         fetchLoginMemberId();
@@ -112,90 +112,125 @@ function MemberProfilePage() {
 
     const handleCreateOneononeChatroom = async () => {
         try {
-            const response = await axiosInstance.post(`chat/create/oneOnOne`, {
+            await axiosInstance.post(`chat/create/oneOnOne`, {
                 receiverId: memberId,
             });
+
+            const response = await axiosInstance.get(`chat/oneOnOne/${memberId}`);
+            const roomId = response.data.roomId;
+
+            let url = `${import.meta.env.VITE_BASE_URL_FOR_FRONT}/chatMain/${roomId}/personal`;
+            // URL이 'http'로 시작하면 절대 경로, 아니면 상대 경로로 처리
+            if (url) {
+                url += '?fromNoti=true';
+                if (url.startsWith('http')) {
+                    window.location.href = url; // 절대 URL로 이동
+                } else {
+                    navigate(url); // 상대 URL로 이동
+                }
+            }
+
             updateSnackbar('개인 채팅방이 생성되었습니다.', 'success');
             console.log('개인 채팅방 생성 응답 : ', response.data);
 
         } catch (error) {
             console.error('Error creating one-on-one chatroom:', error);
-            updateSnackbar('DM 채팅방 생성에 실패했습니다.', 'error');
+            // 에러 메시지를 확인하여 `OneOnOneChatroomAlreadyExistsException` 인 경우에만 navigate
+            if (error.response && error.response.data && error.response.data.message === "해당 컨텐츠의 일대일 채팅이 이미 존재합니다.") {
+                const response = await axiosInstance.get(`chat/oneOnOne/${memberId}`);
+                const roomId = response.data.roomId;
+                console.log('roomId==========', roomId);
+
+                let url = `${import.meta.env.VITE_BASE_URL_FOR_FRONT}/chatMain/${roomId}/personal`;
+                // URL이 'http'로 시작하면 절대 경로, 아니면 상대 경로로 처리
+                if (url) {
+                    url += '?fromNoti=true';
+                    if (url.startsWith('http')) {
+                        window.location.href = url; // 절대 URL로 이동
+                    } else {
+                        navigate(url); // 상대 URL로 이동
+                    }
+                }
+
+                updateSnackbar('채팅방이 이미 존재하므로 이동하겠습니다.', 'success');
+            }
+            else {
+                updateSnackbar('DM 채팅방 생성에 실패했습니다.', 'error');
+            }
         }
     };
 
     return (
-        <div className="mypage-container"> {/* Changed to mypage-container */}
-            <div className="mypage-content-wrapper"> {/* Added mypage-content-wrapper */}
-                <div className="mypage-section"> {/* Changed to mypage-section */}
-                    <div className="mypage-header"> {/* Changed to mypage-header */}
-                        <div className="profile-image"> {/* Keep profile-image */}
-                            {userData.profileImgUrl ? (
-                                <img src={userData.profileImgUrl} alt="Profile" className="profile-img"/>
-                            ) : (
-                                <FaUserCircle className="default-profile-icon"/>
-                            )}
-                        </div>
-                        <div className="user-info"> {/* Keep user-info */}
-                            <h2>{userData.nickname}</h2>
-                            <p>{userData.email}</p>
-                            <div className="mypage-follow-stats"> {/* Added mypage-follow-stats */}
-                                <div className="stat-item"> {/* Keep stat-item */}
-                                    팔로워 <span onClick={handleFollowerClick}
-                                              className="'link-button">{followerCount}</span>
-                                </div>
-                                <span className="separator" style={{margin: '0 8px', color: '#ccc'}}>|</span>
-                                <div className="stat-item"> {/* Keep stat-item */}
-                                    팔로잉 <span onClick={handleFollowingClick}
-                                              className="link-button">{followingCount}</span>
+        <div className="mypage-container">
+            <div className="mypage-content-wrapper">
+                <div className="mypage-section">
+                    <div className="profile-image">
+                        {userData.profileImgUrl ? (
+                            <img src={userData.profileImgUrl} alt="Profile" className="profile-img" />
+                        ) : (
+                            <FaUserCircle className="default-profile-icon" />
+                        )}
+                    </div>
+                    <div className="mypage-header">
+                        {/* user-info와 button-group을 감싸는 div 추가 */}
+                        <div className="user-info-button-wrapper">
+                            <div className="user-info">
+                                <h2>{userData.nickname}</h2>
+                                <p>{userData.email}</p>
+                                <div className="mypage-follow-stats">
+                                    <div className="stat-item">
+                                        <span className="stat-label">팔로워</span>
+                                        <span onClick={handleFollowerClick} className="link-button count-button">
+                                            {followerCount}
+                                        </span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">팔로잉</span>
+                                        <span onClick={handleFollowingClick} className="link-button count-button">
+                                            {followingCount}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+
                             {loginMemberId !== memberId && (
-                                <div style={{marginTop: '10px'}}> {/* Added wrapper div for buttons */}
-                                    <button onClick={handleFollowToggle} className="follow-button">
-                                        {isFollowing ? '언팔로우' : '팔로우'}
+                                <div className="button-group">
+                                    <button onClick={handleFollowToggle} className={`follow-button ${isFollowing ? 'following' : ''}`}>
+                                        {isFollowing ? <FaUserCheck /> : <FaUserPlus />}
                                     </button>
                                     <button onClick={handleCreateOneononeChatroom} className="dm-button">
-                                        DM
+                                        <FaEnvelope />
                                     </button>
                                 </div>
                             )}
                         </div>
                     </div>
-                    <div className="mypage-stats-header"> {/* Added mypage-stats-header */}
-                        <div className="stat-item-header"> {/* Added stat-item-header */}
-                            <span>{userData.movieHeartCount}</span>
+                    <div className="mypage-stats-header">
+                        <div className="stat-item-header">
+                            <span>{userData.movieHeartCount + userData.bookHeartCount}</span>
                             <span>평가</span>
                         </div>
-                        <div className="stat-item-header"> {/* Added stat-item-header */}
+                        <div className="stat-item-header">
                             <span>{userData.movieCommentCount + userData.bookCommentCount}</span>
                             <span>코멘트</span>
-                        </div>
-                        <div className="stat-item-header"> {/* Added stat-item-header */}
-                            <span>{userData.bookHeartCount}</span>
-                            <span>컬렉션</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="mypage-section"> {/* Changed to mypage-section */}
-                    <div className="mypage-genre-list"> {/* Changed to mypage-genre-list */}
+                <div className="mypage-section">
+                    <div className="mypage-genre-list">
                         <h3>선호 장르</h3>
-                        <div className="genre-chips"> {/* Changed to genre-chips */}
+                        <div className="genre-chips">
                             {genreList.map((genre) => (
-                                <div key={genre.genreId} className="genre-chip"> {/* Changed to genre-chip */}
+                                <div key={genre.genreId} className="genre-chip">
                                     {genre.genreName}
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div>
-
-                {/* Remove the sections below 선호 장르 */}
-
             </div>
-            {/* End of mypage-content-wrapper */}
-        </div> // Changed to mypage-container
+        </div>
     );
 }
 

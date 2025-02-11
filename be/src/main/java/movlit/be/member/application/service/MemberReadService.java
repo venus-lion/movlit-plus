@@ -18,16 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-//@Transactional(readOnly = true)
 public class MemberReadService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final EntityManager entityManager;
-
-    public static final int CORRECT_LOGIN = 0;
-    public static final int WRONG_PASSWORD = 1;
-    public static final int Member_NOT_EXIST = 2;
 
     @Transactional(readOnly = true)
     public Member findByMemberEmail(String email) {

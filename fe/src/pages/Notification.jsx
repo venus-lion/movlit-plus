@@ -3,6 +3,7 @@ import './Home.css';
 import '../App.css';
 import axiosInstance from "../axiosInstance.js";
 import {useNavigate} from 'react-router-dom'; // useNavigate 훅 추가
+import { FaTrashAlt } from 'react-icons/fa'; // FaTrashAlt 아이콘 import
 
 
 function Notification() {
@@ -80,7 +81,9 @@ function Notification() {
             <h1>
                 <img src="/images/notification-bell-icon.png" alt="아이콘" className="noti-icon"/>
                 나의 알림
-                <button className="delete-all-btn" onClick={deleteAllmyNotifications}>모두 삭제</button>
+                <button className="delete-all-btn" onClick={deleteAllmyNotifications}>
+                    <FaTrashAlt className="delete-all-icon" /> {/* 삭제 아이콘 적용 */}
+                </button>
             </h1>
             <div className="notification-list">
                 {myNotifications.length === 0 ? (  // 알림이 없는 경우 체크

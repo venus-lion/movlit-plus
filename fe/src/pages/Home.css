@@ -1,3 +1,198 @@
+/* Home.css */
+.home-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f4f7f6;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 90%;
+}
+
+.home-title {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.book-list, .movie-list {
+    margin-bottom: 30px;
+}
+
+.list-title {
+    color: #555;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.book-carousel, .movie-carousel {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+.book-carousel::-webkit-scrollbar,
+.movie-carousel::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+}
+
+.book-item, .movie-item {
+    margin-right: 15px;
+    flex: 0 0 auto;
+    width: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    background-color: white;
+    transition: transform 0.2s ease-in-out;
+}
+
+.book-item:hover, .movie-item:hover {
+    transform: scale(1.05);
+}
+
+.book-item img, .movie-item img {
+    width: 100%;
+    height: auto; /* or fixed height e.g., 220px */
+    display: block;
+}
+
+.book-info, .movie-info {
+    padding: 10px;
+    text-align: center;
+}
+
+.book-title, .movie-title {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.book-author, .movie-rating {
+    color: #777;
+    font-size: 0.9em;
+}
+
+.carousel-buttons {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.carousel-button {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.carousel-button:hover {
+    background-color: #eee;
+}
+
+.notification-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notification-container h1 {
+    display: flex;
+    align-items: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.notification-container h1 .noti-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+.notification-container h1 .delete-all-btn {
+    background: none;
+    border: none;
+    color: #777;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: auto; /* 오른쪽 정렬 */
+    display: flex;
+    align-items: center; /* 아이콘과 텍스트 세로 중앙 정렬 */
+    padding: 5px 10px; /* 필요에 따라 패딩 추가 */
+    border-radius: 5px; /* 약간의 radius */
+    transition: background-color 0.3s ease; /* hover 효과를 위한 transition */
+}
+
+.notification-container h1 .delete-all-btn:hover {
+    background-color: #f0f0f0; /* hover 시 배경색 변경 */
+}
+.notification-container h1 .delete-all-btn .delete-all-icon {
+    margin-left: 3px; /* 아이콘과 텍스트 간 간격 */
+    font-size: 1.1em; /* 아이콘 크기 약간 확대 */
+}
+
+
+.notification-list {
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+    position: relative;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item .noti-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 15px;
+}
+
+.notification-item .noti-message {
+    flex-grow: 1;
+    margin: 0;
+    color: #555;
+    line-height: 1.4;
+}
+
+.notification-item .delete-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    font-size: 16px;
+    position: absolute; /* delete button 위치 조정 */
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.notification-item .delete-btn:hover {
+    color: #333;
+}
+
 .book-home, .movie-home {
     padding: 20px;
 
@@ -14,7 +209,6 @@
 
 .book-carousel-section, .movie-carousel-section {
     margin: 20px 0;
-    /*padding: 0 50px;*/
 }
 
 .carousel-title {
@@ -36,7 +230,8 @@
     overflow: hidden;
     width: 100%;
     justify-content: flex-start;
-
+    padding-top: 30px;
+    padding-bottom: 30px;
     align-items: flex-start; /* 카드들이 위아래로도 상단 정렬되도록(선택 사항) */
     /*margin: 0 auto;        !* 필요한 경우 수평 중앙에 배치 *!*/
 }
