@@ -39,10 +39,10 @@ import movlit.be.member.application.service.MemberReadService;
 import movlit.be.member.domain.entity.MemberEntity;
 import movlit.be.movie.application.service.MovieReadService;
 import movlit.be.movie_heart.application.service.MovieHeartService;
-import movlit.be.pub_sub.notification.NotificationDto;
-import movlit.be.pub_sub.notification.NotificationMessage;
-import movlit.be.pub_sub.notification.NotificationService;
-import movlit.be.pub_sub.notification.NotificationType;
+import movlit.be.pub_sub.notification.application.dto.NotificationDto;
+import movlit.be.pub_sub.notification.application.service.NotificationService;
+import movlit.be.pub_sub.notification.domain.NotificationMessage;
+import movlit.be.pub_sub.notification.domain.NotificationType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -194,7 +194,7 @@ public class GroupChatroomUseCase {
         GroupChatroom groupChatroom = ChatroomConvertor.makeNonReGroupChatroom(data);
         MemberRChatroom memberRChatroom = ChatroomConvertor.makeNonReMemberRChatroom();
 
-        MemberEntity member = memberReadService.findEntityByMemberId(data.getWorkerMemberId());
+        MemberEntity member = memberReadService.fetchEntityByMemberId(data.getWorkerMemberId());
 
         memberRChatroom.updateGroupChatRoom(groupChatroom);
         memberRChatroom.updateMember(member);
@@ -209,7 +209,7 @@ public class GroupChatroomUseCase {
             throws ChatroomAccessDenied {
         GroupChatroom existingGroupChatroom = groupChatRepository.findByChatroomId(groupChatroomId);
         validateAlreadyJoined(memberId, existingGroupChatroom);
-        MemberEntity member = memberReadService.findEntityByMemberId(memberId);
+        MemberEntity member = memberReadService.fetchEntityByMemberId(memberId);
 
         log.info("::GroupChatroomService_joinGroupChatroom::");
         log.info(">> member : " + member.toString());
@@ -297,7 +297,7 @@ public class GroupChatroomUseCase {
     }
 
     // 캐시 업데이트 메서드 추가
-    public void updateCachedMembers(GroupChatroomId groupChatroomId, List<GroupChatroomMemberResponse> members){
+    public void updateCachedMembers(GroupChatroomId groupChatroomId, List<GroupChatroomMemberResponse> members) {
         String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;
 
         try {
@@ -308,7 +308,6 @@ public class GroupChatroomUseCase {
             log.error("Error while updating cache for chatroom: {}", groupChatroomId, e);
         }
     }
-
 
     // 그룹채팅방 나가기
     @Transactional

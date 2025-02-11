@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.chat_room.application.service.GroupChatroomService;
+import movlit.be.chat_room.application.service.GroupChatroomUseCase;
 import movlit.be.chat_room.application.service.OneononeChatroomService;
 import movlit.be.chat_room.presentation.dto.GroupChatroomMemberResponse;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomResponse;
@@ -27,6 +28,7 @@ public class NotificationUseCase {
     private final MemberReadService memberReadService;
     private final RedisNotificationPublisher redisNotificationPublisher;
     private final GroupChatroomService groupChatroomService;
+    private final GroupChatroomUseCase groupChatroomUseCase;
     private final OneononeChatroomService oneononeChatroomService;
     private final NotificationService notificationService;
 
@@ -37,7 +39,7 @@ public class NotificationUseCase {
     public void publishGroupChatMessageNotification(ChatMessageDto chatMessageDto) {
         GroupChatroomId groupChatroomId = IdFactory.createGroupChatroomId(chatMessageDto.getRoomId());
         String roomName = groupChatroomService.fetchGroupChatroomById(groupChatroomId).getRoomName();
-        List<GroupChatroomMemberResponse> responseList = groupChatroomService.fetchMembersInGroupChatroom(
+        List<GroupChatroomMemberResponse> responseList = groupChatroomUseCase.fetchMembersInGroupChatroom(
                 groupChatroomId, true
         );
         String senderNickname = memberReadService.fetchByMemberId(chatMessageDto.getSenderId()).getNickname();
