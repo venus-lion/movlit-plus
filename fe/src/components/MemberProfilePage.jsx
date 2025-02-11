@@ -1,9 +1,10 @@
-import React, {useContext, useEffect, useState} from 'react';
+// MemberProfilePage.jsx
+import React, { useContext, useEffect, useState } from 'react';
 import axiosInstance from '../axiosInstance';
-import './MemberProfilePage.css'; // Make sure to import the CSS file
-import {FaUserCircle} from 'react-icons/fa';
-import {useNavigate, useParams} from 'react-router-dom';
-import {AppContext} from "../App.jsx";
+import './MemberProfilePage.css';
+import { FaUserCircle } from 'react-icons/fa';
+import { useNavigate, useParams } from 'react-router-dom';
+import { AppContext } from "../App.jsx";
 
 function MemberProfilePage() {
     const [userData, setUserData] = useState({
@@ -16,13 +17,13 @@ function MemberProfilePage() {
         bookCommentCount: 0
     });
     const [genreList, setGenreList] = useState([]);
-    const {memberId} = useParams();
+    const { memberId } = useParams();
 
     const [isFollowing, setIsFollowing] = useState(false);
     const [followerCount, setFollowerCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [loginMemberId, setLoginMemberId] = useState(null);
-    const {updateSnackbar} = useContext(AppContext);
+    const { updateSnackbar } = useContext(AppContext);
     const navigate = useNavigate();
 
     const handleFollowerClick = () => {
@@ -125,33 +126,36 @@ function MemberProfilePage() {
     };
 
     return (
-        <div className="mypage-container"> {/* Changed to mypage-container */}
-            <div className="mypage-content-wrapper"> {/* Added mypage-content-wrapper */}
-                <div className="mypage-section"> {/* Changed to mypage-section */}
-                    <div className="mypage-header"> {/* Changed to mypage-header */}
-                        <div className="profile-image"> {/* Keep profile-image */}
+        <div className="mypage-container">
+            <div className="mypage-content-wrapper">
+                <div className="mypage-section">
+                    <div className="mypage-header">
+                        <div className="profile-image">
                             {userData.profileImgUrl ? (
-                                <img src={userData.profileImgUrl} alt="Profile" className="profile-img"/>
+                                <img src={userData.profileImgUrl} alt="Profile" className="profile-img" />
                             ) : (
-                                <FaUserCircle className="default-profile-icon"/>
+                                <FaUserCircle className="default-profile-icon" />
                             )}
                         </div>
-                        <div className="user-info"> {/* Keep user-info */}
+                        <div className="user-info">
                             <h2>{userData.nickname}</h2>
                             <p>{userData.email}</p>
-                            <div className="mypage-follow-stats"> {/* Added mypage-follow-stats */}
-                                <div className="stat-item"> {/* Keep stat-item */}
-                                    팔로워 <span onClick={handleFollowerClick}
-                                              className="'link-button">{followerCount}</span>
+                            <div className="mypage-follow-stats">
+                                <div className="stat-item">
+                                    <span className="stat-label">팔로워</span>
+                                    <span onClick={handleFollowerClick} className="link-button count-button">
+                                        {followerCount}
+                                    </span>
                                 </div>
-                                <span className="separator" style={{margin: '0 8px', color: '#ccc'}}>|</span>
-                                <div className="stat-item"> {/* Keep stat-item */}
-                                    팔로잉 <span onClick={handleFollowingClick}
-                                              className="link-button">{followingCount}</span>
+                                <div className="stat-item">
+                                    <span className="stat-label">팔로잉</span>
+                                    <span onClick={handleFollowingClick} className="link-button count-button">
+                                        {followingCount}
+                                    </span>
                                 </div>
                             </div>
                             {loginMemberId !== memberId && (
-                                <div style={{marginTop: '10px'}}> {/* Added wrapper div for buttons */}
+                                <div style={{ marginTop: '10px' }}>
                                     <button onClick={handleFollowToggle} className="follow-button">
                                         {isFollowing ? '언팔로우' : '팔로우'}
                                     </button>
@@ -162,40 +166,36 @@ function MemberProfilePage() {
                             )}
                         </div>
                     </div>
-                    <div className="mypage-stats-header"> {/* Added mypage-stats-header */}
-                        <div className="stat-item-header"> {/* Added stat-item-header */}
+                    <div className="mypage-stats-header">
+                        <div className="stat-item-header">
                             <span>{userData.movieHeartCount}</span>
                             <span>평가</span>
                         </div>
-                        <div className="stat-item-header"> {/* Added stat-item-header */}
+                        <div className="stat-item-header">
                             <span>{userData.movieCommentCount + userData.bookCommentCount}</span>
                             <span>코멘트</span>
                         </div>
-                        <div className="stat-item-header"> {/* Added stat-item-header */}
+                        <div className="stat-item-header">
                             <span>{userData.bookHeartCount}</span>
                             <span>컬렉션</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="mypage-section"> {/* Changed to mypage-section */}
-                    <div className="mypage-genre-list"> {/* Changed to mypage-genre-list */}
+                <div className="mypage-section">
+                    <div className="mypage-genre-list">
                         <h3>선호 장르</h3>
-                        <div className="genre-chips"> {/* Changed to genre-chips */}
+                        <div className="genre-chips">
                             {genreList.map((genre) => (
-                                <div key={genre.genreId} className="genre-chip"> {/* Changed to genre-chip */}
+                                <div key={genre.genreId} className="genre-chip">
                                     {genre.genreName}
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div>
-
-                {/* Remove the sections below 선호 장르 */}
-
             </div>
-            {/* End of mypage-content-wrapper */}
-        </div> // Changed to mypage-container
+        </div>
     );
 }
 

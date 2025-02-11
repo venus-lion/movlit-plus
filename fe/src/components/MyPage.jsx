@@ -1,10 +1,11 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+// MyPage.jsx
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import axiosInstance from '../axiosInstance';
 import './MyPage.css';
-import {FaCamera, FaUserCircle} from 'react-icons/fa';
-import {IoSettingsOutline} from 'react-icons/io5';
-import {useNavigate, useOutletContext} from 'react-router-dom';
-import {AppContext} from '../App';
+import { FaCamera, FaUserCircle } from 'react-icons/fa';
+import { IoSettingsOutline } from 'react-icons/io5';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import { AppContext } from '../App';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -38,7 +39,7 @@ function MyPage() {
         setRandomGenreIds(getRandomGenreIds());
     }, []);
 
-    const {isLoggedIn} = useOutletContext();
+    const { isLoggedIn } = useOutletContext();
 
     // 사용자 찜한 도서 기반 추천 도서 API 호출
     const {
@@ -84,7 +85,7 @@ function MyPage() {
     });
     const [genreList, setGenreList] = useState([]);
     const navigate = useNavigate();
-    const {updateLoginStatus, updateSnackbar} = useContext(AppContext); // updateSnackbar context 함수 import
+    const { updateLoginStatus, updateSnackbar } = useContext(AppContext); // updateSnackbar context 함수 import
     const fileInputRef = useRef(null);
     const [isHovering, setIsHovering] = useState(false);
 
@@ -257,7 +258,7 @@ function MyPage() {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            setUserData({...userData, profileImgUrl: response.data.imageUrl});
+            setUserData({ ...userData, profileImgUrl: response.data.imageUrl });
             updateSnackbar('프로필 사진이 성공적으로 변경되었습니다. 새로고침을 해주세요.', 'success'); // Material-UI Snackbar 호출
         } catch (error) {
             if (error.response && error.response.status === 413) {
@@ -297,7 +298,7 @@ function MyPage() {
                     <input
                         type="file"
                         ref={fileInputRef}
-                        style={{display: 'none'}}
+                        style={{ display: 'none' }}
                         onChange={handleFileChange}
                         accept="image/*"
                     />
@@ -306,16 +307,16 @@ function MyPage() {
                         onClick={handleProfileImageClick}
                         onMouseEnter={handleMouseEnter}
                         onMouseLeave={handleMouseLeave}
-                        style={{cursor: 'pointer'}}
+                        style={{ cursor: 'pointer' }}
                     >
                         {userData.profileImgUrl ? (
-                            <img src={userData.profileImgUrl} alt="Profile" className="profile-img"/>
+                            <img src={userData.profileImgUrl} alt="Profile" className="profile-img" />
                         ) : (
-                            <FaUserCircle className="default-profile-icon"/>
+                            <FaUserCircle className="default-profile-icon" />
                         )}
                         {isHovering && (
                             <div className="overlay">
-                                <FaCamera className="camera-icon"/>
+                                <FaCamera className="camera-icon" />
                             </div>
                         )}
                     </div>
@@ -323,24 +324,27 @@ function MyPage() {
                         <div className="user-info">
                             <h2>{userData.nickname}</h2>
                             <p>{userData.email}</p>
-                            <div className="mypage-follow-stats"> {/* mypage-follow-stats 클래스 (팔로워, 팔로잉) - 위치 변경 */}
+                            <div className="mypage-follow-stats">
                                 <div className="stat-item">
-                                    팔로워 <span onClick={handleFollowerClick}
-                                              className="'link-button">{followerCount}</span>
+                                    <span className="stat-label">팔로워</span>
+                                    <span onClick={handleFollowerClick} className="link-button count-button">
+                                        {followerCount}
+                                    </span>
                                 </div>
-                                <span className="separator"
-                                      style={{margin: '0 8px', color: '#ccc'}}>|</span> {/* Separator 추가 */}
                                 <div className="stat-item">
-                                    팔로잉 <span onClick={handleFollowingClick}
-                                              className="link-button">{followingCount}</span>
+                                    <span className="stat-label">팔로잉</span>
+                                    <span onClick={handleFollowingClick} className="link-button count-button">
+                                        {followingCount}
+                                    </span>
                                 </div>
                             </div>
+
                         </div>
                         <div className="settings-icon" onClick={handleDropdownOpen}>
-                            <IoSettingsOutline className="settings-icon-comp"/>
+                            <IoSettingsOutline className="settings-icon-comp" />
                         </div>
                     </div>
-                    <div className="mypage-stats-header"> {/* mypage-stats-header 클래스 (평가, 코멘트, 컬렉션) - 위치 변경 */}
+                    <div className="mypage-stats-header">
                         <div className="stat-item-header">
                             <span>{userData.movieHeartCount}</span>
                             <span>평가</span>
@@ -370,14 +374,14 @@ function MyPage() {
                         }}
                     >
                         <MenuItem onClick={openLogoutDialog}
-                                  style={{fontWeight: 'bold', color: '#333', backgroundColor: 'transparent'}}>
+                                  style={{ fontWeight: 'bold', color: '#333', backgroundColor: 'transparent' }}>
                             로그아웃
                         </MenuItem>
-                        <MenuItem onClick={handleUpdateClick} style={{backgroundColor: 'transparent'}}>
+                        <MenuItem onClick={handleUpdateClick} style={{ backgroundColor: 'transparent' }}>
                             수정하기
                         </MenuItem>
-                        <Divider sx={{borderBottomWidth: 2}}/>
-                        <MenuItem onClick={openDeleteDialog} style={{color: '#F44336', backgroundColor: 'transparent'}}>
+                        <Divider sx={{ borderBottomWidth: 2 }} />
+                        <MenuItem onClick={openDeleteDialog} style={{ color: '#F44336', backgroundColor: 'transparent' }}>
                             탈퇴하기
                         </MenuItem>
                     </Menu>
@@ -401,8 +405,8 @@ function MyPage() {
                 {/* Section 3: Movie Home */}
                 <div className="mypage-section">
                     <div className="movie-home">
-                        {isLoggedIn && <RecentHeartSimilarCrewMoviesComponent/>}
-                        {isLoggedIn && <InterestGenreMoviesComponent/>}
+                        {isLoggedIn && <RecentHeartSimilarCrewMoviesComponent />}
+                        {isLoggedIn && <InterestGenreMoviesComponent />}
                     </div>
                 </div>
 
@@ -452,21 +456,21 @@ function MyPage() {
                     }}> {/* DialogTitle 스타일 변경 */}
                         {"회원 탈퇴"}
                     </DialogTitle>
-                    <DialogContent sx={{padding: '1.5rem', textAlign: 'center'}}> {/* DialogContent 스타일 변경 */}
+                    <DialogContent sx={{ padding: '1.5rem', textAlign: 'center' }}> {/* DialogContent 스타일 변경 */}
                         <DialogContentText id="alert-dialog-description" sx={{
                             fontSize: '1rem',
                             color: 'text.secondary'
                         }}> {/* DialogContentText 스타일 변경 */}
-                            정말로 탈퇴하시겠습니까? <br/> 탈퇴 후에는 계정 복구가 불가능합니다.
+                            정말로 탈퇴하시겠습니까? <br /> 탈퇴 후에는 계정 복구가 불가능합니다.
                         </DialogContentText>
                     </DialogContent>
-                    <DialogActions sx={{padding: '1.25rem', justifyContent: 'center'}}> {/* DialogActions 스타일 변경 */}
+                    <DialogActions sx={{ padding: '1.25rem', justifyContent: 'center' }}> {/* DialogActions 스타일 변경 */}
                         <Button onClick={closeDeleteDialog} color="primary"
-                                sx={{minWidth: 100}}> {/* "아니오" 버튼 스타일 변경 */}
+                                sx={{ minWidth: 100 }}> {/* "아니오" 버튼 스타일 변경 */}
                             아니오
                         </Button>
                         <Button onClick={handleDeleteConfirm} color="error" autoFocus
-                                sx={{minWidth: 100}}> {/* "예" 버튼 스타일 변경 */}
+                                sx={{ minWidth: 100 }}> {/* "예" 버튼 스타일 변경 */}
                             예, 탈퇴합니다
                         </Button>
                     </DialogActions>
@@ -493,7 +497,7 @@ function MyPage() {
                     }}>
                         {"로그아웃"}
                     </DialogTitle>
-                    <DialogContent sx={{padding: '1.5rem', textAlign: 'center'}}>
+                    <DialogContent sx={{ padding: '1.5rem', textAlign: 'center' }}>
                         <DialogContentText id="logout-dialog-description" sx={{
                             fontSize: '1rem',
                             color: 'text.secondary'
@@ -501,21 +505,17 @@ function MyPage() {
                             정말로 로그아웃 하시겠습니까?
                         </DialogContentText>
                     </DialogContent>
-                    <DialogActions sx={{padding: '1.25rem', justifyContent: 'center'}}>
-                        <Button onClick={handleLogoutConfirm} color="error" autoFocus sx={{minWidth: 100}}>
+                    <DialogActions sx={{ padding: '1.25rem', justifyContent: 'center' }}>
+                        <Button onClick={handleLogoutConfirm} color="error" autoFocus sx={{ minWidth: 100 }}>
                             예
                         </Button>
-                        <Button onClick={closeLogoutDialog} color="primary" sx={{minWidth: 100}}>
+                        <Button onClick={closeLogoutDialog} color="primary" sx={{ minWidth: 100 }}>
                             아니오
                         </Button>
                     </DialogActions>
                 </Dialog>
-
-
             </div>
-            {/* End of mypage-content-wrapper */}
         </div>
-
     );
 }
 

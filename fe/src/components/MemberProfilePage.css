@@ -1,5 +1,4 @@
-/* MemberProfilePage.css -  (Content is now the same as MyPage.css) */
-/* MyPage.css */
+/* MemberProfilePage.css */
 .mypage-container {
     padding: 20px;
     max-width: 800px;
@@ -35,8 +34,8 @@
 }
 
 .profile-image {
-    width: 200px; /* **프로필 사진 크기 증가: 140px -> 200px** */
-    height: 200px; /* **프로필 사진 크기 증가: 140px -> 200px** */
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     overflow: hidden;
     margin-right: 25px;
@@ -57,7 +56,7 @@
 }
 
 .default-profile-icon {
-    font-size: 200px; /* **기본 아이콘 크기 조정: 140px -> 200px (프로필 사진 크기에 맞춤)** */
+    font-size: 200px;
     color: #aaa;
 }
 
@@ -81,7 +80,7 @@
     color: #777;
 }
 
-.settings-icon {
+.settings-icon {  /* settings-icon 스타일 제거 */
     position: absolute;
     top: 10px;
     right: 10px;
@@ -95,7 +94,7 @@
     color: #555;
 }
 
-.settings-icon-comp {
+.settings-icon-comp { /* settings-icon-comp 스타일 제거 */
     font-size: 28px;
 }
 
@@ -127,36 +126,30 @@
     color: #888;
 }
 
-
+/* 팔로워/팔로잉 관련 스타일 */
 .mypage-follow-stats {
     display: flex;
-    gap: 15px;
+    align-items: center;
+    gap: 15px; /* stat-item 간 간격 */
     margin-top: 5px;
-    margin-bottom: 0;
-    justify-content: flex-start;
-    margin-left: -3px;
-    flex-direction: row; /* 추가됨: 팔로워/팔로잉 가로로 배치 */
-    align-items: center; /* 필요에 따라 추가: 세로 가운데 정렬 */
 }
 
 .stat-item {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-right: 15px;
+    align-items: center; /* 세로 중앙 정렬 */
+    flex-direction: row; /* 가로 방향으로 아이템 배치 */
 }
 
-.stat-item span:first-child {
-    font-size: 15px; /* **팔로워/팔로잉 숫자 크기 감소: 14px -> 12px** */
-    font-weight: 600;
-    margin-bottom: 0px;
-    color: #333;
-}
-
-.stat-item span:last-child {
-    font-size: 11px; /* **팔로워/팔로잉 텍스트 크기 감소: 12px -> 11px** */
+.stat-label {
+    font-size: 13px;
     color: #888;
-    font-weight: normal;
+    margin-right: 4px; /* 레이블과 숫자 사이 간격 */
+}
+
+.count-button {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
 }
 
 .mypage-genre-list {
@@ -230,23 +223,13 @@
     border: none;
     padding: 0;
     font: inherit;
+    font-size: 13px;
+    font-weight: bold;
     cursor: pointer;
     outline: inherit;
     color: inherit;
-    font-size: 100px; /* **font-size를 13px로 설정 (원하는 크기로 조정 가능)** */
 }
 
 .link-button:hover {
     text-decoration: underline;
-}
-
-/* Material UI Menu Item hover style */
-.MuiMenuItem-root {
-    background-color: transparent !important;
-    font-size: 14px;
-    color: #444;
-}
-
-.MuiMenuItem-root:hover {
-    background-color: #f0f0f0 !important;
 }
