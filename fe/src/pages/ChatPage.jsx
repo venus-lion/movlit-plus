@@ -5,6 +5,7 @@ import axiosInstance from '../axiosInstance'; // axios 인스턴스 import
 import './ChatPageGroup.css'; // CSS 파일 import
 import {FaUserCircle} from "react-icons/fa";
 import DateTimeUtil, {getNowDate} from "../util/DateTimeUtil.jsx";
+import {Link} from "react-router-dom";
 
 function ChatPage({roomId, roomInfo}) {
     const [messages, setMessages] = useState([]);
@@ -162,19 +163,20 @@ function ChatPage({roomId, roomInfo}) {
                             className={`message-group ${isCurrentUser ? 'own-message-group' : ''}`}
                         >
                             {!isCurrentUser && receiver && (
-                                <div className="message-profile-group">
-                                    {/* profileImgUrl이 있으면 이미지를 표시하고, 없으면 FaUserCircle 아이콘을 표시합니다. */}
-                                    {receiver.profileImgUrl ? (
-                                        <img
-                                            src={receiver.profileImgUrl}
-                                            alt="Profile"
-                                            className="profile-img-group"
-                                        />
-                                    ) : (
-                                        <FaUserCircle size={36} className="profile-img"/>
-                                    )}
-                                    <strong>{receiver.nickname}</strong>
-                                </div>
+                                <Link to={`/members/${receiver.memberId}`} className="user-profile-link" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <div className="message-profile-group">
+                                        {receiver.profileImgUrl ? (
+                                            <img
+                                                src={receiver.profileImgUrl}
+                                                alt="Profile"
+                                                className="profile-img-group"
+                                            />
+                                        ) : (
+                                            <FaUserCircle size={36} className="profile-img" />
+                                        )}
+                                        <strong>{receiver.nickname}</strong>
+                                    </div>
+                                </Link>
                             )}
                             <div className="message-content-group">
                                 <div className={`message-bubble-group ${isCurrentUser ? 'own-bubble' : ''}`}>

@@ -4,7 +4,7 @@ import SockJS from 'sockjs-client';
 import axiosInstance from '../axiosInstance';
 import './ChatPageGroup.css';
 import {FaUserCircle} from 'react-icons/fa';
-import {useNavigate} from "react-router-dom"; // react-icons에서 기본 프로필 이미지 아이콘을 가져옵니다.
+import {Link, useNavigate} from "react-router-dom"; // react-icons에서 기본 프로필 이미지 아이콘을 가져옵니다.
 import DateTimeUtil, {getNowDate} from "../util/DateTimeUtil.jsx";
 
 function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}) {
@@ -222,20 +222,21 @@ function ChatPageGroup({roomId, roomInfo, refreshChatList, refreshChatComponent}
                                 isJoinMessage ? 'join-message-group' : '' // join 메시지에 대한 CSS 클래스 추가
                             }`}
                         >
-                            {!isCurrentUser && sender && !isJoinMessage && ( // message null 체크 추가
-                                <div className="message-profile-group">
-                                    {/* profileImgUrl이 있으면 이미지를 표시하고, 없으면 FaUserCircle 아이콘을 표시합니다. */}
-                                    {sender && sender.profileImgUrl ? (
-                                        <img
-                                            src={sender.profileImgUrl}
-                                            alt="Profile"
-                                            className="profile-img-group"
-                                        />
-                                    ) : (
-                                        <FaUserCircle size={40} className="profile-img"/>
-                                    )}
-                                    <strong>{sender.nickname}</strong>
-                                </div>
+                            {!isCurrentUser && sender && !isJoinMessage && (
+                                <Link to={`/members/${sender.memberId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <div className="message-profile-group">
+                                        {sender && sender.profileImgUrl ? (
+                                            <img
+                                                src={sender.profileImgUrl}
+                                                alt="Profile"
+                                                className="profile-img-group"
+                                            />
+                                        ) : (
+                                            <FaUserCircle size={40} className="profile-img" />
+                                        )}
+                                        <strong>{sender.nickname}</strong>
+                                    </div>
+                                </Link>
                             )}
                             <div className="message-content-group">
                                 <div
