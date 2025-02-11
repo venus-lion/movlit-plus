@@ -3,6 +3,7 @@ package movlit.be.chat_room.application.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,7 @@ import movlit.be.common.exception.GroupChatroomAlreadyJoinedException;
 import movlit.be.common.exception.GroupChatroomNotFoundException;
 import movlit.be.common.util.ids.GroupChatroomId;
 import movlit.be.common.util.ids.MemberId;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class GroupChatroomService {
     private final GroupChatRepository groupChatRepository;
+
+    @Value("${share.url}")
+    private String basicUrl;
 
     // 그룹채팅 존재 유무 확인
     public GroupChatroomResponseDto fetchGroupChatroom(GroupChatroomRequest request) {
@@ -119,8 +124,6 @@ public class GroupChatroomService {
             return true; // 이미 가입됨
         }
     }
-
-}
 
     private void validateAlreadyJoined(MemberId memberId, GroupChatroom existingGroupChatroom) {
         if (existingGroupChatroom.getMemberRChatroom().stream()
