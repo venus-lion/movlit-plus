@@ -1,4 +1,4 @@
-package movlit.be.pub_sub.notification;
+package movlit.be.pub_sub.notification.application.service;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import movlit.be.pub_sub.notification.application.dto.NotificationDto;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;

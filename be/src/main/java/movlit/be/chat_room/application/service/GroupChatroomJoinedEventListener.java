@@ -19,7 +19,6 @@ import movlit.be.common.util.ids.GroupChatroomId;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.member.application.service.MemberReadService;
 import movlit.be.member.domain.entity.MemberEntity;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -28,19 +27,12 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Slf4j
 public class GroupChatroomJoinedEventListener {
 
-    private final GroupChatroomService groupChatroomService;
+    private final GroupChatroomUseCase groupChatroomUseCase;
     private final RedisMessagePublisher redisMessagePublisher;
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final ObjectMapper objectMapper;
     private final MemberReadService memberReadService;
-
-    private static final String CHATROOM_MEMBERS_KEY_PREFIX = "chatroom:";
-    private static final String CHATROOM_MEMBERS_KEY_SUFFIX = ":members";
-    private static final long CHATROOM_MEMBERS_CACHE_TTL = 60 * 60; // 1시간
 
     @TransactionalEventListener
     public void handleGroupChatroomJoinEvent(GroupChatroomJoinedEvent event) throws JsonProcessingException {
-        log.info("GroupChatroomJoinedEventListener 실행..");
         GroupChatroomId groupChatroomId = event.getGroupChatroomId();
         MemberId newMemberId = event.getMemberId();
 
@@ -48,42 +40,33 @@ public class GroupChatroomJoinedEventListener {
         MemberEntity newMember = memberReadService.findEntityById(newMemberId);
         String joinMessage = newMember.getNickname() + " 님이 가입하셨습니다.";
 
-        // 2. UpdateRoomDto 생성 및 발행
+        // 2. 캐시된 멤버 목록 가져오기 (캐시 없으면 자동 생성)
+        List<GroupChatroomMemberResponse> cachedMembers = groupChatroomUseCase.fetchMembersInGroupChatroom(
+                groupChatroomId, true);
+
+        // 3. 새 멤버 정보 생성 및 캐시된 목록에 추가
+        GroupChatroomMemberResponse newMemberResponse = new GroupChatroomMemberResponse(
+                newMemberId,
+                newMember.getNickname(),
+                newMember.getProfileImgUrl()
+        );
+        cachedMembers.add(newMemberResponse);
+        log.info("GroupChatroomJoinedEventListener :: 캐시에 새로운 멤버 추가 :: {}", newMemberResponse);
+
+        // 4. 업데이트된 목록, redis에 저장
+        groupChatroomUseCase.updateCachedMembers(groupChatroomId, cachedMembers);
+
+        // 5. UpdateRoomDto 생성
         UpdateRoomDto updateRoomDto = new UpdateRoomDto(
-                groupChatroomId.getValue(),
+                groupChatroomId,
                 MessageType.GROUP,
                 EventType.MEMBER_JOIN,
                 newMemberId,
                 joinMessage // 입장메세지 설정
         );
 
-        log.info(">> updateRoomDto :: {}", updateRoomDto.toStringWithJoinMsg());
-
-        // 3. Redis 캐시 업데이트 (RedisMessageSubscriber 메세지 로직 유지)
-        String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;
-        String cachedJson = (String) redisTemplate.opsForValue().get(cacheKey);
-
-        List<GroupChatroomMemberResponse> cachedMembers;
-        if (cachedJson != null) {
-            // 캐시된 데이터(Json 문자열)를 List<GroupChatroomMemberResponse>로 역직렬화
-            cachedMembers = objectMapper.readValue(cachedJson, new TypeReference<>() {
-            });
-
-            // 새 멤버정보 추가
-            GroupChatroomMemberResponse newMemberResponse = new GroupChatroomMemberResponse(
-                    newMemberId,
-                    newMember.getNickname(),
-                    newMember.getProfileImgUrl()
-            );
-            cachedMembers.add(newMemberResponse);
-            log.info("GroupChatroomJoinedEventListener :: 캐시에 새로운 멤버 추가 :: {}", newMemberResponse);
-
-            // 업데이트된 멤버리스트를 다시 JSON 문자열로 변환하여 Redis에 캐싱
-            String updatedJson = objectMapper.writeValueAsString(cachedMembers);
-            redisTemplate.opsForValue().set(cacheKey, updatedJson, CHATROOM_MEMBERS_CACHE_TTL, TimeUnit.SECONDS);
-
-            // 4. /topic/chat/room/{roomId} 토픽으로 업데이트된 멤버 목록 발행
-            redisMessagePublisher.updateRoom(updateRoomDto);
+        // 6. /topic/chat/room/{roomId} 토픽으로 업데이트된 멤버 목록 발행 -> RedisMessageSubscriber에서 처리
+        redisMessagePublisher.updateRoom(updateRoomDto);
         }
 
     }

@@ -9,6 +9,8 @@ import movlit.be.acceptance.AcceptanceTest;
 import movlit.be.common.config.RedisNotificationPublisher;
 import movlit.be.common.util.IdFactory;
 import movlit.be.common.util.ids.MemberId;
+import movlit.be.pub_sub.notification.application.dto.NotificationDto;
+import movlit.be.pub_sub.notification.domain.NotificationType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

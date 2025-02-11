@@ -1,26 +1,45 @@
-/* MemberProfilePage.css (수정됨) */
-.memberpage-container {
+/* MemberProfilePage.css */
+
+.mypage-container {
     padding: 20px;
     max-width: 800px;
-    margin: 20px auto; /* 페이지 중앙 정렬 및 상하 margin 추가 */
-    background-color: #fff; /* MyPage 배경색과 통일 */
-    border-radius: 12px; /* MyPage border-radius 와 통일 */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* MyPage box-shadow 와 통일 */
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.memberpage-header {
+.mypage-content-wrapper {
+    border-radius: 12px;
+}
+
+.mypage-section {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    position: relative;
+    border: 1px solid #eee;
+}
+
+.mypage-section:last-child {
+    margin-bottom: 0;
+}
+
+.mypage-header {
     display: flex;
-    align-items: flex-start; /* 상단 정렬 유지 */
-    margin-bottom: 15px; /* MyPage 와 간격 유사하게 조정 */
-    margin-top: 20px; /* MyPage 와 간격 유사하게 조정 */
+    align-items: flex-start;
+    margin-bottom: 15px;
+    margin-top: 20px;
 }
 
 .profile-image {
-    width: 200px; /* MyPage 프로필 이미지 크기와 통일 */
-    height: 200px; /* MyPage 프로필 이미지 크기와 통일 */
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     overflow: hidden;
-    margin-right: 25px; /* MyPage 와 간격 유사하게 조정 */
+    margin-right: 25px;
     background-color: #ddd;
     display: flex;
     justify-content: center;
@@ -28,7 +47,7 @@
     position: relative;
     flex-shrink: 0;
     border: 2px solid #fff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* MyPage 와 box-shadow 유사하게 적용 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .profile-image img {
@@ -38,135 +57,209 @@
 }
 
 .default-profile-icon {
-    font-size: 200px; /* MyPage 기본 프로필 아이콘 크기와 통일 */
+    font-size: 200px;
     color: #aaa;
 }
 
-.user-info {
-    flex-grow: 1;
+/* user-info와 button-group을 감싸는 div 스타일 */
+.user-info-button-wrapper {
     display: flex;
-    flex-direction: column; /* MyPage 와 동일하게 flex-direction 설정 */
-    justify-content: center; /* MyPage 와 동일하게 justify-content 설정 */
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.user-info {
+    flex-grow: 1; /* 남은 공간을 모두 차지 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .user-info h2 {
-    margin-bottom: 2px; /* MyPage 와 간격 유사하게 조정 */
-    font-size: 22px; /* MyPage 와 폰트 크기 유사하게 조정 */
-    font-weight: 600; /* MyPage 와 font-weight 통일 */
-    color: #222; /* MyPage 와 폰트 색상 통일 */
+    margin-bottom: 2px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #222;
 }
 
 .user-info p {
-    margin: 0; /* MyPage 와 margin 통일 */
-    font-size: 13px; /* MyPage 와 폰트 크기 유사하게 조정 */
-    color: #777; /* MyPage 와 폰트 색상 통일 */
+    margin: 0;
+    font-size: 13px;
+    color: #777;
 }
 
 
-.memberpage-stats {
+.mypage-stats-header {
     display: flex;
     justify-content: space-around;
-    margin-top: 15px; /* MyPage 와 간격 유사하게 조정 */
-    margin-bottom: 15px; /* MyPage 와 간격 유사하게 조정 */
-    border-top: 1px solid #eee; /* MyPage 와 border 스타일 유사하게 적용 */
-    padding-top: 10px; /* MyPage 와 padding 유사하게 적용 */
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.stat-item-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 5px;
+}
+
+.stat-item-header span:first-child {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: #333;
+}
+
+.stat-item-header span:last-child {
+    font-size: 12px;
+    color: #888;
+}
+
+.mypage-follow-stats {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 5px;
 }
 
 .stat-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    margin: 0 5px; /* MyPage 와 margin 유사하게 적용 */
+    flex-direction: row;
 }
 
-.stat-item span:first-child {
-    font-size: 15px; /* MyPage 와 폰트 크기 유사하게 조정 */
-    font-weight: 600; /* MyPage 와 font-weight 통일 */
-    margin-bottom: 2px; /* MyPage 와 margin 유사하게 조정 */
-    color: #333; /* MyPage 와 폰트 색상 통일 */
+.stat-label {
+    font-size: 13px;
+    color: #888;
+    margin-right: 4px;
 }
 
-.stat-item span:last-child {
-    font-size: 12px; /* MyPage 와 폰트 크기 유사하게 조정 */
-    color: #888; /* MyPage 와 폰트 색상 통일 */
+.count-button {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
 }
 
-.memberpage-genre-list {
-    margin-top: 20px; /* MyPage 와 margin 유사하게 조정 */
+.mypage-genre-list {
+    margin-top: 20px;
 }
 
-.memberpage-genre-list h3 {
-    margin-bottom: 10px; /* MyPage 와 margin 유사하게 조정 */
-    font-size: 18px; /* MyPage 와 폰트 크기 유사하게 조정 */
-    color: #444; /* MyPage 와 폰트 색상 통일 */
+.mypage-genre-list h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #444;
 }
 
 .genre-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px; /* MyPage 와 gap 유사하게 조정 */
+    gap: 8px;
 }
 
 .genre-chip {
-    background-color: #f5f5f5; /* MyPage genre-chip 배경색과 통일 */
-    color: #444; /* MyPage genre-chip 폰트 색상과 통일 */
-    border: 1px solid #eee; /* MyPage genre-chip border 와 통일 */
-    border-radius: 20px; /* MyPage genre-chip border-radius 와 통일 */
-    padding: 6px 14px; /* MyPage genre-chip padding 과 통일 */
-    font-size: 13px; /* MyPage genre-chip 폰트 크기와 통일 */
-    box-shadow: none; /* MyPage genre-chip box-shadow 와 통일 */
+    background-color: #f5f5f5;
+    color: #444;
+    border: 1px solid #eee;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    box-shadow: none;
     cursor: default;
     transition: background-color 0.2s ease;
 }
 
 .genre-chip:hover {
-    background-color: #eee; /* MyPage genre-chip hover 배경색과 통일 */
+    background-color: #eee;
 }
 
+.profile-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
 
-/* 팔로우 팔로잉 버튼 스타일 MyPage 와 유사하게 조정 */
+.link-button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    outline: inherit;
+    color: inherit;
+}
+
+.link-button:hover {
+    text-decoration: underline;
+}
+
+.button-group {
+    /* margin-top: 10px;  제거 */
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    /* margin-left: auto; 오른쪽 정렬 */
+}
+
+.follow-button, .dm-button {
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.follow-button svg, .dm-button svg {
+    margin: 0;
+}
+
 .follow-button {
-    margin-top: 10px;
-    padding: 8px 16px;
-    background-color: #4080ff;
+    background-color: #4CAF50;
     color: white;
-    border: none;
-    border-radius: 12px; /* MyPage 와 유사한 border-radius 적용 */
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 14px; /* MyPage 와 유사한 폰트 크기 적용 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* MyPage 와 유사한 box-shadow 적용 */
 }
-
 .follow-button:hover {
-    background-color: #6998ff;
+    background-color: #388E3C;
 }
-
 .follow-button.following {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-.follow-button.following:hover {
-    background-color: #ddd;
-}
-
-
-/* DM 버튼 스타일 MyPage 와 유사하게 조정 */
-.dm-button {
-    margin-top: 10px;
-    margin-left: 10px;
-    padding: 8px 16px;
-    background-color: #ff4040; /* DM 버튼 색상 유지 */
+    background-color: #f44336;
     color: white;
-    border: none;
-    border-radius: 12px; /* MyPage 와 유사한 border-radius 적용 */
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 14px; /* MyPage 와 유사한 폰트 크기 적용 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* MyPage 와 유사한 box-shadow 적용 */
+}
+.follow-button.following:hover {
+    background-color: #d32f2f;
+}
+
+.dm-button {
+    background-color: #2196F3;
+    color: white;
 }
 
 .dm-button:hover {
-    background-color: #ff6969;
+    background-color: #1976D2;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+    .user-info-button-wrapper {
+        flex-direction: column; /* 화면이 작으면 세로로 배열 */
+        align-items: flex-start; /* 왼쪽 정렬 */
+    }
+    .user-info{
+        margin-bottom: 1rem;
+    }
+    .button-group {
+        margin-left: 0; /* 왼쪽 마진 제거 */
+    }
 }

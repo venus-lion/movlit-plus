@@ -1,14 +1,17 @@
-import React, {createContext, useCallback, useEffect, useState} from 'react';
+import React, {createContext, useCallback, useEffect, useState, useRef } from 'react';
 import {NavLink, Outlet, useNavigate} from 'react-router-dom';
 import axiosInstance from './axiosInstance';
 import './App.css';
 import {FaUserCircle} from 'react-icons/fa';
 import {EventSourcePolyfill} from 'event-source-polyfill';
 import notificationIcon from './images/notification.jpg';
+import NotiDropdown from './pages/Notification.jsx'; // SSE 연결 -> Notificatoin 설정으로 동명파일 import 불가 (NotiDropdown으로 파일명 대체)
+
 
 // Material-UI 컴포넌트 import (Snackbar, Alert 추가)
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import Modal from "react-modal";
 
 export const AppContext = createContext();
 
@@ -25,6 +28,8 @@ function App() {
     }, []);
 
     // 알림 관련 (기존 알림 관련 상태 및 함수 유지)
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 알림 목록 드롭다운
+    const dropdownRef = useRef(null); // 드롭다운 참조
     const [notifications, setNotifications] = useState([]);
     const [newNotification, setNewNotification] = useState(false);
 
@@ -73,8 +78,31 @@ function App() {
     // 알림 클릭 시 (기존과 동일)
     const handleBellClick = () => {
         setNewNotification(false);
-        navigate('/notifications');
+        setIsDropdownOpen((prev) => !prev); // 드롭다운 열기/닫기 토글
+        //navigate('/notifications');
     };
+    const closeDropdown = () => {
+        setIsDropdownOpen(false); // 드롭다운 닫기
+    };
+
+    // 알림 드롭다운 (알림 창 밖의 페이지 클릭 시 드롭다운 사라짐)
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // 드롭다운이 열려있고, 클릭한 요소가 드롭다운 안이 아닐 경우 닫기
+            if (isDropdownOpen && dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                closeDropdown();
+            }
+        };
+
+        // 이벤트 리스너 추가
+        document.addEventListener('mousedown', handleClickOutside);
+
+        // 컴포넌트 언마운트 시 리스너 제거
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isDropdownOpen]);
+
 
 
     useEffect(() => {
@@ -155,13 +183,24 @@ function App() {
                                 icon: notificationIcon,
                             });
 
-                            // 알림 종 (기존과 동일)
+                            // 페이지 내 알림 종(bell) 설정 (기존과 동일)
                             setNotifications((prev) => [...prev, notification]);
                             setNewNotification(true); // 새로운 알림 발생
 
+                            // 브라우저 알림 카드 클릭 시
                             noti.onclick = () => {
                                 // window.focus(); // 브라우저 창에 포커스
-                                window.location.href = notification.url; // notification.url로 페이지 이동
+                                console.log('클릭한 URL:', notification.url); // URL 값을 로그로 확인
+                                var url = notification.url;
+                                // URL이 'http'로 시작하면 절대 경로, 아니면 상대 경로로 처리
+                                if (url) {
+                                    url += '?fromNoti=true';
+                                    if (url.startsWith('http')) {
+                                        window.location.href = url; // 절대 URL로 이동
+                                    } else {
+                                        navigate(url); // 상대 URL로 이동
+                                    }
+                                }
                             };
 
                         }
@@ -222,6 +261,8 @@ function App() {
         fetchUnreadNotifications();
 
     }, [isLoggedIn]);
+
+
 
 
     return (
@@ -288,6 +329,14 @@ function App() {
                                 <img src="/images/notification-bell-icon.png" alt="알림" className="noti-img"/>
                                 {newNotification && <span className="badge">N</span>}
                             </div>
+                            {/* 알림 드롭다운 영역 */}
+                            {/* 알림 드롭다운 영역 */}
+                            {isDropdownOpen && (
+                                <div className="notification-dropdown" ref={dropdownRef}>
+                                    <NotiDropdown />
+                                    <button className="close-dropdown-btn" onClick={closeDropdown}>닫기</button>
+                                </div>
+                            )}
 
                             <NavLink
                                 to="/mypage"

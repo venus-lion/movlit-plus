@@ -39,7 +39,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     }
 
     @Override
-    public List<Notification> findByMemberIdAndIsRead(MemberId memberId, Boolean isRead) {
+    public List<Notification> fetchByMemberIdAndIsRead(MemberId memberId, Boolean isRead) {
         return notificationMongoRepository.findByMemberIdAndIsReadOrderByTimestampDesc(memberId, isRead);
     }
 

@@ -49,7 +49,7 @@ public class OneononeChatroomController {
         }
 
         MemberId memberId = details.getMemberId();
-        OneononeChatroomResponse response = oneononeChatroomService.createOneononeChatroom(memberId, request);
+        OneononeChatroomResponse response = oneononeChatroomService.createOneOnOneChatroom(memberId, request);
 
         return ResponseEntity.ok(response);
 
@@ -62,7 +62,7 @@ public class OneononeChatroomController {
             @RequestBody OneononeChatroomCreatePubRequest request) {
         log.info("Received OneononeChatroom Create Send : {}", request);
         MemberId topicSenderId = details.getMemberId();
-        oneononeChatroomService.publishOneononeChatroomCreate(topicSenderId, request);
+        oneononeChatroomService.publishOneOnOneChatroomCreation(topicSenderId, request);
     }
 
     // TODO : 채팅방 나가기

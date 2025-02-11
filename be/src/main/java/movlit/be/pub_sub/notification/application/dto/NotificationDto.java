@@ -1,9 +1,10 @@
-package movlit.be.pub_sub.notification;
+package movlit.be.pub_sub.notification.application.dto;
 
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import movlit.be.pub_sub.notification.domain.NotificationType;
 
 @Getter
 @Setter

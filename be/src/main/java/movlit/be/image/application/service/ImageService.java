@@ -34,7 +34,7 @@ public class ImageService {
         validateMemberExistsInImage(memberId);
         ImageEntity savedImageEntity = imageRepository.upload(imageEntity);
         // 멤버 정보 update
-        MemberEntity member = memberRepository.findEntityById(memberId);
+        MemberEntity member = memberRepository.fetchEntityById(memberId);
         member.updateProfileImgUrl(savedImageEntity.getUrl());
         memberRepository.saveEntity(member);
 

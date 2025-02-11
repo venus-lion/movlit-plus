@@ -56,7 +56,7 @@ public class OneononeChatroomRepositoryImpl implements OneononeChatroomRepositor
     }
 
     @Override
-    public List<MemberROneononeChatroom> findWithMembersById(OneononeChatroomId roomId) {
+    public List<MemberROneononeChatroom> fetchWithMembersById(OneononeChatroomId roomId) {
         OneononeChatroom oneononeChatroom = oneononeChatroomJpaRepository.findWithMembersById(roomId)
                 .orElseThrow(ChatroomNotFoundException::new);
         return oneononeChatroom.getMemberROneononeChatrooms();

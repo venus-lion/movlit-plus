@@ -33,6 +33,7 @@ public class ProfileImageUpdatedEventListener {
 
     private final RedisMessagePublisher redisMessagePublisher;
     private final FetchGroupChatroomUseCase fetchGroupChatroomUseCase;
+    private final GroupChatroomUseCase groupChatroomUseCase;
     private final FetchOneononeChatroomUseCase fetchOneononeChatroomUseCase;
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -44,7 +45,6 @@ public class ProfileImageUpdatedEventListener {
     private static final String CHATROOM_MEMBERS_KEY_SUFFIX = ":members";
     private static final String ONE_ON_ONE_CHATROOM_KEY_PREFIX = "oneononeChatList:";
     private static final long CHATROOM_MEMBERS_CACHE_TTL = 60 * 60; // 1시간
-
 
     @TransactionalEventListener
     public void handleProfileImageUpdatedEvent(ProfileImageUpdatedEvent event) throws JsonProcessingException {
@@ -63,47 +63,37 @@ public class ProfileImageUpdatedEventListener {
         for (GroupChatroomResponseDto groupChatroomResponseDto : groupChatroomResponseDtoList) {
             GroupChatroomId groupChatroomId = groupChatroomResponseDto.getGroupChatroomId();
 
-            // 캐시 키 생성
-            String cacheKey = CHATROOM_MEMBERS_KEY_PREFIX + groupChatroomId + CHATROOM_MEMBERS_KEY_SUFFIX;
+            // 캐시된 멤버 목록 가져오기 (캐시 없으면 자동 생성)
+            List<GroupChatroomMemberResponse> cachedMembers = groupChatroomUseCase.fetchMembersInGroupChatroom(
+                    groupChatroomId, true);
 
-            // Redis에서 현재 캐시된 데이터 조회
-            String cachedJson = (String) redisTemplate.opsForValue().get(cacheKey);
+            // 업데이트된 멤버 정보 설정
+            GroupChatroomMemberResponse updatedMemberResponse = new GroupChatroomMemberResponse(
+                    updatedMember.getMemberId(),
+                    updatedMember.getNickname(),
+                    updatedMember.getProfileImgUrl()
+            );
 
-            List<GroupChatroomMemberResponse> cachedMembers;
-            if (cachedJson != null) {
-                // 캐시된 데이터(Json 문자열)를 List<GroupChatroomMemberResponse>로 역직렬화
-                cachedMembers = objectMapper.readValue(cachedJson, new TypeReference<>() {
-                });
-
-                // 업데이트된 멤버 정보 설정
-                GroupChatroomMemberResponse updatedMemberResponse = new GroupChatroomMemberResponse(
-                        updatedMember.getMemberId(),
-                        updatedMember.getNickname(),
-                        updatedMember.getProfileImgUrl()
-                );
-
-                // 기존에 캐시된 멤버리스트에서, 업데이트된 멤버정보만 수정
-                for (int i = 0; i < cachedMembers.size(); i++) {
-                    if (cachedMembers.get(i).getMemberId().equals(memberId)) {
-                        cachedMembers.set(i, updatedMemberResponse);
-                        break;
-                    }
+            // 기존 캐시된 멤버 목록에서 업데이트된 멤버 정보 수정
+            for (int i = 0; i < cachedMembers.size(); i++) {
+                if (cachedMembers.get(i).getMemberId().equals(memberId)) {
+                    cachedMembers.set(i, updatedMemberResponse);
+                    break;
                 }
-
-                // 업데이트된 멤버리스트를 다시 JSON 문자열로 변환하여, Redis에 캐싱
-                String updatedJson = objectMapper.writeValueAsString(cachedMembers);
-                redisTemplate.opsForValue().set(cacheKey, updatedJson, CHATROOM_MEMBERS_CACHE_TTL, TimeUnit.SECONDS);
-
-                // UpdateRoomDto 생성 및 발행
-                UpdateRoomDto updateRoomDto = new UpdateRoomDto(
-                        groupChatroomId.getValue(),
-                        MessageType.GROUP,
-                        EventType.MEMBER_PROFILE_UPDATE,
-                        memberId
-                );
-
-                redisMessagePublisher.updateRoom(updateRoomDto);
             }
+
+            // 업데이트된 멤버목록 Redis에 캐싱
+            groupChatroomUseCase.updateCachedMembers(groupChatroomId, cachedMembers);
+
+            // UpdateRoomDto 생성 및 발행
+            UpdateRoomDto updateRoomDto = new UpdateRoomDto(
+                    groupChatroomId,
+                    MessageType.GROUP,
+                    EventType.MEMBER_PROFILE_UPDATE,
+                    memberId
+            );
+
+            redisMessagePublisher.updateRoom(updateRoomDto); // RedisMessageSubscriber에서 처리
         }
     }
 

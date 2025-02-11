@@ -13,11 +13,11 @@ public interface MemberRepository {
 
     void deleteById(MemberId id);
 
-    Member findByEmail(String email);
+    Member fetchByEmail(String email);
 
-    Member findById(MemberId memberId);
+    Member fetchById(MemberId memberId);
 
-    MemberEntity findEntityById(MemberId memberId);
+    MemberEntity fetchEntityById(MemberId memberId);
 
     boolean existsByNickname(String nickname);
 

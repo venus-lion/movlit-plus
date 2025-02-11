@@ -57,7 +57,7 @@ public class UpdateRoomDto {
                 ", memberId=" + memberId.getValue();
     }
 
-    public String toStringWithJoinMsg() {
+    public String toStringWithEventMsg() {
         return "UpdateRoomDto{" +
                 "groupChatroomId='" + roomId + '\'' +
                 ", messageType=" + messageType +

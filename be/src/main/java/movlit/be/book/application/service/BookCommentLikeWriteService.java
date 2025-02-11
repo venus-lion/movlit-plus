@@ -30,7 +30,7 @@ public class BookCommentLikeWriteService {
     // 해당 도서 리뷰에 대한 좋아요 추가
     @Transactional
     public BookCommentLikeVo addLike(MemberId memberId, BookCommentId bookCommentId) {
-        Member member = memberReadService.findByMemberId(memberId);
+        Member member = memberReadService.fetchByMemberId(memberId);
 
         BookCommentVo comment = bookCommentReadService.fetchByBookCommentId(bookCommentId);
         BookVo bookVo = bookDetailReadService.fetchByBookId(comment.getBookVo().getBookId());
@@ -75,7 +75,7 @@ public class BookCommentLikeWriteService {
     public void removeLike(MemberId memberId, BookCommentId bookCommentId) throws Exception {
         BookCommentVo comment = bookCommentReadService.fetchByBookCommentId(bookCommentId);
         BookVo bookVo = bookDetailReadService.fetchByBookId(comment.getBookVo().getBookId());
-        Member member = memberReadService.findByMemberId(memberId);
+        Member member = memberReadService.fetchByMemberId(memberId);
 
         BookCommentLikeVo existingLike = bookCommentLikeRepository.fetchByBookCommentAndMember(comment, member);
         if (existingLike != null) {
