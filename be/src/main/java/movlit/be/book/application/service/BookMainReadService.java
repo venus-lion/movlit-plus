@@ -36,7 +36,7 @@ public class BookMainReadService {
     }
 
     public List<BookItemDto> fetchBookNews(int limit) {
-        Pageable pageable = PageRequest.of(5, limit);
+        Pageable pageable = PageRequest.of(0, limit);
         List<BookNewVo> bookNewVos = bookNewRepository.findAllBookNew(pageable);
 
         return bookNewVos.stream()

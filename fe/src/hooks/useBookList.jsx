@@ -13,6 +13,7 @@ const useBookList = ({endpoint, params = {}}) => {
                     params: {...params},
                 });
 
+                console.log('response.data.books :: ', response.data.books);
                 setBooks(response.data.books);
             } catch (err) {
                 console.error(`Error fetching books from ${endpoint}: `, err);
