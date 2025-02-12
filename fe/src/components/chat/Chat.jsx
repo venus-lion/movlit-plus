@@ -270,6 +270,7 @@ const Chat = () => {
             // type에 따라 적절한 API를 호출하여 채팅방 리스트 가져오기
             if (type === 'group') {
                 response = await axiosInstance.get('/chat/group/rooms/my');
+
             } else if (type === 'personal') {
                 response = await axiosInstance.get('/chat/oneOnOne');
             }
@@ -277,12 +278,17 @@ const Chat = () => {
             // 전체 채팅방 리스트 상태에 저장
             setChatrooms(response.data);
 
+
             // chatId에 해당하는 채팅방 찾기
             const chatRoom = response.data.find(room =>
                 type === 'group' ? room.groupChatroomId === chatId : room.roomId === chatId
             );
 
-            console.log('@@ 선택된 방 : ' + JSON.stringify(chatRoom, null, 2));
+            if (type === 'group' && chatId) {
+                fetchGroupChatMembers(chatId);
+            }
+
+                console.log('@@ 선택된 방 : ' + JSON.stringify(chatRoom, null, 2));
             if (chatRoom) {
                 setSelectedChat(chatRoom); // 찾은 채팅방 정보를 선택
             }
