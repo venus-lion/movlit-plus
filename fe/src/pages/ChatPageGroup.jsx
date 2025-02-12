@@ -1,6 +1,7 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Client} from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import {AppContext} from "../App.jsx";
 import axiosInstance from '../axiosInstance';
 import './ChatPageGroup.css';
 import {FaUserCircle} from 'react-icons/fa';
@@ -30,8 +31,7 @@ function ChatPageGroup({
     const [posterUrl, setPosterUrl] = useState(null);
 
     const navigate = useNavigate();
-    console.log('groupchat init!!');
-    console.log(roomId);
+    const {updateSnackbar} = useContext(AppContext);
 
     useEffect(() => {
         setRoomInfoData(roomInfo);
@@ -221,7 +221,7 @@ function ChatPageGroup({
 
             console.log('/chatMain으로 navigate');
             // // 채팅방 목록 페이지로 이동
-            navigate('/chatMain');
+            // navigate('/chatMain');
 
         } catch (error) {
             console.error("Error leaving chatroom:", error);
