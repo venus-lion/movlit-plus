@@ -5,8 +5,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.chat_room.presentation.dto.OneononeChatroomResponse;
@@ -35,16 +37,10 @@ public class ProfileImageUpdatedEventListener {
     private final FetchGroupChatroomUseCase fetchGroupChatroomUseCase;
     private final GroupChatroomUseCase groupChatroomUseCase;
     private final FetchOneononeChatroomUseCase fetchOneononeChatroomUseCase;
-
-//    private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, String> stringRedisTemplate;
     private final MemberReadService memberReadService;
     private final ObjectMapper objectMapper;
-
-//    private static final String CHATROOM_MEMBERS_KEY_PREFIX = "chatroom:";
-//    private static final String CHATROOM_MEMBERS_KEY_SUFFIX = ":members";
     private static final String ONE_ON_ONE_CHATROOM_KEY_PREFIX = "oneononeChatList:";
-//    private static final long CHATROOM_MEMBERS_CACHE_TTL = 60 * 60; // 1시간
 
     @TransactionalEventListener
     public void handleProfileImageUpdatedEvent(ProfileImageUpdatedEvent event) throws JsonProcessingException {
@@ -64,38 +60,6 @@ public class ProfileImageUpdatedEventListener {
             GroupChatroomId groupChatroomId = groupChatroomResponseDto.getGroupChatroomId();
 
             updateGroupChatroomCacheAndPublish(groupChatroomId, updatedMember);
-
-//            // 캐시된 멤버 목록 가져오기 (캐시 없으면 자동 생성)
-//            List<GroupChatroomMemberResponse> cachedMembers = groupChatroomUseCase.fetchMembersInGroupChatroom(
-//                    groupChatroomId, true);
-//
-//            // 업데이트된 멤버 정보 설정
-//            GroupChatroomMemberResponse updatedMemberResponse = new GroupChatroomMemberResponse(
-//                    updatedMember.getMemberId(),
-//                    updatedMember.getNickname(),
-//                    updatedMember.getProfileImgUrl()
-//            );
-//
-//            // 기존 캐시된 멤버 목록에서 업데이트된 멤버 정보 수정
-//            for (int i = 0; i < cachedMembers.size(); i++) {
-//                if (cachedMembers.get(i).getMemberId().equals(memberId)) {
-//                    cachedMembers.set(i, updatedMemberResponse);
-//                    break;
-//                }
-//            }
-//
-//            // 업데이트된 멤버목록 Redis에 캐싱
-//            groupChatroomUseCase.updateCachedMembers(groupChatroomId, cachedMembers);
-//
-//            // UpdateRoomDto 생성 및 발행
-//            UpdateRoomDto updateRoomDto = new UpdateRoomDto(
-//                    groupChatroomId.getValue(),
-//                    MessageType.GROUP,
-//                    EventType.MEMBER_PROFILE_UPDATE,
-//                    memberId
-//            );
-//
-//            redisMessagePublisher.updateRoom(updateRoomDto); // RedisMessageSubscriber에서 처리
         }
     }
 
@@ -108,7 +72,7 @@ public class ProfileImageUpdatedEventListener {
         GroupChatroomMemberResponse updatedMemberResponse = GroupChatroomMemberResponse.from(updatedMember);
 
         // 기존 캐시된 멤버 목록에서 업데이트된 멤버 정보 수정
-        updateCachedMemberList(cachedMembers, updatedMemberResponse);
+        modifyCachedMember(cachedMembers, updatedMemberResponse);
 
         // 업데이트된 멤버목록 Redis에 캐싱
         groupChatroomUseCase.updateCachedMembers(groupChatroomId, cachedMembers);
@@ -120,15 +84,14 @@ public class ProfileImageUpdatedEventListener {
         redisMessagePublisher.updateRoom(updateRoomDto); // RedisMessageSubscriber에서 처리
     }
 
-    private void updateCachedMemberList(List<GroupChatroomMemberResponse> cachedMembers,
+    private void modifyCachedMember(List<GroupChatroomMemberResponse> cachedMembers,
                                         GroupChatroomMemberResponse updatedMemberResponse){
-        for (int i = 0; i < cachedMembers.size(); i++){
-            if (cachedMembers.get(i).getMemberId().equals(updatedMemberResponse.getMemberId())){
-                cachedMembers.set(i, updatedMemberResponse);
 
-                break;
-            }
-        }
+        IntStream.range(0, cachedMembers.size())
+                .filter(i -> Objects.equals(cachedMembers.get(i).getMemberId(),
+                             updatedMemberResponse.getMemberId()))
+                .findFirst()
+                .ifPresent(i -> cachedMembers.set(i, updatedMemberResponse));
     }
 
     private void publishToOneononeChat(MemberEntity member) throws JsonProcessingException {
