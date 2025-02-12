@@ -251,7 +251,9 @@ const Chat = () => {
         setStompClient(client);
 
         return () => {
-            if (client.connected) client.deactivate();
+            if (client.connected){
+                client.deactivate();
+            }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUserId, personalChats, groupChats, selectedChat]);
@@ -480,7 +482,7 @@ const Chat = () => {
     }
 
     const handleChatMessage = (type, receivedMessage) => {
-        if (type === 'gruop') {
+        if (type === 'group') {
             setGroupChats((prev) =>
                 prev.map((chat) =>
                     chat.roomId === receivedMessage.roomId
