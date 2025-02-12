@@ -38,7 +38,7 @@ function ChatPageGroup({
     }, [roomInfo]);
 
     useEffect(() => {
-        setMembers(currentGroupChatMembers);
+        setMembers(currentGroupChatMembers || []);
     }, [currentGroupChatMembers]);
 
     // 포스터 URL 가져오는 로직
@@ -268,7 +268,12 @@ function ChatPageGroup({
             </div>
             <div className="chat-messages-group" ref={messagesContainerRef}>
                 {messages.map((message, index) => {
-                    const sender = members.find((m) => m.memberId === message.senderId);
+                 //   const sender = members.find((m) => m.memberId === message.senderId);
+                    // members가 null 또는 undefined가 아니고, 배열일 때만 find 호출
+                    const sender = members && Array.isArray(members)
+                        ? members.find((m) => m.memberId === message.senderId)
+                        : null;
+
                     const isCurrentUser = message.senderId === currentUserId;
                     const isJoinMessage = message.type === 'join';
                     return (
