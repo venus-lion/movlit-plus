@@ -88,6 +88,21 @@ function ChatPageGroup({roomId, roomInfo, onReceiveMessage, refreshChatList, ref
                 const receivedMessage = JSON.parse(message.body);
                 setMessages((prevMessages) => [...prevMessages, receivedMessage]);
 
+                // 메시지 수신 시 멤버 정보가 업데이트 되었는지 확인
+                const sender = members.find((m) => m.memberId === receivedMessage.senderId);
+                if (!sender) {
+                    // 만약 sender가 없다면, 멤버 정보를 다시 가져옵니다.
+                    axiosInstance
+                        .get(`/chat/${roomId}/members`)
+                        .then((response) => {
+                            setMembers(response.data);
+                        })
+                        .catch((error) => {
+                            console.error('Error fetching chatroom members:', error);
+                        });
+                }
+
+
                 if (onReceiveMessage) {
                     onReceiveMessage(receivedMessage);
                 }
