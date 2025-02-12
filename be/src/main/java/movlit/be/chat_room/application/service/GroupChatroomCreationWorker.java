@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 public class GroupChatroomCreationWorker {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final ThreadPoolExecutor threadPoolExecutor; // Consider using ExecutorService instead
+    private final ThreadPoolExecutor threadPoolExecutor;
 
     private static final String GROUP_CHATROOM_QUEUE_KEY_PREFIX = "groupChatroomQueue:";
 
@@ -30,12 +30,10 @@ public class GroupChatroomCreationWorker {
             String queueKey = GROUP_CHATROOM_QUEUE_KEY_PREFIX + contentId;
 
             Object memberIdObject = redisTemplate.opsForList()
-                    .rightPop(queueKey, 10, TimeUnit.SECONDS); // Added timeout
+                    .rightPop(queueKey, 10, TimeUnit.SECONDS);
 
             if (memberIdObject instanceof String memberId) {
-                Map<String, String> resultMap = new HashMap<>();
-                resultMap.put(contentId, memberId);
-                return Optional.of(resultMap);
+                return makeResultMap(contentId, memberId);
             }
 
             return Optional.empty();
@@ -52,6 +50,12 @@ public class GroupChatroomCreationWorker {
 
             throw new GroupChatroomCreationWhenWorkingException();
         }
+    }
+
+    private Optional<Map<String, String>> makeResultMap(String contentId, String memberId) {
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put(contentId, memberId);
+        return Optional.of(resultMap);
     }
 
 }
