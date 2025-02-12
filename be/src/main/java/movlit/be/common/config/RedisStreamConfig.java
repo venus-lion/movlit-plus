@@ -20,6 +20,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Slf4j
 public class RedisStreamConfig {
 
+    private final ThreadPoolTaskExecutor redisStreamExecutor;
+
     // 종료 상태 플래그 (shutdown 중인지 여부)
     private volatile boolean shuttingDown = false;
 
@@ -27,17 +29,19 @@ public class RedisStreamConfig {
     public StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamMessageListenerContainer(
             @Qualifier("redisConnectionFactory") RedisConnectionFactory redisConnectionFactory
     ) {
-        log.info("redisconnectfactory {}", redisConnectionFactory);
-        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(8);
-        taskExecutor.setMaxPoolSize(16);
-        taskExecutor.setThreadNamePrefix("redis-stream-");
-        taskExecutor.initialize();
-        log.info("==== StreamMessageListenerContainer threadPoolExecutor : {} ", taskExecutor);
+        StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options = getStringMapRecordStreamMessageListenerContainerOptions();
 
+        StreamMessageListenerContainer<String, MapRecord<String, String, String>> container = StreamMessageListenerContainer.create(
+                redisConnectionFactory, options);
+        container.start();
+        log.info("==== StreamMessageListenerContainer 등록 : {}", container);
+        return container;
+    }
+
+    private StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> getStringMapRecordStreamMessageListenerContainerOptions() {
         StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options = StreamMessageListenerContainerOptions
                 .builder()
-                .executor(taskExecutor)
+                .executor(redisStreamExecutor)
                 .batchSize(10)
                 .pollTimeout(Duration.ofSeconds(1))
                 .errorHandler(
@@ -49,12 +53,7 @@ public class RedisStreamConfig {
                             }
                         })
                 .build();
-
-        StreamMessageListenerContainer<String, MapRecord<String, String, String>> container = StreamMessageListenerContainer.create(
-                redisConnectionFactory, options);
-        container.start();
-        log.info("==== StreamMessageListenerContainer 빈 등록 : {}", container);
-        return container;
+        return options;
     }
 
     @PreDestroy
