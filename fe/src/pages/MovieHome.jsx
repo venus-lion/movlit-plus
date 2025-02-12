@@ -33,7 +33,20 @@ function MovieHome() {
             }
             return genreIds;
         };
-        setRandomGenreIds(getRandomGenreIds());
+
+        const getRandomGenreIdsForView = () => {
+            // 메인화면 시연용(1:액션, 3:코미디, 4:범죄, 6:드라마, 7:판타지, 11:로맨스, 12:SF, 14:공포스릴러)
+            const genreIdsAll = [1, 3, 4, 6, 7, 11, 12, 14];
+            const genreIds = [];
+            while (genreIds.length < 4) {
+                const randomIdx = Math.floor(Math.random() * genreIdsAll.length);
+                if (!genreIds.includes(genreIdsAll[randomIdx])) {
+                    genreIds.push(genreIdsAll[randomIdx]);
+                }
+            }
+            return genreIds;
+        }
+        setRandomGenreIds(getRandomGenreIdsForView());
     }, []);
 
     // Helper function to check if a component's movies are loaded
