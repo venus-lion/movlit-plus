@@ -13,13 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class RestDocsController {
 
     @GetMapping("/api/docs")
-    public ResponseEntity<Resource> getDocs() throws IOException {
+    public ResponseEntity<Resource> getDocs() {
         // 정적 리소스 로드
         Resource resource = new ClassPathResource("static/docs/index.html");
 
-        // 리소스가 존재하지 않는 경우 404 Not Found 반환.
         if (!resource.exists()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         // Content-Type 설정 (HTML 파일) 및 리소스 반환.
