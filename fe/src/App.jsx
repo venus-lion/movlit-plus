@@ -1,9 +1,9 @@
-import React, {createContext, useCallback, useEffect, useState, useRef } from 'react';
-import {NavLink, Outlet, useNavigate} from 'react-router-dom';
+import React, { createContext, useCallback, useEffect, useState, useRef } from 'react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import axiosInstance from './axiosInstance';
 import './App.css';
-import {FaUserCircle} from 'react-icons/fa';
-import {EventSourcePolyfill} from 'event-source-polyfill';
+import { FaUserCircle } from 'react-icons/fa';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import notificationIcon from './images/notification.jpg';
 import NotiDropdown from './pages/Notification.jsx'; // SSE 연결 -> Notificatoin 설정으로 동명파일 import 불가 (NotiDropdown으로 파일명 대체)
 
@@ -20,8 +20,8 @@ function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(
         !!localStorage.getItem('accessToken')
     );
-    const [profileImage, setProfileImage] = useState(null);
-    console.log('profileImage = {}', profileImage);
+    // const [profileImage, setProfileImage] = useState(null); // MyPage.jsx에서 context로 관리
+    // console.log('profileImage = {}', profileImage);
 
     const updateLoginStatus = useCallback((status) => {
         setIsLoggedIn(status);
@@ -37,6 +37,13 @@ function App() {
     const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+    // userInfo context 사용
+    const [userInfo, setUserInfo] = useState({
+        nickname: '',
+        profileImgUrl: null,
+    });
+
 
     const updateSnackbar = useCallback((message, severity = 'success') => {
         setSnackbarMessage(message);
@@ -105,21 +112,21 @@ function App() {
 
 
 
-    useEffect(() => {
-        const fetchProfileImage = async () => {
-            try {
-                const response = await axiosInstance.get('/images/profile');
-                setProfileImage(response.data);
-            } catch (error) {
-                console.error('Error fetching profile image:', error);
-                setProfileImage(null);
-            }
-        };
+    // useEffect(() => { // MyPage.jsx에서 처리
+    //     const fetchProfileImage = async () => {
+    //         try {
+    //             const response = await axiosInstance.get('/images/profile');
+    //             setProfileImage(response.data);
+    //         } catch (error) {
+    //             console.error('Error fetching profile image:', error);
+    //             setProfileImage(null);
+    //         }
+    //     };
 
-        if (isLoggedIn) {
-            fetchProfileImage();
-        }
-    }, [isLoggedIn]);
+    //     if (isLoggedIn) {
+    //         fetchProfileImage();
+    //     }
+    // }, [isLoggedIn]);
 
     useEffect(() => {
         let eventSource = null;
@@ -266,30 +273,30 @@ function App() {
 
 
     return (
-        <AppContext.Provider value={{updateLoginStatus, isLoggedIn, updateSnackbar}}> {/* updateSnackbar 추가 */}
+        <AppContext.Provider value={{ updateLoginStatus, isLoggedIn, updateSnackbar, userInfo, setUserInfo }}> {/* updateSnackbar, userInfo, setUserInfo 추가 */}
             <nav className="navbar">
                 <div className="nav-left">
                     <NavLink
                         to="/"
-                        className={({isActive}) => (isActive ? 'active' : '')}
+                        className={({ isActive }) => (isActive ? 'active' : '')}
                     >
                         Movlit
                     </NavLink>
                     <NavLink
                         to="/"
-                        className={({isActive}) => (isActive ? 'active' : '')}
+                        className={({ isActive }) => (isActive ? 'active' : '')}
                     >
                         영화
                     </NavLink>
                     <NavLink
                         to="/book"
-                        className={({isActive}) => (isActive ? 'active' : '')}
+                        className={({ isActive }) => (isActive ? 'active' : '')}
                     >
                         책
                     </NavLink>
                     <NavLink
                         to="/chatMain"
-                        className={({isActive}) => (isActive ? 'active' : '')}
+                        className={({ isActive }) => (isActive ? 'active' : '')}
                     >
                         채팅
                     </NavLink>
@@ -310,13 +317,13 @@ function App() {
                         <>
                             <NavLink
                                 to="/member/login"
-                                className={({isActive}) => (isActive ? 'active' : '')}
+                                className={({ isActive }) => (isActive ? 'active' : '')}
                             >
                                 로그인
                             </NavLink>
                             <NavLink
                                 to="/member/register"
-                                className={({isActive}) => (isActive ? 'active' : '')}
+                                className={({ isActive }) => (isActive ? 'active' : '')}
                             >
                                 회원가입
                             </NavLink>
@@ -325,8 +332,8 @@ function App() {
                     {isLoggedIn && (
                         <div className="nav-right-logged-in">
 
-                            <div onClick={handleBellClick} style={{position: 'relative', cursor: 'pointer'}}>
-                                <img src="/images/notification-bell-icon.png" alt="알림" className="noti-img"/>
+                            <div onClick={handleBellClick} style={{ position: 'relative', cursor: 'pointer' }}>
+                                <img src="/images/notification-bell-icon.png" alt="알림" className="noti-img" />
                                 {newNotification && <span className="badge">N</span>}
                             </div>
                             {/* 알림 드롭다운 영역 */}
@@ -340,18 +347,18 @@ function App() {
 
                             <NavLink
                                 to="/mypage"
-                                className={({isActive}) =>
+                                className={({ isActive }) =>
                                     isActive ? 'active nav-mypage' : 'nav-mypage'
                                 }
                             >
-                                {profileImage ? (
+                                {userInfo.profileImgUrl ? (  // userInfo 사용
                                     <img
-                                        src={profileImage.url}
+                                        src={userInfo.profileImgUrl}  // userInfo 사용
                                         alt="프로필"
                                         className="nav-mypage-img"
                                     />
                                 ) : (
-                                    <FaUserCircle className="nav-mypage-icon"/>
+                                    <FaUserCircle className="nav-mypage-icon" />
                                 )}
                             </NavLink>
                         </div>
@@ -360,16 +367,17 @@ function App() {
             </nav>
 
             {/* Outlet에 context 전달 (기존과 동일) */}
-            <Outlet context={{updateLoginStatus, isLoggedIn, updateSnackbar}}/>
+            {/* Outlet context에 userInfo, setUserInfo 추가 */}
+            <Outlet context={{ updateLoginStatus, isLoggedIn, updateSnackbar, userInfo, setUserInfo }} />
 
             {/* Material-UI Snackbar 추가 (ToastContainer 대신) */}
             <Snackbar
                 open={isSnackbarOpen}
                 autoHideDuration={2000} // 2초로 변경
                 onClose={handleSnackbarClose}
-                anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
-                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{width: '100%'}}>
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
                     {snackbarMessage}
                 </Alert>
             </Snackbar>

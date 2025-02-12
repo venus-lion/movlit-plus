@@ -48,6 +48,33 @@ public class UpdateRoomDto {
         this.eventMessage = eventMessage;
     }
 
+    // 프로필 업데이트용 UpdateRoomDto 생성자 추가
+    // UpdateRoomDto 생성 및 발행
+//            UpdateRoomDto updateRoomDto = new UpdateRoomDto(
+//                    groupChatroomId.getValue(),
+//                    MessageType.GROUP,
+//                    EventType.MEMBER_PROFILE_UPDATE,
+//                    memberId
+//            );
+    public static UpdateRoomDto UpdateRoomDtoForProfileUpdate(String roomId, MemberId memberId){
+        return new UpdateRoomDto(
+          roomId,
+          MessageType.GROUP,
+          EventType.MEMBER_PROFILE_UPDATE,
+          memberId
+        );
+    }
+
+    public static UpdateRoomDto UpdateRoomDtoForMemberJoin(String roomId, MemberId memberId, String joinMessage){
+        return new UpdateRoomDto(
+                roomId,
+                MessageType.GROUP,
+                EventType.MEMBER_JOIN,
+                memberId,
+                joinMessage
+        );
+    }
+
     @Override
     public String toString() {
         return "UpdateRoomDto{" +

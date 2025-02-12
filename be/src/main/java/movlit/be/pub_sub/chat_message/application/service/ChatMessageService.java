@@ -89,9 +89,7 @@ public class ChatMessageService {
         if (chatMessages.isEmpty()) {
             return new ArrayList<>();       // 빈 값 전달
         }
-
-        log.info("=== chatMessages : {}", chatMessages);
-        // TODO : Converter 나중에 빼기
+        
         return chatMessages.stream().map(
                 c -> new ChatMessageDto(
                         c.getRoomId(),
