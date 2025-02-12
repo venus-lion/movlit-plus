@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.pub_sub.notification.application.dto.NotificationDto;
@@ -64,8 +62,11 @@ public class SseEmitterService {
         heartbeatTasks.put(id, heartbeat);
     }
 
-    private synchronized void checkEmitterStatus(String id) {
-        if (!emitters.containsKey(id) || emitterCompletionStatus.getOrDefault(id, false)) {
+    private void checkEmitterStatus(String id) {
+        // computeIfAbsent 를 사용해서 동시성 제어
+        emitterCompletionStatus.computeIfAbsent(id, k -> false); // 없으면 false로 초기화
+
+        if (!emitters.containsKey(id) || Boolean.TRUE.equals(emitterCompletionStatus.get(id))) {
             cancelHeartbeat(id);
             return;
         }
@@ -82,23 +83,30 @@ public class SseEmitterService {
         }
     }
 
-    private synchronized void completeEmitter(String id, Throwable error) {
-        if (emitterCompletionStatus.getOrDefault(id, false)) {
+    private void completeEmitter(String id, Throwable error) {
+        // computeIfAbsent 를 사용해서 동시성 제어
+        emitterCompletionStatus.computeIfAbsent(id, k -> false);
+        if (Boolean.TRUE.equals(emitterCompletionStatus.get(id))) {
             return;
         }
 
-        emitterCompletionStatus.put(id, true);
+        emitterCompletionStatus.put(id, true); // 먼저 완료 상태를 true로 변경
         SseEmitter emitter = emitters.remove(id);
         cancelHeartbeat(id);
 
         if (emitter != null) {
-            threadPoolTaskExecutor.execute(() -> {
+            Future<?> future = threadPoolTaskExecutor.submit(() -> { //submit으로 변경
                 if (error != null) {
                     emitter.completeWithError(error);
                 } else {
                     emitter.complete();
                 }
             });
+            try {
+                future.get(5, TimeUnit.SECONDS); // 타임아웃 설정 (옵션)
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                log.error("Emitter complete 작업 실패", e);
+            }
         }
     }
 
@@ -110,7 +118,7 @@ public class SseEmitterService {
     }
 
     public void sendNotification(String id, NotificationDto notification) {
-        threadPoolTaskExecutor.execute(() -> {
+        Future<?> future = threadPoolTaskExecutor.submit(() -> { //submit으로 변경
             SseEmitter emitter = emitters.get(id);
             if (emitter != null) {
                 try {
@@ -124,6 +132,6 @@ public class SseEmitterService {
                 }
             }
         });
-    }
 
+    }
 }

@@ -3,9 +3,12 @@ package movlit.be.chat_room.application.service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import movlit.be.common.exception.GroupChatroomCreationWhenWorkingException;
@@ -18,42 +21,35 @@ import org.springframework.stereotype.Component;
 public class GroupChatroomCreationWorker {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final ThreadPoolExecutor threadPoolExecutor;
+    private final ThreadPoolExecutor threadPoolExecutor; // Consider using ExecutorService instead
 
     private static final String GROUP_CHATROOM_QUEUE_KEY_PREFIX = "groupChatroomQueue:";
 
     public Optional<Map<String, String>> requestChatroomCreation(String contentId) {
-        // 스레드 풀을 사용하여 비동기 작업 실행
-        Future<Optional<Map<String, String>>> future = threadPoolExecutor.submit(() -> {
+        Callable<Optional<Map<String, String>>> task = () -> {
             String queueKey = GROUP_CHATROOM_QUEUE_KEY_PREFIX + contentId;
 
-            while (true) {
-                // Redis Queue에서 memberId를 value로 꺼내옴 (RPOP)
-                Object memberIdObject = redisTemplate.opsForList().rightPop(queueKey);
+            Object memberIdObject = redisTemplate.opsForList()
+                    .rightPop(queueKey, 10, TimeUnit.SECONDS); // Added timeout
 
-                if (memberIdObject == null) {
-                    // 큐가 비어있으면 빈 Optional 반환
-                    return Optional.empty();
-                }
-
-                if (!(memberIdObject instanceof String memberId)) {
-                    log.error("Invalid memberId type for contentId: {}. Expected String, but got: {}", contentId,
-                            memberIdObject.getClass().getName());
-                    continue;
-                }
-
-                // contentId와 memberId를 Map에 담아서 Optional로 감싸서 반환
+            if (memberIdObject instanceof String memberId) {
                 Map<String, String> resultMap = new HashMap<>();
                 resultMap.put(contentId, memberId);
                 return Optional.of(resultMap);
             }
-        });
+
+            return Optional.empty();
+        };
 
         try {
-            // 비동기 작업 결과 가져오기
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            log.error("Error while getting result from worker thread", e);
+            Future<Optional<Map<String, String>>> future = threadPoolExecutor.submit(task);
+            return future.get(30, TimeUnit.SECONDS);
+
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+
             throw new GroupChatroomCreationWhenWorkingException();
         }
     }
