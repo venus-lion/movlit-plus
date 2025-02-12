@@ -137,7 +137,8 @@ const Chat = () => {
                                     : c
                             )
                         );
-                        if (checkIsSelectedChat('personal', receivedMessage)) {
+                        // if (checkIsSelectedChat('personal', receivedMessage)) {
+                        if (selectedChat.roomId && selectedChat.roomId === chat.roomId) {
                             setCurrentChatMessages((prev) => [...prev, receivedMessage]);
                         }
                     });
@@ -165,9 +166,9 @@ const Chat = () => {
 
             groupChats.forEach((chat) => {
                 // 그룹 sendMessage 토픽 구독
-                const msgSubId = `/topic/chat/message/group/${chat.groupChatroomId}`;
-                if (!client.subscriptions || !client.subscriptions[msgSubId]) {
-                    client.subscribe(msgSubId, (message) => {
+                const groupMsgSubId = `/topic/chat/message/group/${chat.groupChatroomId}`;
+                if (!client.subscriptions || !client.subscriptions[groupMsgSubId]) {
+                    client.subscribe(groupMsgSubId, (message) => {
                         const receivedMessage = JSON.parse(message.body);
                         setGroupChats((prevChats) =>
                             prevChats.map((c) =>
@@ -176,7 +177,8 @@ const Chat = () => {
                                     : c
                             )
                         );
-                        if (checkIsSelectedChat('group', receivedMessage)) {
+                        // if (checkIsSelectedChat('group', receivedMessage)) {
+                        if (selectedChat.groupChatroomId && selectedChat.groupChatroomId === chat.groupChatroomId) {
                             setCurrentChatMessages((prev) => [...prev, receivedMessage]);
                         }
                     });
@@ -403,12 +405,17 @@ const Chat = () => {
     // ChatList 갱신 함수 (기존과 동일)
     const refreshChatList = () => {
         setRefreshKey(prevKey => prevKey + 1);
+        setSelectedChat(null); // selectedChat을 null로 설정
+        // setCurrentChatMessages(null);
+        // setCurrentGroupChatMembers(null);
     };
 
     // Chat 컴포넌트 새로고침 함수 (기존과 동일)
     const refreshChatComponent = () => {
         setChatComponentKey(prevKey => prevKey + 1);
         setSelectedChat(null); // selectedChat을 null로 설정
+        // setCurrentChatMessages(null);
+        // setCurrentGroupChatMembers(null);
     };
 
     const fetchChatMessages = async (chatId) => {
@@ -427,14 +434,20 @@ const Chat = () => {
         let roomId;
         if (type === 'personal') {
             roomId = target.roomId;
-        } else {
-            roomId = target.groupChatroomId;
+            if (selectedChatRef.current && selectedChatRef.current.roomId === roomId) {
+                return true;
+            } else {
+                false;
+            }
         }
-        if (selectedChatRef.current && selectedChatRef.current.roomId === roomId) {
-            return true;
-        } else {
-            return false;
-        }
+        // else {
+        //     roomId = target.groupChatroomId;
+        //     if (selectedChatRef.current && selectedChatRef.current.groupChatroomId === roomId) {
+        //         return true;
+        //     } else {
+        //         return false;
+        //     }
+        // }
     }
 
     const fetchGroupChatMembers = async (roomId) => {

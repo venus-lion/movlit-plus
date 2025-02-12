@@ -210,18 +210,12 @@ function ChatPageGroup({
             await axiosInstance.delete(`/chat/group/${roomId}/leave`);
 
             updateSnackbar('채팅방을 나갔습니다.', 'success');
-
             // 채팅방 목록 갱신
             refreshChatList();
-
-            console.log('Chat 컴포넌트 새로고침');
-
             // Chat 컴포넌트 새로고침
             refreshChatComponent();
-
-            console.log('/chatMain으로 navigate');
-            // // 채팅방 목록 페이지로 이동
-            // navigate('/chatMain');
+            // 채팅방 목록 페이지로 이동
+            navigate('/chatMain');
 
         } catch (error) {
             console.error("Error leaving chatroom:", error);
@@ -268,7 +262,7 @@ function ChatPageGroup({
             </div>
             <div className="chat-messages-group" ref={messagesContainerRef}>
                 {messages.map((message, index) => {
-                 //   const sender = members.find((m) => m.memberId === message.senderId);
+                    //   const sender = members.find((m) => m.memberId === message.senderId);
                     // members가 null 또는 undefined가 아니고, 배열일 때만 find 호출
                     const sender = members && Array.isArray(members)
                         ? members.find((m) => m.memberId === message.senderId)
