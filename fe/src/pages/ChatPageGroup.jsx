@@ -209,7 +209,7 @@ function ChatPageGroup({
             // 나가기 api 호출
             await axiosInstance.delete(`/chat/group/${roomId}/leave`);
 
-            alert("채팅방을 나갔습니다.");
+            updateSnackbar('채팅방을 나갔습니다.', 'success');
 
             // 채팅방 목록 갱신
             refreshChatList();

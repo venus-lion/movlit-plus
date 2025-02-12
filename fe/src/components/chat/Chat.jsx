@@ -166,7 +166,7 @@ const Chat = () => {
             groupChats.forEach((chat) => {
                 // 그룹 sendMessage 토픽 구독
                 const msgSubId = `/topic/chat/message/group/${chat.groupChatroomId}`;
-                if (!client.subscriptions || !client.subscriptions[groupMsgSubId]) {
+                if (!client.subscriptions || !client.subscriptions[msgSubId]) {
                     client.subscribe(msgSubId, (message) => {
                         const receivedMessage = JSON.parse(message.body);
                         setGroupChats((prevChats) =>
@@ -183,7 +183,7 @@ const Chat = () => {
                 }
 
                 const groupUpdateSubId = `/topic/chat/room/${chat.groupChatroomId}`;
-                if (!client.subscriptions || !client.subscriptions[groupProfileSubId]) {
+                if (!client.subscriptions || !client.subscriptions[groupUpdateSubId]) {
                     client.subscribe(groupUpdateSubId, (message) => {
                         const receivedData = JSON.parse(message.body);
                         // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
