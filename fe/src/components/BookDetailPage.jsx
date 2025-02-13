@@ -610,7 +610,7 @@ function BookDetailPage() {
 
 
     return (
-        <div style={styles.container} className="container">
+        <div className="container">
             <div
                 style={{
                     ...styles.header,
@@ -1007,6 +1007,8 @@ const styles = {
     container: {
         width: '100%',
         fontFamily: 'Arial, sans-serif',
+        padding: '0',
+        margin: '0',
     },
     header: {
         padding: '110px 20px',
@@ -1101,6 +1103,7 @@ const styles = {
     },
     section: {
         marginBottom: '20px',
+        maxWidth: '100%',
     },
     sectionTitle: {
         fontSize: '20px',
