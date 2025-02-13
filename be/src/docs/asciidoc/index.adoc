@@ -13,8 +13,16 @@
 === 로그인
 
 ==== 성공
-
 operation::login_success[snippets='http-request,http-response']
+
+==== 실패
+operation::login_failedByUnregisteredEmail[snippets='http-request,http-response']
+
+=== 로그아웃
+
+==== 성공
+operation::logout_success[snippets='http-request,http-response']
+
 
 [[member]]
 == 회원
@@ -43,15 +51,22 @@ operation::signupMember_failedByReconfirmPasswordUnmatch[snippets='http-response
 
 === 회원 수정
 
+=== 회원 삭제
 === 성공
+operation::deleteMember_success[snippets='http-request,http-response']
 
 operation::updateMember_success['http-request,http-response']
+
+=== 회원 장르 정보 조회
+==== 성공
+operation::memberGenreRead_success['http-request,http-response']
 
 === 회원 조회
 
 ==== 회원 장르 조회
 
 operation::myPageRead_success['http-request,http-response']
+
 
 ==== 회원 id 조회
 
@@ -79,6 +94,7 @@ operation::searchMovie_success[snippets='http-request,http-response']
 ==== 상세 페이지 조회
 
 operation::fetchMovieDetail_success[snippets='http-response']
+operation::fetchMovieGenresWithMovieDetail_success[http-response']
 
 // operation::fetchMovieComment_success[snippets='http-request,http-response']
 
@@ -126,6 +142,17 @@ operation::movie_comment_like_increment_success[snippets='http-request,http-resp
 
 operation::movie_comment_unlike_decrement_success[snippets='http-request,http-response']
 
+[[book]]
+== 책
+=== 메인페이지
+==== 성공
+operation::fetchBookListByBestseller_success[snippets='http-request,http-response']
+
+=== 상세페이지
+==== 성공
+operation::getBookDetail_success[snippets='http-request,http-response']
+
+
 [[image]]
 == 이미지
 
@@ -158,7 +185,17 @@ operation::memberCheckNotExistGroupChatJoin_success[snippets='http-request,http-
 ==== 일대일 채팅 생성
 
 operation::createOneononeChatroom_success[snippets='http-request,http-response']
+==== 일대일 채팅 생성 실패
+operation::createOneononeChatroom_failed_duplicated[snippets='http-response']
+
 
 ==== 일대일 채팅 목록 조회
 
 operation::getOneononeChatroom_success[snippets='http-response']
+
+
+=== 장르
+=== 성공
+operation::genreRead_success[snippets='http-response']
+
+
