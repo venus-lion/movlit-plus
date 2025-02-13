@@ -247,7 +247,10 @@
     /*margin-right: 20px;*/
     overflow: hidden;
     position: relative; /* 순위 표시를 위해 relative 설정 */
-    flex: 0 0 18%;
+    /*flex: 0 0 18%;*/
+    flex-basis: 18%; /* 너비 고정 */
+    flex-grow: 0;    /* 늘어나지 않음 */
+    flex-shrink: 0;   /* 줄어들지 않음 */
     margin: 0 1%;
     text-align: center;
     text-decoration: none;
@@ -279,7 +282,8 @@
     /*position: relative;*/
     border-radius: 8px;
     overflow: hidden; /* 이미지가 영역 밖으로 나가지 않도록 */
-    /*height: 350px;*/
+    max-height: 500px; /* 최대 높이 제한 (원하는 값으로 조정) */
+    height: auto; /* 중요: max-height를 사용하려면 height는 auto로 */
 }
 
 .book-image img .movie-image img {
