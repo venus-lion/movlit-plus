@@ -443,53 +443,53 @@ const Chat = () => {
 
 
             // 멤버 업데이트 토픽
-            const groupUpdateSubId = `/topic/chat/room/${chat.groupChatroomId}`;
-            if (!stompClient.subscriptions || !stompClient.subscriptions[groupUpdateSubId]) {
-                stompClient.subscribe(groupUpdateSubId, (message) => {
-                    const receivedData = JSON.parse(message.body);
-
-                    // 현재 열려있는 채팅방과 일치하는 경우만 처리
-                    if (
-                        selectedChat?.groupChatroomId &&
-                        selectedChat.groupChatroomId === chat.groupChatroomId
-                    ) {
-                        if (Array.isArray(receivedData)) {
-                            // 멤버 프로필 업데이트 이벤트
-                            setCurrentGroupChatMembers(receivedData);
-                        } else if (receivedData.hasOwnProperty('updateRoomDto')) {
-                            // MEMBER_JOIN or MEMBER_LEAVE 이벤트
-                            const {updateRoomDto, cachedMembers} = receivedData;
-
-                            // 새 멤버 리스트 반영
-                            setCurrentGroupChatMembers(cachedMembers);
-
-                            if (updateRoomDto.eventType === 'MEMBER_JOIN') {
-                                // 참여 메시지
-                                const joinMessage = updateRoomDto.eventMessage;
-                                setCurrentChatMessages((prev) => [
-                                    ...prev,
-                                    {
-                                        type: 'join',
-                                        message: joinMessage,
-                                        regDt: getNowDate(),
-                                    },
-                                ]);
-                            } else if (updateRoomDto.eventType === 'MEMBER_LEAVE') {
-                                // 퇴장 메시지
-                                const leaveMessage = updateRoomDto.eventMessage;
-                                setCurrentChatMessages((prev) => [
-                                    ...prev,
-                                    {
-                                        type: 'join',
-                                        message: leaveMessage,
-                                        regDt: getNowDate(),
-                                    },
-                                ]);
-                            }
-                        }
-                    }
-                });
-            }
+            // const groupUpdateSubId = `/topic/chat/room/${chat.groupChatroomId}`;
+            // if (!stompClient.subscriptions || !stompClient.subscriptions[groupUpdateSubId]) {
+            //     stompClient.subscribe(groupUpdateSubId, (message) => {
+            //         const receivedData = JSON.parse(message.body);
+            //
+            //         // 현재 열려있는 채팅방과 일치하는 경우만 처리
+            //         if (
+            //             selectedChat?.groupChatroomId &&
+            //             selectedChat.groupChatroomId === chat.groupChatroomId
+            //         ) {
+            //             if (Array.isArray(receivedData)) {
+            //                 // 멤버 프로필 업데이트 이벤트
+            //                 setCurrentGroupChatMembers(receivedData);
+            //             } else if (receivedData.hasOwnProperty('updateRoomDto')) {
+            //                 // MEMBER_JOIN or MEMBER_LEAVE 이벤트
+            //                 const {updateRoomDto, cachedMembers} = receivedData;
+            //
+            //                 // 새 멤버 리스트 반영
+            //                 setCurrentGroupChatMembers(cachedMembers);
+            //
+            //                 if (updateRoomDto.eventType === 'MEMBER_JOIN') {
+            //                     // 참여 메시지
+            //                     const joinMessage = updateRoomDto.eventMessage;
+            //                     setCurrentChatMessages((prev) => [
+            //                         ...prev,
+            //                         {
+            //                             type: 'join',
+            //                             message: joinMessage,
+            //                             regDt: getNowDate(),
+            //                         },
+            //                     ]);
+            //                 } else if (updateRoomDto.eventType === 'MEMBER_LEAVE') {
+            //                     // 퇴장 메시지
+            //                     const leaveMessage = updateRoomDto.eventMessage;
+            //                     setCurrentChatMessages((prev) => [
+            //                         ...prev,
+            //                         {
+            //                             type: 'join',
+            //                             message: leaveMessage,
+            //                             regDt: getNowDate(),
+            //                         },
+            //                     ]);
+            //                 }
+            //             }
+            //         }
+            //     });
+            // }
         });
     }, [
         isStompConnected,

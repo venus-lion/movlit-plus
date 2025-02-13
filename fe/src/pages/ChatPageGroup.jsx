@@ -135,50 +135,50 @@ function ChatPageGroup({
             });
             //
             //         // 2. /topic/chat/room/{roomId} 구독 (업데이트된 멤버 목록 수신)
-            //         client.subscribe(`/topic/chat/room/${roomId}`, (message => {
-            //             const receivedData = JSON.parse(message.body);
-            //
-            //             // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
-            //             if (Array.isArray(receivedData)) {
-            //                 // 1-1. 멤버 프로필 업데이트 이벤트
-            //                 setMembers(receivedData);
-            //             } else if (receivedData.hasOwnProperty('updateRoomDto')) {
-            //                 // 1-2. receivedData에 updateRoomDto 속성이 있으면, MEMBER_JOIN 이벤트로 간주
-            //                 const updateRoomDto = receivedData.updateRoomDto;
-            //                 const cachedMembers = receivedData.cachedMembers;
-            //
-            //                 if (updateRoomDto.eventType === 'MEMBER_JOIN') {
-            //                     // MEMBER_JOIN 이벤트 처리
-            //                     setMembers(cachedMembers);
-            //
-            //                     // joinMessage 처리
-            //                     const joinMessage = updateRoomDto.eventMessage;
-            //
-            //                     // 1-5. joinMessage를 채팅 메시지와 구분하여 화면에 표시
-            //                     setMessages((prevMessages) => [
-            //                         ...prevMessages,
-            //                         {
-            //                             type: 'join', // 메시지 유형을 'join'으로 설정
-            //                             message: joinMessage,
-            //                             regDt: DateTimeUtil(getNowDate()), //new Date(),
-            //                         },
-            //                     ]);
-            //                 } else if (updateRoomDto.eventType === 'MEMBER_LEAVE') {
-            //                     // MEMBER_LEAVE 이벤트 처리
-            //                     setMembers(cachedMembers);
-            //
-            //                     const leaveMessage = updateRoomDto.eventMessage;
-            //                     setMessages((prevMessages) => [
-            //                         ...prevMessages,
-            //                         {
-            //                             type: 'join', // (중요) 나간 멤버 알림 메시지 유형을 'join'으로 설정
-            //                             message: leaveMessage, // "ㅇㅇ님이 나갔습니다" 메시지 설정
-            //                             regDt: DateTimeUtil(getNowDate()), //new Date(),
-            //                         },
-            //                     ]);
-            //                 }
-            //             }
-            //         }))
+            client.subscribe(`/topic/chat/room/${roomId}`, (message => {
+                const receivedData = JSON.parse(message.body);
+
+                // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
+                if (Array.isArray(receivedData)) {
+                    // 1-1. 멤버 프로필 업데이트 이벤트
+                    setMembers(receivedData);
+                } else if (receivedData.hasOwnProperty('updateRoomDto')) {
+                    // 1-2. receivedData에 updateRoomDto 속성이 있으면, MEMBER_JOIN 이벤트로 간주
+                    const updateRoomDto = receivedData.updateRoomDto;
+                    const cachedMembers = receivedData.cachedMembers;
+
+                    if (updateRoomDto.eventType === 'MEMBER_JOIN') {
+                        // MEMBER_JOIN 이벤트 처리
+                        setMembers(cachedMembers);
+
+                        // joinMessage 처리
+                        const joinMessage = updateRoomDto.eventMessage;
+
+                        // 1-5. joinMessage를 채팅 메시지와 구분하여 화면에 표시
+                        setMessageList((prevMessages) => [
+                            ...prevMessages,
+                            {
+                                type: 'join', // 메시지 유형을 'join'으로 설정
+                                message: joinMessage,
+                                regDt: getNowDate(), //new Date(),
+                            },
+                        ]);
+                    } else if (updateRoomDto.eventType === 'MEMBER_LEAVE') {
+                        // MEMBER_LEAVE 이벤트 처리
+                        setMembers(cachedMembers);
+
+                        const leaveMessage = updateRoomDto.eventMessage;
+                        setMessageList((prevMessages) => [
+                            ...prevMessages,
+                            {
+                                type: 'join', // (중요) 나간 멤버 알림 메시지 유형을 'join'으로 설정
+                                message: leaveMessage, // "ㅇㅇ님이 나갔습니다" 메시지 설정
+                                regDt: getNowDate(), //new Date(),
+                            },
+                        ]);
+                    }
+                }
+            }))
         };
         //
         client.activate();
