@@ -29,17 +29,17 @@ public class RedisStreamConfig {
     public StreamMessageListenerContainer<String, MapRecord<String, String, String>> streamMessageListenerContainer(
             @Qualifier("redisConnectionFactory") RedisConnectionFactory redisConnectionFactory
     ) {
-        StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options = getStringMapRecordStreamMessageListenerContainerOptions();
+        StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options = getOptions();
+        StreamMessageListenerContainer<String, MapRecord<String, String, String>> container =
+                StreamMessageListenerContainer.create(redisConnectionFactory, options);
 
-        StreamMessageListenerContainer<String, MapRecord<String, String, String>> container = StreamMessageListenerContainer.create(
-                redisConnectionFactory, options);
         container.start();
-        log.info("==== StreamMessageListenerContainer 등록 : {}", container);
+
         return container;
     }
 
-    private StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> getStringMapRecordStreamMessageListenerContainerOptions() {
-        StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> options = StreamMessageListenerContainerOptions
+    private StreamMessageListenerContainerOptions<String, MapRecord<String, String, String>> getOptions() {
+        return StreamMessageListenerContainerOptions
                 .builder()
                 .executor(redisStreamExecutor)
                 .batchSize(10)
@@ -53,7 +53,6 @@ public class RedisStreamConfig {
                             }
                         })
                 .build();
-        return options;
     }
 
     @PreDestroy
