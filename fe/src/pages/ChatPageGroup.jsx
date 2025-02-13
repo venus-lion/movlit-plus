@@ -39,6 +39,10 @@ function ChatPageGroup({
     }, [roomInfo]);
 
     useEffect(() => {
+        setMessageList(messages);
+    }, [messages]);
+
+    useEffect(() => {
         setMembers(currentGroupChatMembers || []);
     }, [currentGroupChatMembers]);
 
