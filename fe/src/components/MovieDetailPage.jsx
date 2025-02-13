@@ -22,7 +22,8 @@ import 'react-circular-progressbar/dist/styles.css';
 import GetGroupChatInfoModal from "./chat/GetGroupChatInfoModal.jsx";
 import CreateGroupChatNameModal from "./chat/CreateGroupChatNameModal.jsx";
 import './MovieDetailPage.css'; // CSS 파일 import
-import {AppContext} from "../App.jsx"; // AppContext import
+import {AppContext} from "../App.jsx";
+import BookCarouselRecommend from "../pages/BookCarouselRecommend.jsx"; // AppContext import
 
 function MovieDetailPage() {
     const {movieId} = useParams();
@@ -61,6 +62,34 @@ function MovieDetailPage() {
     const location = useLocation(); // 현재 URL의 location 객체 가져오기
     const params = new URLSearchParams(location.search); // 쿼리 파라미터 읽기
     const navigate = useNavigate();
+
+    // 추천 책 리스트
+    const [recommendedBooks, setRecommendedBooks] = useState([]); // 전체 도서 목록
+    const [startIndex, setStartIndex] = useState(0); // 화면에 보이는 도서 시작 인덱스
+    const [startIndexRecommended, setStartIndexRecommended] = useState(0);
+
+    const handleNextRecommended = () => handleNext(startIndexRecommended, setStartIndexRecommended, recommendedBooks.length);
+    const handlePrevRecommended = () => handlePrev(startIndexRecommended, setStartIndexRecommended);
+
+    // 관련 책 추천
+    useEffect(() => {
+        const fetchBooks = async () => {
+            try {
+                const response = await axiosInstance.get(`/books/9791138485593/recommendedBooks`);
+                // const response = await axios.get('/api/books/popular', {
+                //     params: {limit : 30},
+                // });
+
+                //const response = await axiosInstance.get(`/api/books/popular`);
+                console.log('#### 추천책 response 값 :' + response.data);
+                setRecommendedBooks(response.data);
+            } catch (err) {
+                console.error(`Error fetching books : `, err);
+            }
+        }
+
+        fetchBooks();
+    }, []);
 
     // 관련 영화 데이터 가져오기
     const {
@@ -925,23 +954,36 @@ function MovieDetailPage() {
 
                         <div className="section">
                             <div className="sectionTitle">관련 도서 추천</div>
+
                             <div className="sectionContent">
-                                {relatedBooksLoading && <p>Loading related books...</p>}
-                                {relatedBooksError && (
-                                    <div>
-                                        <p>Error loading related books.</p>
-                                    </div>
-                                )}
-                                {!relatedBooksLoading && !relatedBooksError && (
-                                    <BookGenreCarousel
-                                        books={relatedBooks}
-                                        startIndex={relatedBooksStartIndex}
-                                        handleNext={handleRelatedBooksNext}
-                                        handlePrev={handleRelatedBooksPrev}
-                                    />
-                                )}
+                                <BookCarouselRecommend
+                                    books={recommendedBooks}
+                                    startIndex={startIndexRecommended}
+                                    handlePrev={handlePrevRecommended}
+                                    handleNext={handleNextRecommended}
+                                />
                             </div>
                         </div>
+
+                        {/*<div className="section">*/}
+                        {/*    <div className="sectionTitle">관련 도서 추천</div>*/}
+                        {/*    <div className="sectionContent">*/}
+                        {/*        {relatedBooksLoading && <p>Loading related books...</p>}*/}
+                        {/*        {relatedBooksError && (*/}
+                        {/*            <div>*/}
+                        {/*                <p>Error loading related books.</p>*/}
+                        {/*            </div>*/}
+                        {/*        )}*/}
+                        {/*        {!relatedBooksLoading && !relatedBooksError && (*/}
+                        {/*            <BookGenreCarousel*/}
+                        {/*                books={relatedBooks}*/}
+                        {/*                startIndex={relatedBooksStartIndex}*/}
+                        {/*                handleNext={handleRelatedBooksNext}*/}
+                        {/*                handlePrev={handleRelatedBooksPrev}*/}
+                        {/*            />*/}
+                        {/*        )}*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
                 <GetGroupChatInfoModal
