@@ -19,10 +19,15 @@ function ChatPage({key, roomId, roomInfo, currentUserId, stompClient, isStompCon
     // const [currentUserId, setCurrentUserId] = useState(null);
     const [isComposing, setIsComposing] = useState(false);
     const [roomInfoData, setRoomInfoData] = useState(roomInfo);
+    const [messageList, setMessageList] = useState(messages);
 
     useEffect(() => {
         setRoomInfoData(roomInfo);
     }, [roomInfo]);
+
+    useEffect(() => {
+        setMessageList(messages);
+    }, [messages]);
 
     useEffect(() => {
         // // 과거 메시지 로드
@@ -47,48 +52,48 @@ function ChatPage({key, roomId, roomInfo, currentUserId, stompClient, isStompCon
     //     return () => subscription.unsubscribe();
     // }, [roomId, stompClient, isStompConnected, onReceiveMessage]);
 
-    // // WebSocket 연결 설정
-    // useEffect(() => {
-    //     if (!roomId) return; // roomId가 없으면 연결하지 않음
-    //
-    //     const client = new Client({
-    //         webSocketFactory: () => new SockJS(`${process.env.VITE_BASE_URL_FOR_CONF}/ws-stomp`),
-    //         connectHeaders: {
-    //             Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
-    //         },
-    //         debug: (str) => {
-    //             // console.log("메시지  : " + JSON.stringify(messages, null, 2));
-    //         },
-    //     });
-    //
-    //
-    //     client.onConnect = () => {
-    //         console.log('WebSocket Connected');
-    //         client.subscribe(`/topic/chat/message/one-on-one/${roomId}`, (message) => {
-    //             const receivedMessage = JSON.parse(message.body);
-    //             setMessages((prevMessages) => [...prevMessages, receivedMessage]);
-    //
-    //             if (onReceiveMessage) {
-    //                 onReceiveMessage(receivedMessage);
-    //             }
-    //         });
-    //
-    //         // 2. /topic/chat/room/{roomId} 구독 (업데이트된 멤버 목록 수신)
-    //         // client.subscribe(`/topic/chat/room/${roomId}`, (message) => {
-    //         //     const receivedData = JSON.parse(message.body);
-    //         //     console.log(receivedData);
-    //         //     // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
-    //         //     setRoomInfoData(receivedData);
-    //         // });
-    //     };
-    //
-    //     client.activate();
-    //     setStompClient(client);
-    //
-    //     return () => {
-    //         if (client.connected) client.deactivate();
-    //     };
-    // }, [roomId]); // roomId가 변경될 때마다 재연결
+    // WebSocket 연결 설정
+    useEffect(() => {
+        if (!roomId) return; // roomId가 없으면 연결하지 않음
+
+        const client = new Client({
+            webSocketFactory: () => new SockJS(`${process.env.VITE_BASE_URL_FOR_CONF}/ws-stomp`),
+            connectHeaders: {
+                Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
+            },
+            debug: (str) => {
+                // console.log("메시지  : " + JSON.stringify(messages, null, 2));
+            },
+        });
+
+
+        client.onConnect = () => {
+            console.log('WebSocket Connected');
+            client.subscribe(`/topic/chat/message/one-on-one/${roomId}`, (message) => {
+                const receivedMessage = JSON.parse(message.body);
+                setMessageList((prevMessages) => [...prevMessages, receivedMessage]);
+
+                // if (onReceiveMessage) {
+                //     onReceiveMessage(receivedMessage);
+                // }
+            });
+
+            // 2. /topic/chat/room/{roomId} 구독 (업데이트된 멤버 목록 수신)
+            // client.subscribe(`/topic/chat/room/${roomId}`, (message) => {
+            //     const receivedData = JSON.parse(message.body);
+            //     console.log(receivedData);
+            //     // 1. receivedData가 배열(멤버 목록)인지, 객체(UpdateRoomDto)인지 체크
+            //     setRoomInfoData(receivedData);
+            // });
+        };
+
+        client.activate();
+        // setStompClient(client);
+
+        return () => {
+            if (client.connected) client.deactivate();
+        };
+    }, [roomId]); // roomId가 변경될 때마다 재연결
 
     const sendMessage = () => {
 
@@ -146,7 +151,7 @@ function ChatPage({key, roomId, roomInfo, currentUserId, stompClient, isStompCon
             }
         };
         scrollToBottom();
-    }, [messages]);
+    }, [messageList]);
 
     return (
         <div className="chat-container-group" style={{display: 'flex', flexDirection: 'column', height: '90%'}}>
@@ -154,7 +159,7 @@ function ChatPage({key, roomId, roomInfo, currentUserId, stompClient, isStompCon
                 <h2>채팅방: {roomInfoData.receiverNickname}</h2>
             </div>
             <div className="chat-messages-group" ref={messagesContainerRef}>
-                {messages.map((message, index) => {
+                {messageList.map((message, index) => {
                     const receiver = {
                         memberId: roomInfoData.receiverId,
                         nickname: roomInfoData.receiverNickname,
