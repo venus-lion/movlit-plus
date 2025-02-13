@@ -29,24 +29,26 @@ function BookCarouselRecommend({title, books, onBooksLoaded, hidden}) {
 
 
     return (
-        <div>
+        <div className="movie-carousel-section">
             <h2 className="carousel-title">{title}</h2>
-            <div className="book-carousel">
+            <div className="movie-carousel">
                 {startIndex > 0 && (
-                    <button className="prev-button" onClick={handlePrev}>
+                    <button className="prev-button" onClick={handlePrev} aria-label="Previous">
                         {'<'}
                     </button>
                 )}
-                <div className="book-list">
+                <div className="movie-list">
                     {books && books.slice(startIndex, startIndex + 5).map((book, index) => (
-                        <Link className="book-card" to={`/book/${book.bookId}`} key={book.bookId}>
+                        <Link className="movie-card" to={`/book/${book.bookId}`} key={book.bookId}>
                             <div>
                                 {title !== "추천 도서" && (
-                                    <div className="book-rank">
+                                    <div className="movie-rank">
                                         {startIndex + index + 1}
                                     </div>
                                 )}
-                                <img src={book.bookImgUrl} alt={book.title} className="book-image"/>
+                                <div className="movie-image">
+                                    <img src={book.bookImgUrl} alt={book.title} className="movie-image"/>
+                                </div>
                                 <div className="book-info">
                                     <h3 className="book-title">{book.title}</h3>
                                     <p className="book-writer">
