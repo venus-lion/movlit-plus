@@ -957,15 +957,17 @@ function BookDetailPage() {
                             </div>
                         </div>
 
-                        <div style={styles.section} className="section">
-                            <div style={styles.sectionTitle} className="sectionTitle">관련 도서</div>
+                        <div className="section">
+                            <div className="sectionTitle">관련 도서</div>
 
-                            <BookCarouselRecommend
-                                books={recommendedBooks}
-                                startIndex={startIndexRecommended}
-                                handlePrev={handlePrevRecommended}
-                                handleNext={handleNextRecommended}
-                            />
+                            <div className="sectionContent">
+                                <BookCarouselRecommend
+                                    books={recommendedBooks}
+                                    startIndex={startIndexRecommended}
+                                    handlePrev={handlePrevRecommended}
+                                    handleNext={handleNextRecommended}
+                                />
+                            </div>
                         </div>
                         <div style={styles.section} className="section">
                             <div style={styles.sectionTitle} className="sectionTitle">관련 영화</div>
