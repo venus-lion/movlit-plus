@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import axiosInstance from '../axiosInstance';
 import './FollowList.css';
-import {FaUserCircle} from 'react-icons/fa';
+import {FaUserCircle, FaUserPlus, FaUserCheck} from 'react-icons/fa'; // 아이콘 추가
 import FollowToggleButton from "./FollowToggleButton.jsx";
 import {Link, useParams} from "react-router-dom";
 
-function FollowList({type}) {
+function FollowListPer({type}) {
     const [followList, setFollowList] = useState([]);
 
     const {memberId} = useParams();
@@ -33,7 +33,7 @@ function FollowList({type}) {
 
     return (
         <div className="follow-list-container">
-            <h2>{type === 'followers' ? '유저를 팔로우하는 사람들' : '유저를 팔로우하는 사람들'}</h2>
+            <h2>{type === 'followers' ? '유저를 팔로우하는 사람들' : '유저가 팔로우하는 사람들'}</h2>
             <div className="follow-list">
                 {followList.map((follow) => (
                     <div key={follow.memberId} className="follow-item">
@@ -53,7 +53,7 @@ function FollowList({type}) {
                             <div className="email">{follow.email}</div>
                         </div>
                         {/* 팔로잉/팔로우 버튼 (MemberProfilePage에서 가져옴) */}
-                        <FollowToggleButton memberId={follow.memberId}/>
+                        <FollowToggleButton memberId={follow.memberId} isIcon={true}/> {/* isIcon prop 추가 */}
                     </div>
                 ))}
             </div>
@@ -62,4 +62,4 @@ function FollowList({type}) {
 
 }
 
-export default FollowList;
+export default FollowListPer;

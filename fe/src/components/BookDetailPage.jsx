@@ -961,12 +961,12 @@ function BookDetailPage() {
                             <div className="sectionTitle">관련 도서</div>
 
                             <div className="sectionContent">
-                                <BookCarouselRecommend
-                                    books={recommendedBooks}
-                                    startIndex={startIndexRecommended}
-                                    handlePrev={handlePrevRecommended}
-                                    handleNext={handleNextRecommended}
-                                />
+                                {/*<BookCarouselRecommend*/}
+                                {/*    books={recommendedBooks}*/}
+                                {/*    startIndex={startIndexRecommended}*/}
+                                {/*    handlePrev={handlePrevRecommended}*/}
+                                {/*    handleNext={handleNextRecommended}*/}
+                                {/*/>*/}
                             </div>
                         </div>
                         <div style={styles.section} className="section">

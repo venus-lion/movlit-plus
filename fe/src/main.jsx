@@ -117,11 +117,11 @@ const router = createBrowserRouter([
             },
             {
                 path: '/members/:memberId/followers',
-                element: <FollowListPer/>
+                element: <FollowListPer type="followers"/>
             },
             {
                 path: '/members/:memberId/followings',
-                element: <FollowListPer/>
+                element: <FollowListPer type="followings"/>
             }
         ],
     },
