@@ -1,3 +1,20 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* 모든 요소의 박스 크기 조정 */
+}
+
+.container{
+    width: 100%;
+    fontFamily: Arial sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+.section{
+    max-width: 100%;
+}
+
 .comment-user-link {
     text-decoration: none; /* 밑줄 제거 */
     color: #282c34; /* 닉네임 색상 */

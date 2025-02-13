@@ -610,7 +610,7 @@ function BookDetailPage() {
 
 
     return (
-        <div style={styles.container} className="container">
+        <div className="container">
             <div
                 style={{
                     ...styles.header,
