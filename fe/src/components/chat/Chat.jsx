@@ -433,12 +433,12 @@ const Chat = () => {
                     )
                 );
                 // 현재 열려있는 그룹 채팅방이면 메시지 리스트에 추가
-                if (
-                    selectedChat?.groupChatroomId &&
-                    selectedChat.groupChatroomId === chat.groupChatroomId
-                ) {
-                    setCurrentChatMessages((prev) => [...prev, receivedMessage]);
-                }
+                // if (
+                //     selectedChat?.groupChatroomId &&
+                //     selectedChat.groupChatroomId === chat.groupChatroomId
+                // ) {
+                //     setCurrentChatMessages((prev) => [...prev, receivedMessage]);
+                // }
             });
 
 
