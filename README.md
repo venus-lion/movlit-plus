@@ -4,7 +4,7 @@
 
 ## 🕸️ 시스템 아키텍처
 
-![https://github.com/user-attachments/assets/96b372dd-52ee-4481-96d1-fba414443c4a](https://github.com/user-attachments/assets/96b372dd-52ee-4481-96d1-fba414443c4a)
+<img src="https://github.com/user-attachments/assets/96b372dd-52ee-4481-96d1-fba414443c4a" style="width: 600px">
 
 ## 📄 프로젝트 개요
 
@@ -21,9 +21,9 @@
 <details>
 <summary><h3>메인 화면</h3></summary>
 
-![https://github.com/user-attachments/assets/c86c38e8-4812-427e-950f-42fdb85cdd11](https://github.com/user-attachments/assets/c86c38e8-4812-427e-950f-42fdb85cdd11)
+<img src="https://github.com/user-attachments/assets/c86c38e8-4812-427e-950f-42fdb85cdd11" style="width: 600px">
 
-![https://github.com/user-attachments/assets/99e01ff5-b105-4c0b-98cd-224ee0070b02](https://github.com/user-attachments/assets/99e01ff5-b105-4c0b-98cd-224ee0070b02)
+<img src="https://github.com/user-attachments/assets/99e01ff5-b105-4c0b-98cd-224ee0070b02" style="width: 600px">
 
 - 카테고리별 콘텐츠(영화, 책) 리스트 제공
 
@@ -32,13 +32,13 @@
 <details>
 <summary><h3>상세 화면</h3></summary>
 
-![https://github.com/user-attachments/assets/a9a6668b-0632-4445-b92f-703b880e30e1](https://github.com/user-attachments/assets/a9a6668b-0632-4445-b92f-703b880e30e1)
+<img src="https://github.com/user-attachments/assets/a9a6668b-0632-4445-b92f-703b880e30e1" style="width: 600px">
 
-![https://github.com/user-attachments/assets/93140632-99de-4166-b4ef-384bfa25bb73](https://github.com/user-attachments/assets/93140632-99de-4166-b4ef-384bfa25bb73)
+<img src="https://github.com/user-attachments/assets/93140632-99de-4166-b4ef-384bfa25bb73" style="width: 600px">
 
-![https://github.com/user-attachments/assets/9ac75e7f-9782-46cd-a63b-8cf710e015a1](https://github.com/user-attachments/assets/9ac75e7f-9782-46cd-a63b-8cf710e015a1)
+<img src="https://github.com/user-attachments/assets/9ac75e7f-9782-46cd-a63b-8cf710e015a1" style="width: 600px">
 
-![https://github.com/user-attachments/assets/79539d4b-16ed-473a-aeae-4dc15e737690](https://github.com/user-attachments/assets/79539d4b-16ed-473a-aeae-4dc15e737690)
+<img src="https://github.com/user-attachments/assets/79539d4b-16ed-473a-aeae-4dc15e737690" style="width: 600px">
 
 - 평점 및 코멘트, 찜, 유사 콘텐츠 제공 기능
 
@@ -47,7 +47,6 @@
 <details>
 <summary><h3>통합 검색</h3></summary>
 
-[//]: # (![https://github.com/user-attachments/assets/2e66d8b0-9f04-4ecb-bdb7-ffe42a01bcfa]&#40;https://github.com/user-attachments/assets/2e66d8b0-9f04-4ecb-bdb7-ffe42a01bcfa&#41;)
 <img src="https://github.com/user-attachments/assets/2e66d8b0-9f04-4ecb-bdb7-ffe42a01bcfa" style="width:600px">
 
 - 콘텐츠의 제목/장르/카테고리/출연 배우/제작 등으로 검색 및 유사 콘텐츠 제공
