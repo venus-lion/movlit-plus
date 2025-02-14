@@ -1,11 +1,11 @@
 package movlit.be.book.getBookApi;
 
 import lombok.RequiredArgsConstructor;
-import movlit.be.book.domain.Genre;
 import movlit.be.book.domain.entity.BookEntity;
 import movlit.be.book.domain.entity.BookGenreEntity;
 import movlit.be.book.domain.entity.BookGenreIdEntity;
 import movlit.be.book.infra.persistence.jpa.BookGenreJpaRepository;
+import movlit.be.common.util.Genre;
 import movlit.be.common.util.ids.BookId;
 import org.springframework.stereotype.Service;
 

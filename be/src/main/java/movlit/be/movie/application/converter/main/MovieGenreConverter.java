@@ -1,6 +1,6 @@
 package movlit.be.movie.application.converter.main;
 
-import movlit.be.book.domain.Genre;
+import movlit.be.common.util.Genre;
 import movlit.be.movie.domain.MovieGenre;
 import movlit.be.movie.domain.entity.MovieGenreEntity;
 

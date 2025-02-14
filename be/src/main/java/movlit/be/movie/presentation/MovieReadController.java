@@ -58,7 +58,7 @@ public class MovieReadController {
     @ExecutionTime
     @GetMapping("/genre")
     public ResponseEntity<MovieMainGenreResponseDto> getMovieGroupbyGenre(
-            @RequestParam(required = true) Long genreId,
+            @RequestParam Long genreId,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int pageSize) {
 
