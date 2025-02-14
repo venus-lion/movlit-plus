@@ -4,7 +4,7 @@
 
 ## 🕸️ 시스템 아키텍처
 
-<img src="https://github.com/user-attachments/assets/96b372dd-52ee-4481-96d1-fba414443c4a" style="width: 600px">
+<img src="https://github.com/user-attachments/assets/96b372dd-52ee-4481-96d1-fba414443c4a">
 
 ## 📄 프로젝트 개요
 
@@ -64,6 +64,7 @@
 <summary><h3>통합 검색 - 콘텐츠 검색 및 유사 콘텐츠 제공</h3></summary>
 
 - 콘텐츠의 제목/장르/카테고리/출연 배우/제작 등으로 검색 및 유사 콘텐츠 제공
+
 <img src="https://github.com/user-attachments/assets/2e66d8b0-9f04-4ecb-bdb7-ffe42a01bcfa" style="width:600px">
 
 
@@ -73,6 +74,7 @@
 <summary><h3>프로필 페이지 - 팔로우, 개인정보 수정 및 맞춤 콘텐츠 제공</h3></summary>
 
 - 팔로우/언팔로우, 개인정보 수정 및 사용자 정보 기반의 맞춤 콘텐츠 제공
+
 <img src="https://github.com/user-attachments/assets/8f440bfd-d64c-4e43-8329-5502c0b0b062" style="width:600px">
 
 
@@ -83,14 +85,17 @@
 
 
 - 최초 DM 전송 시 프로필 페이지에서 채팅방 생성
+
 <img src="https://github.com/user-attachments/assets/b3c1e0c9-b985-4b24-af52-5c1cde01ae55" style="width:600px">
 <hr/>
 
 - 일대일 채팅방 접속 중인 상태에서 상대방이 프로필 사진이 변경되면, 실시간 업데이트
+
 <img src="https://github.com/user-attachments/assets/7cd08d50-8ec1-4f38-88dc-35eb4c67bdf7" style="width:600px">
 <hr/>
 
 - 일대일 채팅을 받으면, 그 받은 유저에게 알림이 오는 기능
+
 <img src="https://github.com/user-attachments/assets/505fea8c-7cbd-4eac-b7e1-a35a73763797" style="width:600px">
 
 </details>
@@ -99,20 +104,23 @@
 <summary><h3>그룹 채팅 - 콘텐츠(영화/책)의 그룹 채팅방 가입 및 채팅을 통한 의견 교류</h3></summary>
 
 - 콘텐츠 검색 및 그룹 채팅방 생성
+
 <img src="https://github.com/user-attachments/assets/f24799ba-e133-4824-9858-7fa50ed64abd" style="width:600px">
 <hr/>
 
 - 실시간 그룹 채팅
+
 <img src="https://github.com/user-attachments/assets/48cbec83-32e2-480d-88d7-71ef0cf99c47" style="width:600px">
 <hr/>
 
 - 실시간으로 프로필 정보 변경 반영
+
 <img src="https://github.com/user-attachments/assets/65d61216-23da-4f51-952e-437f7cbf5adb" style="width:600px">
 <hr/>
 
 - 채팅방 나가기
-<img src="https://github.com/user-attachments/assets/62f28b53-feb7-4f45-81fa-6bbc37848107" style="width:600px">
 
+<img src="https://github.com/user-attachments/assets/62f28b53-feb7-4f45-81fa-6bbc37848107" style="width:600px">
 
 </details>
 
@@ -120,6 +128,7 @@
 <summary><h3>사용자 알림 - 특정 이벤트에 대한 실시간 알림</h3></summary>
 
 - 채팅, 팔로우, 콘텐츠 찜 이벤트를 실시간으로 알림 제공
+
 <img src="https://github.com/user-attachments/assets/cb18199a-8ed0-49eb-8515-8cda7d2e0503" style="width:600px">
 
 </details>
