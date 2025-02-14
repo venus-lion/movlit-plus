@@ -133,10 +133,10 @@
 
 ## 🧑‍🤝‍🧑 멤버
 
-| 팀장                                                                                                                        | 팀원                                                                                                                | 팀원                                                                                                               | 팀원                                                                                                                      |
-|---------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
-| <a href="https://github.com/devbattery"><img src = "https://avatars.githubusercontent.com/u/60080167?v=4" width="120px;"> | <a href="https://github.com/minyoongi96"><img src = "https://avatars.githubusercontent.com/gunoc" width="120px;"> | <a href="https://github.com/G1Huh"><img src = "https://avatars.githubusercontent.com/chunghye98" width="120px;"> | <a href="https://github.com/minjikimkim2222"><img src = "https://avatars.githubusercontent.com/won4885" width="120px;"> |
-| [정원준](https://github.com/devbattery)                                                                                      | [민윤기](https://github.com/minyoongi96)                                                                             | [허지원](https://github.com/G1Huh)                                                                                  | [김민지](https://github.com/minjikimkim2222)                                                                               |
+| 팀장                                                                                                                    | 팀원 | 팀원 | 팀원 |
+|-----------------------------------------------------------------------------------------------------------------------| --- | --- | --- |
+| <a href="https://github.com/devbattery"><img src = "https://avatars.githubusercontent.com/devbattery" width="120px;"> | <a href="https://github.com/minyoongi96"><img src = "https://avatars.githubusercontent.com/minyoongi96" width="120px;"> | <a href="https://github.com/G1Huh"><img src = "https://avatars.githubusercontent.com/G1Huh" width="120px;"> | <a href="https://github.com/minjikimkim2222"><img src = "https://avatars.githubusercontent.com/minjikimkim2222" width="120px;"> |
+| [정원준](https://github.com/devbattery)                                                                                  | [민윤기](https://github.com/minyoongi96) | [허지원](https://github.com/G1Huh) | [김민지](https://github.com/minjikimkim2222) |
 
 ## 📉 ERD 설계도
 
