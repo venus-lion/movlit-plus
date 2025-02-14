@@ -2,27 +2,26 @@ import React, {useContext, useEffect, useRef, useState} from 'react';
 import {Link, useLocation, useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../axiosInstance';
 import {
+    FaCheck,
     FaComment,
+    FaEdit,
     FaHeart,
     FaRegHeart,
     FaRegStar,
     FaStar,
     FaStarHalfAlt,
-    FaUserCircle,
-    FaEdit,
     FaTrashAlt,
-    FaCheck, // FaCheck 아이콘 추가
+    FaUserCircle,
 } from 'react-icons/fa';
 import MovieCarousel from '../pages/MovieCarousel';
 import useAuthMovieList from '../hooks/useAuthMovieList';
-import useBookList from '../hooks/useBookList';
-import BookGenreCarousel from '../pages/BookGenreCarousel';
 import {buildStyles, CircularProgressbar} from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import GetGroupChatInfoModal from "./chat/GetGroupChatInfoModal.jsx";
 import CreateGroupChatNameModal from "./chat/CreateGroupChatNameModal.jsx";
 import './MovieDetailPage.css'; // CSS 파일 import
-import {AppContext} from "../App.jsx"; // AppContext import
+import {AppContext} from "../App.jsx";
+import BookCarouselRecommend from "../pages/BookCarouselRecommend.jsx"; // AppContext import
 
 function MovieDetailPage() {
     const {movieId} = useParams();
@@ -87,14 +86,6 @@ function MovieDetailPage() {
         }
     };
 
-    const {
-        books: relatedBooks,
-        loading: relatedBooksLoading,
-        error: relatedBooksError,
-    } = useBookList({
-        endpoint: `/books/genres/movies/${movieId}/detail`,
-        params: {limit: 30},
-    });
     const [relatedBooksStartIndex, setRelatedBooksStartIndex] = useState(0);
 
     const handleRelatedBooksNext = () => {
@@ -110,6 +101,42 @@ function MovieDetailPage() {
             setRelatedBooksStartIndex(newIndex);
         }
     };
+
+    const [recommendedBooks, setRecommendedBooks] = useState([]); // 전체 도서 목록
+
+    //API에서 책 정보 가져오기
+    const handleNext = (startIndex, setStartIndex, length) => {
+        const newIndex = startIndex + 5;
+        if (newIndex < length) {
+            setStartIndex(newIndex);
+        }
+    };
+
+    const handlePrev = (startIndex, setStartIndex) => {
+        const newIndex = startIndex - 5;
+        if (newIndex >= 0) {
+            setStartIndex(newIndex);
+        }
+    };
+
+    const [startIndexRecommended, setStartIndexRecommended] = useState(0);
+    const handleNextRecommended = () => handleNext(startIndexRecommended, setStartIndexRecommended, recommendedBooks.length);
+    const handlePrevRecommended = () => handlePrev(startIndexRecommended, setStartIndexRecommended);
+
+
+    useEffect(() => {
+        const fetchBooks = async () => {
+            try {
+                const response = await axiosInstance.get(`/books/recommend/books/${movieId}`);
+                console.log('#### 추천책 response 값 :' + response.data);
+                setRecommendedBooks(response.data);
+            } catch (err) {
+                console.error(`Error fetching books : `, err);
+            }
+        }
+
+        fetchBooks();
+    }, []);
 
     useEffect(() => {
         axiosInstance
@@ -465,17 +492,6 @@ function MovieDetailPage() {
         return <div className="loading">Loading...</div>;
     }
 
-    const uniqueGenres = new Set();
-    if (relatedBooks) {
-        relatedBooks.forEach((book) => {
-            if (book.genres && Array.isArray(book.genres)) {
-                book.genres.forEach((genre) => uniqueGenres.add(genre.genreName));
-            }
-        });
-    }
-    const uniqueGenreList = Array.from(uniqueGenres);
-
-
     const handleJoinGroupChatroom = async (movieId) => {
         try {
 
@@ -517,7 +533,7 @@ function MovieDetailPage() {
         const checkJoinedRes = response.data;
         const isJoined = checkJoinedRes.isJoined;
         console.log('%%%% 가입여부 ' + JSON.stringify(response, null, 2));
-        if (isJoined === true ) {
+        if (isJoined === true) {
             if (shouldShowAlert === false) { // 매개변수를 사용하여 알림 표시 여부 결정 **//*******
                 alert("이미 가입된 채팅방입니다. ");
             }
@@ -638,7 +654,11 @@ function MovieDetailPage() {
                                         <span
                                             key={index}
                                             onClick={(e) => handleRatingClick(starIndex * 2, e)}
-                                            style={{cursor: 'pointer', position: 'relative', display: 'inline-block'}}
+                                            style={{
+                                                cursor: 'pointer',
+                                                position: 'relative',
+                                                display: 'inline-block'
+                                            }}
                                             onMouseMove={(e) => {
                                                 const rect = e.currentTarget.getBoundingClientRect();
                                                 const x = e.clientX - rect.left;
@@ -693,7 +713,8 @@ function MovieDetailPage() {
                                 className={`heart-button ${movieData.isHearted ? 'button-hearted' : 'button-not-hearted'}`}
                                 onClick={handleWishClick}
                             >
-                                {movieData.isHearted ? <FaHeart className="wishIcon"/> : <FaRegHeart className="wishIcon"/>}
+                                {movieData.isHearted ? <FaHeart className="wishIcon"/> :
+                                    <FaRegHeart className="wishIcon"/>}
                             </button>
                             <span id="heartCount" className="heartCountContainer">
                 {movieData.heartCount.toLocaleString()}
@@ -926,20 +947,12 @@ function MovieDetailPage() {
                         <div className="section">
                             <div className="sectionTitle">관련 도서 추천</div>
                             <div className="sectionContent">
-                                {relatedBooksLoading && <p>Loading related books...</p>}
-                                {relatedBooksError && (
-                                    <div>
-                                        <p>Error loading related books.</p>
-                                    </div>
-                                )}
-                                {!relatedBooksLoading && !relatedBooksError && (
-                                    <BookGenreCarousel
-                                        books={relatedBooks}
-                                        startIndex={relatedBooksStartIndex}
-                                        handleNext={handleRelatedBooksNext}
-                                        handlePrev={handleRelatedBooksPrev}
-                                    />
-                                )}
+                                <BookCarouselRecommend
+                                    books={recommendedBooks}
+                                    startIndex={startIndexRecommended}
+                                    handlePrev={handlePrevRecommended}
+                                    handleNext={handleNextRecommended}
+                                />
                             </div>
                         </div>
                     </div>
@@ -964,6 +977,7 @@ function MovieDetailPage() {
             </div>
         </div>
     );
+
 }
 
 export default MovieDetailPage;

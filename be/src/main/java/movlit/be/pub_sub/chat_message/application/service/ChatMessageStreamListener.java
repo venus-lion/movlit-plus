@@ -18,7 +18,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ChatMessageStreamListener implements StreamListener<String, MapRecord<String, String, String>> {
+public class ChatMessageStreamListener
+        implements StreamListener<String, MapRecord<String, String, String>> {
 
     private final ChatMessageRepository chatMessageRepository;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -32,10 +33,8 @@ public class ChatMessageStreamListener implements StreamListener<String, MapReco
         try {
             // Redis Stream 메시지를 DTO로 변환
             ChatMessageDto chatMessageDto = convertFromMap(message.getValue());
-
             // MongoDB에 저장
             saveMessageToMongoDB(chatMessageDto);
-
             // 처리 완료 후 Ack 전송
             acknowledgeMessage(message);
 

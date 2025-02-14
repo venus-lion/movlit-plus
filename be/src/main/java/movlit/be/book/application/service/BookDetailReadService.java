@@ -3,6 +3,7 @@ package movlit.be.book.application.service;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,14 +18,17 @@ import movlit.be.bookES.BookESConvertor;
 import movlit.be.bookES.BookESRepository;
 import movlit.be.bookES.BookESVo;
 import movlit.be.common.exception.BookNotFoundException;
+import movlit.be.common.exception.MovieNotFoundException;
 import movlit.be.common.util.ids.BookId;
 import movlit.be.common.util.ids.MemberId;
 import movlit.be.movie.domain.document.MovieDocument;
+import movlit.be.movie.infra.persistence.es.MovieDocumentRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +41,10 @@ public class BookDetailReadService {
 
     // Elasticsearch - 관련 도서 추천
     private final BookESRepository bookESRepository;
+
+    // TODO: service에서 참조하게끔 변경
+    private final MovieDocumentRepository movieDocumentRepository;
+
     private final ElasticsearchOperations elasticsearchOperations;
 
     // 도서 상세 정보 (리팩토링 후)
@@ -170,6 +178,79 @@ public class BookDetailReadService {
 
     }
 
+    // 관련 도서 추천 ByMovieId
+    public List<BookESVo> fetchRecommendedBooksByMovieId(Long movieId) {
+        Pageable pageable = PageRequest.of(0, 10);
+        MovieDocument movieDocument = movieDocumentRepository.findById(movieId)
+                .orElseThrow(MovieNotFoundException::new);
+
+        String category = movieDocument.getMovieGenre().toString();
+        String titleKeyword = movieDocument.getMovieTag().toString();
+        String description = movieDocument.getOverview();
+
+        // 3. elasticsearch 쿼리
+        BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
+
+        // 첫 번째 MatchQuery: description에 대한 쿼리와 boost 3.0 설정
+        Query titleKeywordMatchQueryForShould = MatchQuery.of(t -> t
+                .field("titleKeyword")
+                .query(titleKeyword)
+                //  .boost(2.0f) // boost 값 추가
+                .fuzziness("AUTO")
+        )._toQuery();
+
+        // 두 번째 MatchQuery: categoryName에 대한 쿼리와 boost 1.5 설정
+        Query categoryNameMatchQuery = MatchQuery.of(t -> t
+                .field("categoryName")
+                .query(category)
+                .boost(1.5f) // boost 값 추가
+        )._toQuery();
+
+        Query DescriptionMatchQueryForShould = MatchQuery.of(t -> t
+                .field("description")
+                .query(description)
+                .boost(1.5f) // boost 값 추가
+        )._toQuery();
+
+        // BoolQuery에 MatchQuery 추가
+        boolQueryBuilder
+                .should(titleKeywordMatchQueryForShould)
+                .should(categoryNameMatchQuery)
+                .should(DescriptionMatchQueryForShould)
+                .minimumShouldMatch("1");
+
+        // BoolQuery 빌드
+        BoolQuery boolQuery = boolQueryBuilder.build();
+
+        // NativeSearchQuery 빌드 -- 최종 쿼리
+        NativeQuery nativeQuery = new NativeQueryBuilder()
+                .withQuery(boolQuery._toQuery())
+                .withPageable(pageable)
+//                .withSort(Sort.by(
+//                        Sort.Order.desc("_score")
+////                        Sort.Order.desc("voteAverage")      // score순, 평점 순
+//                ))
+                .build();
+
+        // 검색 실행
+        SearchHits<BookES> searchHits = elasticsearchOperations.search(nativeQuery, BookES.class);
+
+        // 값이 없을경우
+        if (!searchHits.hasSearchHits()) {
+            return null; // 사용자 취향 리스트가 없음
+        }
+
+        List<BookES> bookESListForReturn = searchHits.getSearchHits().stream()
+                .map(SearchHit::getContent)
+                .toList();
+
+        log.info(" ==================== Elastic = {}", bookESListForReturn);
+
+        return bookESListForReturn.stream()
+                .map(BookESConvertor::documentToDomain)
+                .collect(Collectors.toList());
+    }
+
     // 관련 영화 추천
     public List<MovieDocument> fetchRecommendedMovies(BookId bookId) {
         Pageable pageable = PageRequest.of(0, 10);
@@ -253,6 +334,5 @@ public class BookDetailReadService {
 
 
     }
-
 
 }

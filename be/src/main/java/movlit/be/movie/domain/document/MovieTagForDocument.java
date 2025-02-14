@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.InnerField;
@@ -13,6 +14,7 @@ import org.springframework.data.elasticsearch.annotations.MultiField;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class MovieTagForDocument {
 
     @Field(type = FieldType.Keyword)
