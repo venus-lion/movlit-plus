@@ -126,6 +126,238 @@
 
 ## 💎 핵심 구현
 
+<details>
+<summary><h2> 1. 그룹 채팅방 생성 시 동시성 문제 해결</h2></summary>
+
+Movlit 서비스에서는 **한 컨텐츠당 하나의 그룹 채팅방**만 생성되도록 구현되어 있습니다.
+
+인기 영화나 책이 공개되자마자 수많은 사용자가 동시에 “채팅방 만들기” 버튼을 누를 경우, 서버가 요청을 감당하지 못해 여러 채팅방이 생성될 수 있습니다.
+
+이를 해결하기 위해 **Worker 클래스**를 도입하였습니다.
+
+Worker 클래스는 **Redis Queue**와 **Thread Pool**을 활용하여 채팅방 생성 요청을 **비동기적으로 처리**합니다.
+
+### 주요 처리 과정
+
+- **Callable 인터페이스 활용**
+  - 비동기 작업을 정의하여 Redis에서 데이터를 가져오는 작업을 처리합니다.
+- **Redis Queue Key 생성**
+  - Key Prefix와 contentId를 조합하여 Redis Queue의 Key를 생성합니다.
+- **데이터 조회**
+  - `rightPop()` 메서드를 사용하여 가장 오래된 생성 요청을 최대 10초 동안 대기하며 가져옵니다.
+  - 만약 데이터가 없거나 의도한 String 형태가 아니라면 empty를 반환합니다.
+  - 정상적인 String 데이터라면 contentId와 memberId를 Map 형태로 반환합니다.
+- **Future를 통한 결과 처리**
+  - ThreadPoolExecutor의 `submit()` 메서드를 통해 Callable task를 비동기 실행하고, Future 객체로 결과를 관리합니다.
+  - `future.get(30초)`를 호출하여 작업 완료를 기다리며, 30초 내에 완료되지 않으면 TimeoutException이 발생합니다.
+  - **예외 처리:**
+    - **InterruptedException:** 스레드가 인터럽트될 경우 현재 스레드의 인터럽트 상태를 재설정합니다.
+    - **ExecutionException:** Callable 실행 중 예외 발생 시 처리합니다.
+    - **TimeoutException:** 작업이 30초 안에 완료되지 않으면 발생합니다.
+    - 위 세 가지 예외 발생 시, `GroupChatroomCreationWhenWorkingException`을 발생시켜 채팅방 생성 요청 처리 중 문제가 있음을 알립니다.
+
+### 관련 이미지
+
+<img width="1210" alt="image (4)" src="[https://github.com/user-attachments/assets/d569a81d-b1e3-43f2-b296-551111229f1d](https://github.com/user-attachments/assets/d569a81d-b1e3-43f2-b296-551111229f1d)" /> <img width="1416" alt="image (5)" src="[https://github.com/user-attachments/assets/507953fb-8d63-4a84-a6ef-5efe3373c2ac](https://github.com/user-attachments/assets/507953fb-8d63-4a84-a6ef-5efe3373c2ac)" />
+
+</details>
+
+---
+
+<details>
+<summary><h2> 2. 메시징 (Redis Pub/Sub) 흐름</h2></summary>
+
+실시간 채팅 메시지 전송을 위해 **WebSocket**과 **Redis Pub/Sub**를 활용하고 있습니다.
+
+- **메시지 전송 과정:**
+  1. 클라이언트가 채팅 메시지를 전송합니다.
+  2. 서버는 메시지를 가공한 후, Redis Broker에 특정 토픽으로 발행합니다.
+- **사용하는 토픽:**
+  - 메시지 전송, 채팅방 업데이트, 채팅방 생성, 사용자 알림 등
+- **후처리:**
+  - Redis Subscriber가 각 토픽을 구독하여 후처리를 진행하고, 브로드캐스트 방식으로 실시간 반영됩니다.
+
+### 관련 이미지
+
+<img width="1152" alt="image (6)" src="[https://github.com/user-attachments/assets/74068e47-3d14-404f-bee0-3e8b18454f67](https://github.com/user-attachments/assets/74068e47-3d14-404f-bee0-3e8b18454f67)" />
+
+</details>
+
+---
+
+<details>
+<summary><h2> 3. 메시지 처리 (Redis Stream) 흐름</h2></summary>
+
+채팅 메시지의 **실시간 전송**과 **영구 저장**을 위해 Redis Stream과 Pub/Sub를 사용합니다.
+
+- **메시지 전송 및 처리 과정:**
+  1. 사용자가 채팅 메시지를 전송하면, 서버에서 메시지를 가공합니다.
+  2. Redis Publish를 통해 다른 소비자에게 메시지를 전달하여 WebSocket과 SSE를 통한 UI 업데이트가 이루어집니다.
+  3. 동시에 Redis Stream에 메시지를 추가하여, 하나 이상의 Consumer가 그룹으로 묶여 비동기적으로 처리합니다.
+  4. MongoDB에 저장 후, ACK를 전송하여 메시지 처리가 완료되었음을 확인합니다.
+- **Redis Stream 사용 이유:**
+  - **Consumer Group 지원:** Producer가 발행한 메시지를 여러 Consumer가 중복 없이 순차적으로 병렬 처리할 수 있습니다.
+  - **비동기 처리:** 메시지 저장을 별도의 리스너가 비동기적으로 처리하여 수평 확장이 용이합니다.
+  - **실시간성과 안정성 분리:** 메시지 전송/알림은 실시간, 저장은 비동기 처리함으로써 효율적인 파이프라인을 구축합니다.
+
+### 관련 이미지
+
+<img width="1278" alt="image (7)" src="[https://github.com/user-attachments/assets/2ce8800a-0103-4925-b980-9cef729352e2](https://github.com/user-attachments/assets/2ce8800a-0103-4925-b980-9cef729352e2)" /> <img width="1416" alt="image (8)" src="[https://github.com/user-attachments/assets/844591d9-6366-466c-9e32-4ae4db3a5166](https://github.com/user-attachments/assets/844591d9-6366-466c-9e32-4ae4db3a5166)" /> <img width="1369" alt="image (9)" src="[https://github.com/user-attachments/assets/75b70d01-740e-44d2-92ad-a8086af1454f](https://github.com/user-attachments/assets/75b70d01-740e-44d2-92ad-a8086af1454f)" />
+
+- **Consumer 클래스:**
+  - 별도의 Consumer 클래스를 정의하여 Consumer Group의 등록, 구독 설정, 종료 처리를 관리합니다.
+  - `@PostConstruct`로 애플리케이션 시작 시 ConsumerGroup이 없으면 생성하고, 지정한 그룹과 이름으로 StreamOffset 이후의 메시지를 구독합니다.
+- **StreamListener 구현체 (ChatMessageStreamListener):**
+  - Redis 스트림에서 전달된 채팅 메시지를 처리하며, MongoDB에 저장 후 ACK를 전송합니다.
+</details>
+
+---
+
+<details>
+<summary><h2> 4. 그룹채팅방 멤버정보 캐싱 (Redis Cache)</h2></summary>
+
+그룹 채팅방에 참여한 멤버 정보를 실시간으로 조회할 경우 DB 부하가 크므로 **Redis 캐싱**을 도입하였습니다.
+
+- **처리 과정:**
+  - **Cache Hit:** Redis에 캐싱된 데이터를 빠르게 조회합니다.
+  - **Cache Miss:** DB에서 조회 후 Redis에 캐싱하여 이후 요청에 빠르게 응답할 수 있도록 합니다.
+
+### 관련 이미지
+
+<img width="1245" alt="image (14)" src="[https://github.com/user-attachments/assets/9224e9c3-6ddc-4601-ba88-5ba781928a63](https://github.com/user-attachments/assets/9224e9c3-6ddc-4601-ba88-5ba781928a63)" />
+
+</details>
+
+---
+<details>
+<summary><h2> 5. 캐싱 성능 개선</h2></summary>
+
+DB에서 멤버 정보를 조회할 경우 평균 두 자리 수의 시간이 소요되지만, Redis 캐시를 사용하면 평균 한 자리 수의 시간으로 조회가 가능해졌습니다.
+
+### 관련 이미지
+
+<img width="517" alt="image (15)" src="[https://github.com/user-attachments/assets/92afb98c-d425-4f75-a63a-bd2c924df450](https://github.com/user-attachments/assets/92afb98c-d425-4f75-a63a-bd2c924df450)" />
+</details>
+
+---
+
+<details>
+<summary><h2> 6. 일대일 채팅방 목록 캐싱 (Redis Cache)</h2></summary>
+
+**일대일 채팅방**은 삭제 없이 새로운 채팅이 추가되는 형태이므로 변경 빈도가 낮습니다.
+
+따라서, 채팅방 목록 역시 Redis 캐싱을 통해 빠르게 조회할 수 있도록 처리하였습니다.
+
+- **처리 과정:**
+  - **Cache Hit:** Redis에 저장된 캐시 데이터를 조회합니다.
+  - **Cache Miss:** DB에서 데이터를 가져온 후 Redis에 캐싱합니다.
+
+### 관련 이미지
+
+<img width="1283" alt="image (16)" src="[https://github.com/user-attachments/assets/57862678-d57d-410b-ba94-8de8d910d513](https://github.com/user-attachments/assets/57862678-d57d-410b-ba94-8de8d910d513)" />
+
+</details>
+
+---
+<details>
+<summary><h2> 7. 일대일 채팅방 캐시 업데이트 (Redis Cache)</h2></summary>
+
+일대일 채팅의 경우,
+
+1.  상대방에게 최초 메시지 전송 시 일대일 채팅방이 생성되고 메시지가 전송됩니다.
+2.  RDB에 채팅방 정보 저장 후 Redis 캐시를 업데이트합니다.
+3.  이후 토픽을 발행하여 Redis Subscriber 클라이언트를 통해 채팅방 및 메시지 정보를 전달합니다.
+
+### 관련 이미지
+
+<img width="1106" alt="image (17)" src="[https://github.com/user-attachments/assets/0ba0f62c-e8ec-4d0c-bf4b-613c4ba35df0](https://github.com/user-attachments/assets/0ba0f62c-e8ec-4d0c-bf4b-613c4ba35df0)" />
+
+</details>
+
+---
+
+<details>
+<summary><h2> 8. 실시간 멤버정보 변경과 캐시 동기화</h2></summary>
+
+채팅 중에 사용자의 프로필 사진 등 멤버 정보가 변경되면, 이를 실시간으로 반영할 필요가 있습니다.
+
+- **처리 과정:**
+  1.  프로필 업데이트 후 이벤트를 발행합니다.
+  2.  업데이트된 멤버 정보를 기반으로 Redis 캐시를 갱신합니다.
+  3.  Redis로 Publish하여, Subscriber가 WebSocket에 연결된 클라이언트에게 변경된 정보를 전송합니다.
+
+### 관련 이미지
+
+<img width="1154" alt="image (18)" src="[https://github.com/user-attachments/assets/b15a3b4a-3ef3-41d6-855b-4dd7e36b2c86](https://github.com/user-attachments/assets/b15a3b4a-3ef3-41d6-855b-4dd7e36b2c86)" />
+
+</details>
+
+---
+
+<details>
+<summary><h2> 9. Redis 캐시 업데이트 코드</h2></summary>
+
+업데이트된 멤버 정보를 캐시에 반영하는 과정은 다음과 같이 진행됩니다.
+
+- **처리 과정:**
+  1.  Redis에 저장된 기존 멤버 목록을 불러옵니다. (캐시가 없다면 DB에서 조회)
+  2.  이벤트에서 전달받은 업데이트된 멤버 객체를 생성합니다.
+  3.  `modifyCachedMember` 함수를 통해 캐시된 멤버 목록에서 업데이트된 멤버와 ID가 같은 항목을 찾아 갱신합니다.
+  4.  `updateCachedMembers` 함수를 통해 변경된 전체 멤버 목록을 Redis에 다시 저장하고, 변경사항을 Publish합니다.
+
+### 관련 이미지
+
+<img width="1416" alt="image (19)" src="[https://github.com/user-attachments/assets/1c9f88ae-4be0-4898-99cb-d12959f51093](https://github.com/user-attachments/assets/1c9f88ae-4be0-4898-99cb-d12959f51093)" /> <img width="1420" alt="image (20)" src="[https://github.com/user-attachments/assets/9f63be9f-2f14-47c8-97ff-460507c42320](https://github.com/user-attachments/assets/9f63be9f-2f14-47c8-97ff-460507c42320)" /> <img width="1289" alt="image (21)" src="[https://github.com/user-attachments/assets/488efecd-da65-4d64-8ffd-43d9bd2167bd](https://github.com/user-attachments/assets/488efecd-da65-4d64-8ffd-43d9bd2167bd)" />
+</details>
+
+---
+
+<details>
+<summary><h2> 10. SSE 알림</h2></summary>
+
+사용자가 특정 이벤트 발생 시 **즉각적인** 알림을 받을 수 있도록 SSE(Server-Sent Events)를 사용하여 브라우저 알림과 페이지 내 알림(알림 리스트)을 제공합니다.
+
+- **알림 적용 대상:**
+  - 새로운 팔로워 추가
+  - 사용자가 찜한 콘텐츠의 그룹 채팅방 생성
+  - 1:1 채팅 메시지 수신
+  - 그룹 채팅 메시지 수신
+- **처리 과정:**
+  1.  클라이언트가 SSE 연결 요청 시 `addEmitter` 메서드가 호출되어 새로운 SSE 연결이 생성됩니다.
+  2.  30초 간격으로 하트비트(keep-alive)를 전송하여 연결을 유지합니다.
+
+### 관련 이미지
+
+- **브라우저 알림:**
+
+<img width="562" alt="image (23)" src="[https://github.com/user-attachments/assets/8b3dd225-1ffb-44f8-a83a-c0717f56697c](https://github.com/user-attachments/assets/8b3dd225-1ffb-44f8-a83a-c0717f56697c)" />
+
+- **알림 리스트:**
+
+<img width="460" alt="image (24)" src="[https://github.com/user-attachments/assets/f6fda653-4981-4b9e-a4ae-df8331111b3b](https://github.com/user-attachments/assets/f6fda653-4981-4b9e-a4ae-df8331111b3b)" />
+
+</details>
+
+---
+
+<details>
+<summary><h2> 11. SSE 알림에 Redis Pub/Sub을 사용한 이유</h2></summary>
+
+SSE는 단일 서버 인스턴스에 연결된 클라이언트에게만 알림을 전송할 수 있는 한계가 있습니다.
+
+다중 서버(로드밸런싱) 환경에서는 각 서버가 자신이 관리하는 SSE 연결에만 알림을 보낼 수 있습니다.
+
+따라서 **Redis Pub/Sub**을 사용하여,
+
+-   모든 서버 인스턴스가 특정 채널을 구독하고,
+-   발행된 메시지를 각 서버가 받아 자신이 관리하는 SSE 연결을 통해 클라이언트에게 알림을 전달할 수 있도록 하였습니다.
+
+### 관련 이미지
+
+<img width="1055" alt="image (27)" src="[https://github.com/user-attachments/assets/e4e1fecc-992e-4842-801d-c502e7572ef2](https://github.com/user-attachments/assets/e4e1fecc-992e-4842-801d-c502e7572ef2)" />
+
+</details>
+
 ## 🛠️ 기술 스택
 
 |                |                      |                                                       |
