@@ -17,6 +17,24 @@
 ## 🎥 핵심 기능
 
 <details>
+<summary><h3>API 문서화</h3></summary>
+
+- Rest Assured와 Rest Docs 연동
+
+<img src="https://github.com/user-attachments/assets/8577372b-633b-4e48-bda3-54d269e5a6cb" style="width: 600px">
+
+</details>
+
+<details>
+<summary><h3>회원</h3></summary>
+
+- OAuth2 로그인
+
+<img src="https://github.com/user-attachments/assets/34d361fb-f748-4d2e-850f-7a76dc0a4153" style="width: 600px">
+
+</details>
+
+<details>
 <summary><h3>메인 화면 - 카테고리별 콘텐츠(영화, 도서) 리스트 제공</h3></summary>
 
 - 메인 화면 (영화)
