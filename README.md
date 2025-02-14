@@ -128,7 +128,7 @@
 
 ### 영화 (movie)
 
-<img width="987" alt="스크린샷 2025-02-14 오후 3 46 12" src="[https://github.com/user-attachments/assets/47596b32-ffbc-4eca-9602-f6a0e1da11ba](https://github.com/user-attachments/assets/47596b32-ffbc-4eca-9602-f6a0e1da11ba)" />
+![https://github.com/user-attachments/assets/47596b32-ffbc-4eca-9602-f6a0e1da11ba](https://github.com/user-attachments/assets/47596b32-ffbc-4eca-9602-f6a0e1da11ba)
 
 ### 책 (book)
 
