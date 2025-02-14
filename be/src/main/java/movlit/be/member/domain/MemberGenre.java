@@ -9,7 +9,4 @@ public class MemberGenre {
     private MemberId memberId;
     private Long genreId;
 
-//    private MemberGenreId memberGenreId;
-//    private MemberEntity memberEntity;
-
 }
