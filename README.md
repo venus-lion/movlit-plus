@@ -18,15 +18,18 @@
 
 ## 🎥 핵심 기능
 
-### 메인 화면
+<details>
+<summary><h3>메인 화면</h3></summary>
 
 ![https://github.com/user-attachments/assets/c86c38e8-4812-427e-950f-42fdb85cdd11](https://github.com/user-attachments/assets/c86c38e8-4812-427e-950f-42fdb85cdd11)
 
 ![https://github.com/user-attachments/assets/99e01ff5-b105-4c0b-98cd-224ee0070b02](https://github.com/user-attachments/assets/99e01ff5-b105-4c0b-98cd-224ee0070b02)
 
 - 카테고리별 콘텐츠(영화, 책) 리스트 제공
+</details>
 
-### 상세 화면
+<details>
+<summary><h3>상세 화면</h3></summary>
 
 ![https://github.com/user-attachments/assets/a9a6668b-0632-4445-b92f-703b880e30e1](https://github.com/user-attachments/assets/a9a6668b-0632-4445-b92f-703b880e30e1)
 
@@ -38,19 +41,26 @@
 
 - 평점 및 코멘트, 찜, 유사 콘텐츠 제공 기능
 
-### 통합 검색
+</details>
+
+<details>
+<summary><h3>통합 검색</h3></summary>
 
 ![https://github.com/user-attachments/assets/2e66d8b0-9f04-4ecb-bdb7-ffe42a01bcfa](https://github.com/user-attachments/assets/2e66d8b0-9f04-4ecb-bdb7-ffe42a01bcfa)
 
 - 콘텐츠의 제목/장르/카테고리/출연 배우/제작 등으로 검색 및 유사 콘텐츠 제공
+</details>
 
-### 프로필 페이지
+<details>
+<summary><h3>프로필 페이지</h3></summary>
 
 ![https://github.com/user-attachments/assets/8f440bfd-d64c-4e43-8329-5502c0b0b062](https://github.com/user-attachments/assets/8f440bfd-d64c-4e43-8329-5502c0b0b062)
 
 - 팔로우/언팔로우, 개인정보 수정 및 사용자 정보 기반의 맞춤 콘텐츠 제공
+</details>
 
-### 1:1 채팅 (DM)
+<details>
+<summary><h3>1:1 채팅 (DM)</h3></summary>
 
 ![https://github.com/user-attachments/assets/b3c1e0c9-b985-4b24-af52-5c1cde01ae55](https://github.com/user-attachments/assets/b3c1e0c9-b985-4b24-af52-5c1cde01ae55)
 
@@ -64,7 +74,10 @@
 
 - 일대일 채팅을 받으면, 그 받은 유저에게 알림이 오는 기능
 
-### 그룹 채팅
+</details>
+
+<details>
+<summary><h3>그룹 채팅</h3></summary>
 
 - 콘텐츠 검색 및 그룹 채팅방 생성
 
@@ -85,13 +98,16 @@
 
 ![https://github.com/user-attachments/assets/62f28b53-feb7-4f45-81fa-6bbc37848107](https://github.com/user-attachments/assets/62f28b53-feb7-4f45-81fa-6bbc37848107)
 
+</details>
 
-### 사용자 알림
+<details>
+<summary><h3>사용자 알림</h3></summary>
 
 - 채팅, 팔로우, 콘텐츠 찜 이벤트를 실시간으로 알림 제공
 
 ![https://github.com/user-attachments/assets/cb18199a-8ed0-49eb-8515-8cda7d2e0503](https://github.com/user-attachments/assets/cb18199a-8ed0-49eb-8515-8cda7d2e0503)
 
+</details>
 
 ## 💎 핵심 구현
 
@@ -121,7 +137,7 @@
 
 | 팀장 | 팀원 | 팀원 | 팀원 |
 | --- | --- | --- | --- |
-| <a href="[https://github.com/devbattery](https://github.com/devbattery)"><img src = "[https://avatars.githubusercontent.com/u/60080167?v=4](https://avatars.githubusercontent.com/u/60080167?v=4)" width="120px;"> | <a href="[https://github.com/minyoongi96](https://github.com/minyoongi96)"><img src = "[https://avatars.githubusercontent.com/gunoc](https://avatars.githubusercontent.com/gunoc)" width="120px;"> | <a href="[https://github.com/G1Huh](https://github.com/G1Huh)"><img src = "[https://avatars.githubusercontent.com/chunghye98](https://avatars.githubusercontent.com/chunghye98)" width="120px;"> | <a href="[https://github.com/minjikimkim2222](https://github.com/minjikimkim2222)"><img src = "[https://avatars.githubusercontent.com/won4885](https://avatars.githubusercontent.com/won4885)" width="120px;"> |
+| <a href="https://github.com/devbattery"><img src = "https://avatars.githubusercontent.com/u/60080167?v=4" width="120px;"> | <a href="https://github.com/minyoongi96"><img src = "https://avatars.githubusercontent.com/gunoc" width="120px;"> | <a href="https://github.com/G1Huh"><img src = "https://avatars.githubusercontent.com/chunghye98" width="120px;"> | <a href="https://github.com/minjikimkim2222"><img src = "https://avatars.githubusercontent.com/won4885" width="120px;"> |
 | [정원준](https://github.com/devbattery) | [민윤기](https://github.com/minyoongi96) | [허지원](https://github.com/G1Huh) | [김민지](https://github.com/minjikimkim2222) |
 
 ## 📉 ERD 설계도
