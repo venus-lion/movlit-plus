@@ -120,5 +120,11 @@ public class BookDetailController {
         return ResponseEntity.ok(recommendedMovieList);
     }
 
+    @GetMapping("recommend/books/{movieId}")
+    public ResponseEntity<List<BookESVo>> fetchRecommendedMBooksByMovieId(@PathVariable Long movieId) {
+        List<BookESVo> recommendedMovieList = bookDetailReadService.fetchRecommendedBooksByMovieId(movieId);
+        return ResponseEntity.ok(recommendedMovieList);
+    }
+
 
 }

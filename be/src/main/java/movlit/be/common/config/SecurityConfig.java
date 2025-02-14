@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/testBook//saveBooks/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/movies/search/searchMovie").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/movies/*/detail/related").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/books/genres/movies/*/detail").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/books/recommend/books/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/genreList").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/movies/*/comments").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/movies/*/crews").permitAll()
