@@ -28,9 +28,22 @@
 <details>
 <summary><h3>회원</h3></summary>
 
+- 회원가입
+
+<img src="https://github.com/user-attachments/assets/82e9f940-3f51-43bb-bef0-bf4246dbbb7a" style="width: 600px">
+
+<hr/>
+
+- 로그인
+
+<img src="https://github.com/user-attachments/assets/4935e3f9-1f4f-40af-95a9-4fe5a8b272da" style="width: 600px">
+
+<hr/>
+
 - OAuth2 로그인
 
 <img src="https://github.com/user-attachments/assets/34d361fb-f748-4d2e-850f-7a76dc0a4153" style="width: 600px">
+
 
 </details>
 
@@ -40,6 +53,8 @@
 - 메인 화면 (영화)
 
 <img src="https://github.com/user-attachments/assets/c86c38e8-4812-427e-950f-42fdb85cdd11" style="width: 600px">
+
+<hr/>
 
 - 메인 화면 (도서)
 
