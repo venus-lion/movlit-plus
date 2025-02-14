@@ -56,26 +56,26 @@
 <details>
 <summary><h3>프로필 페이지</h3></summary>
 
-![https://github.com/user-attachments/assets/8f440bfd-d64c-4e43-8329-5502c0b0b062](https://github.com/user-attachments/assets/8f440bfd-d64c-4e43-8329-5502c0b0b062)
-
 - 팔로우/언팔로우, 개인정보 수정 및 사용자 정보 기반의 맞춤 콘텐츠 제공
+<img src="https://github.com/user-attachments/assets/8f440bfd-d64c-4e43-8329-5502c0b0b062" style="width:600px">
+
 
 </details>
 
 <details>
 <summary><h3>1:1 채팅 (DM)</h3></summary>
 
-![https://github.com/user-attachments/assets/b3c1e0c9-b985-4b24-af52-5c1cde01ae55](https://github.com/user-attachments/assets/b3c1e0c9-b985-4b24-af52-5c1cde01ae55)
 
 - 최초 DM 전송 시 프로필 페이지에서 채팅방 생성
+<img src="https://github.com/user-attachments/assets/b3c1e0c9-b985-4b24-af52-5c1cde01ae55" style="width:600px">
 
-![https://github.com/user-attachments/assets/7cd08d50-8ec1-4f38-88dc-35eb4c67bdf7](https://github.com/user-attachments/assets/7cd08d50-8ec1-4f38-88dc-35eb4c67bdf7)
 
 - 일대일 채팅방 접속 중인 상태에서 상대방이 프로필 사진이 변경되면, 실시간 업데이트
+<img src="https://github.com/user-attachments/assets/7cd08d50-8ec1-4f38-88dc-35eb4c67bdf7" style="width:600px">
 
-![https://github.com/user-attachments/assets/505fea8c-7cbd-4eac-b7e1-a35a73763797](https://github.com/user-attachments/assets/505fea8c-7cbd-4eac-b7e1-a35a73763797)
 
 - 일대일 채팅을 받으면, 그 받은 유저에게 알림이 오는 기능
+<img src="https://github.com/user-attachments/assets/505fea8c-7cbd-4eac-b7e1-a35a73763797" style="width:600px">
 
 </details>
 
@@ -83,20 +83,19 @@
 <summary><h3>그룹 채팅</h3></summary>
 
 - 콘텐츠 검색 및 그룹 채팅방 생성
-
-![https://github.com/user-attachments/assets/f24799ba-e133-4824-9858-7fa50ed64abd](https://github.com/user-attachments/assets/f24799ba-e133-4824-9858-7fa50ed64abd)
+<img src="https://github.com/user-attachments/assets/f24799ba-e133-4824-9858-7fa50ed64abd" style="width:600px">
 
 - 실시간 그룹 채팅
+<img src="https://github.com/user-attachments/assets/48cbec83-32e2-480d-88d7-71ef0cf99c47" style="width:600px">
 
-![https://github.com/user-attachments/assets/48cbec83-32e2-480d-88d7-71ef0cf99c47](https://github.com/user-attachments/assets/48cbec83-32e2-480d-88d7-71ef0cf99c47)
 
 - 실시간으로 프로필 정보 변경 반영
+<img src="https://github.com/user-attachments/assets/65d61216-23da-4f51-952e-437f7cbf5adb" style="width:600px">
 
-![https://github.com/user-attachments/assets/65d61216-23da-4f51-952e-437f7cbf5adb](https://github.com/user-attachments/assets/65d61216-23da-4f51-952e-437f7cbf5adb)
 
 - 채팅방 나가기
+<img src="https://github.com/user-attachments/assets/62f28b53-feb7-4f45-81fa-6bbc37848107" style="width:600px">
 
-![https://github.com/user-attachments/assets/62f28b53-feb7-4f45-81fa-6bbc37848107](https://github.com/user-attachments/assets/62f28b53-feb7-4f45-81fa-6bbc37848107)
 
 </details>
 
@@ -104,8 +103,7 @@
 <summary><h3>사용자 알림</h3></summary>
 
 - 채팅, 팔로우, 콘텐츠 찜 이벤트를 실시간으로 알림 제공
-
-![https://github.com/user-attachments/assets/cb18199a-8ed0-49eb-8515-8cda7d2e0503](https://github.com/user-attachments/assets/cb18199a-8ed0-49eb-8515-8cda7d2e0503)
+<img src="https://github.com/user-attachments/assets/cb18199a-8ed0-49eb-8515-8cda7d2e0503" style="width:600px">
 
 </details>
 
@@ -114,7 +112,6 @@
 ## 🛠️ 기술 스택
 
 | Frontend       |                      |                                                       |
-|----------------|----------------------|-------------------------------------------------------|
 |                | React (Vite)         | 사용자 인터페이스 구축을 위한 프론트엔드 라이브러리 (Javascript)             |
 | Backend        |                      |                                                       |
 |                | Springboot 3.4       | 웹 애플리케이션 백엔드 프레임워크 (Java)                             |
