@@ -19,28 +19,44 @@
 ## 🎥 핵심 기능
 
 <details>
-<summary><h3>메인 화면</h3></summary>
+<summary><h3>메인 화면 - 카테고리별 콘텐츠(영화, 도서) 리스트 제공</h3></summary>
+
+- 메인 화면 (영화)
 
 <img src="https://github.com/user-attachments/assets/c86c38e8-4812-427e-950f-42fdb85cdd11" style="width: 600px">
 
-<img src="https://github.com/user-attachments/assets/99e01ff5-b105-4c0b-98cd-224ee0070b02" style="width: 600px">
+- 메인 화면 (도서)
 
-- 카테고리별 콘텐츠(영화, 책) 리스트 제공
+<img src="https://github.com/user-attachments/assets/99e01ff5-b105-4c0b-98cd-224ee0070b02" style="width: 600px">
 
 </details>
 
 <details>
-<summary><h3>상세 화면</h3></summary>
+<summary><h3>상세 화면 - 평점 및 코멘트, 찜, 유사 콘텐츠 제공 기능</h3></summary>
+
+- 도서 상세 정보 : 평점, 관련 도서 / 영화 리스트 제공
 
 <img src="https://github.com/user-attachments/assets/a9a6668b-0632-4445-b92f-703b880e30e1" style="width: 600px">
 
+<hr/>
+
+- 평점 및 코멘트 입력 및 조회
+
 <img src="https://github.com/user-attachments/assets/93140632-99de-4166-b4ef-384bfa25bb73" style="width: 600px">
+
+<hr/>
+
+- 영화 상세 정보 : 평점, 관련 도서 / 영화 리스트 제공
 
 <img src="https://github.com/user-attachments/assets/9ac75e7f-9782-46cd-a63b-8cf710e015a1" style="width: 600px">
 
+<hr/>
+
+- 평점 및 코멘트 입력 및 조회
+
 <img src="https://github.com/user-attachments/assets/79539d4b-16ed-473a-aeae-4dc15e737690" style="width: 600px">
 
-- 평점 및 코멘트, 찜, 유사 콘텐츠 제공 기능
+
 
 </details>
 
