@@ -25,6 +25,8 @@
 
 </details>
 
+---
+
 <details>
 <summary><h3>회원</h3></summary>
 
@@ -47,6 +49,8 @@
 
 </details>
 
+---
+
 <details>
 <summary><h3>메인 화면 - 카테고리별 콘텐츠(영화, 도서) 리스트 제공</h3></summary>
 
@@ -61,6 +65,8 @@
 <img src="https://github.com/user-attachments/assets/99e01ff5-b105-4c0b-98cd-224ee0070b02" style="width: 600px">
 
 </details>
+
+---
 
 <details>
 <summary><h3>상세 화면 - 평점 및 코멘트, 찜, 유사 콘텐츠 제공 기능</h3></summary>
@@ -91,6 +97,8 @@
 
 </details>
 
+---
+
 <details>
 <summary><h3>통합 검색 - 콘텐츠 검색 및 유사 콘텐츠 제공</h3></summary>
 
@@ -101,6 +109,8 @@
 
 </details>
 
+---
+
 <details>
 <summary><h3>프로필 페이지 - 팔로우, 개인정보 수정 및 맞춤 콘텐츠 제공</h3></summary>
 
@@ -110,6 +120,8 @@
 
 
 </details>
+
+---
 
 <details>
 <summary><h3>1:1 채팅 (DM) - 타 사용자와 1:1 채팅</h3></summary>
@@ -129,6 +141,8 @@
 <img src="https://github.com/user-attachments/assets/505fea8c-7cbd-4eac-b7e1-a35a73763797" style="width:600px">
 
 </details>
+
+---
 
 <details>
 <summary><h3>그룹 채팅 - 콘텐츠(영화/책)의 그룹 채팅방 가입 및 채팅을 통한 의견 교류</h3></summary>
@@ -153,6 +167,8 @@
 <img src="https://github.com/user-attachments/assets/62f28b53-feb7-4f45-81fa-6bbc37848107" style="width:600px">
 
 </details>
+
+---
 
 <details>
 <summary><h3>사용자 알림 - 특정 이벤트에 대한 실시간 알림</h3></summary>
